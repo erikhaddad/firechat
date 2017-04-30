@@ -1,0 +1,410 @@
+$blue: #2196F3;
+$dingy: #495B6A;
+$white: #ffffff;
+$purple: #673AB7;
+$yellow: #FFEB3B;
+$red: #F44336;
+$orange: #FF5722;
+$black: #333333;
+
+$nav: 100;
+
+$navHeight: 64px;
+
+$trans: 0.3s ease;
+
+.app-toolbar {
+  .app-toolbar-menu {
+    box-shadow: none;
+    user-select: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    filter: none;
+    font-weight: normal;
+    height: auto;
+    line-height: inherit;
+    margin: 0;
+    min-width: 0;
+    padding: 0;
+    text-align: left;
+    text-decoration: none;
+    outline: none;
+
+    .app-toolbar-menu-icon {
+      padding: 0 14px 0 14px;
+      color: rgba(255, 255, 255, .54);
+
+      transition: .2s all linear;
+
+      &:hover {
+        color: rgba(255, 255, 255, 1);
+      }
+    }
+  }
+
+  .app-toolbar-title {
+    font-family: 'Product Sans', sans-serif;
+    color: rgba(255,255,255,1)
+  }
+
+  .app-toolbar-filler {
+    flex: 1 1 auto;
+  }
+
+  .app-toolbar-theme {
+
+  }
+}
+
+.app-sidenav-container {
+  height: calc(100% - 64px);
+
+  &.m2app-dark {
+    background: #333333;
+
+    #sidenav-community,
+    #sidenav-details {
+      background: #434753;
+      color: #ffffff;
+    }
+
+    #sidenav-community {
+      .list-friends {
+        .user {
+          color: rgba(255,255,255,.87);
+        }
+        .status {
+          color: rgba(255,255,255,.54);
+        }
+      }
+    }
+
+    .app-content {
+      background: #333333;
+
+      .bottom {
+        .input {
+          color: #ffffff;
+        }
+      }
+    }
+  }
+
+  #sidenav-community {
+    font-family: 'Roboto', sans-serif;
+    box-sizing: content-box;
+    height: 100%;
+    background: #ffffff;
+    color: rgba(0,0,0,.87);
+
+    min-width: 100px;
+    /*width: 29%;*/
+    width: 274px;
+    max-width: 324px;
+
+    .search {
+      position: relative;
+      height: 64px;
+
+      input {
+        outline: none;
+        border: none;
+        background: none;
+
+        &[type=submit] {
+          font-family: 'Material Icons Extended';
+          position: absolute;
+          right: 9%;
+          top: 27px;
+          color: white;
+          content: '&#xE87C;';
+        }
+
+        &[type=search] {
+          background-color: #696c75;
+          border-radius: 3px;
+          padding: 10px;
+          box-sizing: border-box;
+          margin: 16px 12px;
+          color: #fff;
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          display: table-cell;
+          width: calc(100% - 24px);
+        }
+      }
+
+      i.material-icons {
+        position: absolute;
+        right: 16px;
+        top: 20px;
+        color: white;
+      }
+    }
+
+    .list-friends {
+      list-style: none;
+      font-size: 13px;
+      height: 88%;
+
+      margin: 0;
+      padding: 0;
+      overflow: auto;
+      outline: none;
+
+      img {
+        border-radius: 50%;
+        border: 3px solid #696c75;
+        margin: 5px;
+      }
+      > li {
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        padding: 6px 12px 6px 12px;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        cursor: pointer;
+
+        &:hover {
+          background-color: #666666;
+        }
+      }
+      .info {
+        -webkit-box-flex: 1;
+        -ms-flex: 1;
+        flex: 1;
+      }
+      .user {
+        color: rgba(0,0,0,.87);
+        margin-top: 12px;
+      }
+      .status {
+        position: relative;
+        margin-top: 4px;
+        margin-left: 14px;
+        color: rgba(0,0,0,.54);
+      }
+      .off:after,
+      .on:after {
+        content: '';
+        left: -12px;
+        top: 5px;
+        position: absolute;
+        height: 7px;
+        width: 7px;
+        border-radius: 50%;
+      }
+      .off:after {
+        background: #fd8064;
+      }
+      .on:after {
+        background: #62bf6e;
+      }
+    }
+  }
+  #sidenav-details {
+    min-width: 256px;
+  }
+
+  .app-content {
+    background: darken($white, 5%);
+
+    height: 100%;
+
+    .inner {
+      overflow: scroll;
+      height: 100%;
+      padding-bottom: 64px;
+      box-sizing: border-box;
+
+      -ms-overflow-style: none;
+      overflow: -moz-scrollbars-none;
+      //gotta hide windows scrollbars
+
+      &::-webkit-scrollbar {
+        width: 0 !important
+      }
+
+      .content {
+        padding: ($navHeight - ($navHeight/1.5)) / 2;
+        position: relative;
+
+        :first-child {
+          margin-top: 0;
+        }
+      }
+    }
+
+    .bottom {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: $navHeight;
+      background: #696c75;
+
+      /* box-shadow: 0px -3px 3px 0px rgba(50, 50, 50, 0.1); */
+
+      .input {
+        height: $navHeight;
+        background: #696c75;
+        border: none;
+        width: calc(100% - #{$navHeight});
+        position: absolute;
+        left: 0;
+        top: 0;
+        padding: 0 5%;
+        resize: none;
+        overflow: scroll;
+        padding-top: ($navHeight/2) - 8;
+        font-weight: 300;
+        font-size: 16px;
+
+        &:focus {
+          outline: none;
+        }
+
+        -ms-overflow-style: none;
+        overflow: -moz-scrollbars-none;
+        //gotta hide windows scrollbars
+
+        &::-webkit-scrollbar {
+          width: 0 !important
+        }
+      }
+
+      .send {
+        position: fixed;
+        height: $navHeight/1.5;
+        width: $navHeight/1.5;
+        border-radius: 50%;
+        border: 0;
+        background: $red;
+        color: $white;
+
+        bottom: ($navHeight - ($navHeight/1.5)) / 2;
+        right: ($navHeight - ($navHeight/1.5)) / 2;
+
+        &:before {
+          content: '';
+          background: url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/104946/ic_send_white_48dp.png) no-repeat center center;
+          background-size: $navHeight/2.5;
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+        }
+
+        &:focus {
+          outline: none;
+        }
+
+        &:hover {
+          cursor: pointer;
+        }
+      }
+    }
+
+    .message-wrapper {
+      position: relative;
+      overflow: hidden;
+
+      width: 100%;
+      margin: (($navHeight - ($navHeight/1.5)) / 2) 0;
+      padding: (($navHeight - ($navHeight/1.5)) / 2) 0;
+      font-family: 'Roboto', sans-serif;
+
+      .circle-wrapper {
+        height: $navHeight/1.5;
+        width: $navHeight/1.5;
+        border-radius: 50%;
+        cursor: pointer;
+      }
+
+      .text-wrapper {
+        padding: ($navHeight - ($navHeight/1.5)) / 2;
+        min-height: $navHeight/1.5;
+        width: 60%;
+        margin: 0 ($navHeight - ($navHeight/1.5)) / 2;
+        box-shadow: 0px 1px 0px 0px rgba(50, 50, 50, 0.3);
+        border-radius: 2px;
+        font-weight: 300;
+        position: relative;
+        /* word-break: break-all; */
+        /*opacity: 0;*/
+
+        &:before {
+          content: '';
+          width: 0;
+          height: 0;
+          border-style: solid;
+        }
+      }
+
+      &.them {
+        .circle-wrapper, .text-wrapper {
+          background: $red;
+          float: left;
+          color: $white;
+        }
+
+        .text-wrapper {
+          &:before {
+            border-width: 0 10px 10px 0;
+            border-color: transparent $red transparent transparent;
+            position: absolute;
+            top: 0;
+            left: -9px;
+          }
+        }
+      }
+
+      &.me {
+        .circle-wrapper,
+        .text-wrapper {
+          background: $orange;
+          float: right;
+          color: $black;
+        }
+
+        .circle-wrapper {
+          display: none;
+        }
+
+        .text-wrapper {
+          background: $white;
+
+          &:before {
+            border-width: 10px 10px 0 0;
+            border-color: $white transparent transparent transparent;
+            position: absolute;
+            top: 0;
+            right: -9px;
+          }
+        }
+      }
+    }
+
+  }
+
+  .app-action {
+    display: inline-block;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+  }
+}
+
+@media (max-width: 600px) {
+  .app-sidenav-container {
+    height: calc(100% - 56px);
+  }
+}

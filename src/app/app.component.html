@@ -1,3 +1,89 @@
-<h1>
-  {{title}}
-</h1>
+<div class="app-toolbar-container" [class.m2app-dark]="isDarkTheme">
+  <md-toolbar class="app-toolbar mat-elevation-z6" color="primary">
+    <button class="app-toolbar-menu" (click)="community.toggle()">
+      <i class="material-icons app-toolbar-menu-icon">menu</i>
+    </button>
+
+    <span class="app-toolbar-title">{{ title }}</span>
+    <span class="app-toolbar-filler"></span>
+    <button md-icon-button
+            class="app-toolbar-theme">
+      <md-icon>language</md-icon>
+    </button>
+    <button md-icon-button
+            class="app-toolbar-theme"
+            (click)="isModerated = !isModerated">
+      <md-icon *ngIf="!isModerated">lock_open</md-icon>
+      <md-icon *ngIf="isModerated">lock_outline</md-icon>
+    </button>
+    <button md-icon-button
+            class="app-toolbar-theme"
+            (click)="isDarkTheme = !isDarkTheme">
+      <md-icon>lightbulb_outline</md-icon>
+    </button>
+  </md-toolbar>
+</div>
+
+<md-sidenav-container class="app-sidenav-container" [class.m2app-dark]="isDarkTheme">
+  <md-sidenav #community id="sidenav-community" class="app-sidenav" mode="side" opened="true" fxLayout="column">
+    <form action="#" class="search">
+      <input placeholder="search..." type="search" name="" id="">
+      <i class="material-icons">search</i>
+    </form>
+
+    <ul class="list-friends" fxFlex>
+      <li *ngFor="let user of users">
+        <img width="50" height="50" [src]="user.avatar">
+        <div class="info">
+          <div class="user">{{ user.name }}</div>
+          <div class="status"
+               [ngClass]="{'on': user.status == 'online', 'off': user.status != 'online'}"> {{ user.status }}</div>
+        </div>
+      </li>
+    </ul>
+  </md-sidenav>
+
+  <div class="app-content">
+    <div class="inner" id="inner">
+      <div class="content" id="content">
+        <div class="message-wrapper"
+             *ngFor="let msg of messages"
+             [ngClass]="{'me': msg.userId == currentUser.id, 'them': msg.userId != currentUser.id}">
+
+          <div class="circle-wrapper animated bounceIn"
+               [mdTooltip]="msg.name + ' @ ' + msg.timestamp"
+               mdTooltipPosition="below"
+               [@bounceInOut]="'in'"
+               (click)="details.open()"
+               [style.backgroundImage]="'url(' + msg.avatar + ')'"></div>
+
+          <div class="text-wrapper animated fadeIn" [@flyInOut]="'in'">{{ msg.message }}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bottom" id="bottom">
+      <textarea class="input" id="input"></textarea>
+      <div class="send" id="send"></div>
+    </div>
+  </div>
+  <md-sidenav #details id="sidenav-details" align="end" mode="side" opened="true">
+    <md-tab-group>
+      <md-tab>
+        <ng-template md-tab-label>Details</ng-template>
+        <div fxLayout="column" fxLayoutAlign="center center" style="margin: 24px 0">
+          <button md-raised-button (click)="details.close()" color="accent">CLOSE</button>
+        </div>
+      </md-tab>
+      <md-tab>
+        <ng-template md-tab-label>Feed</ng-template>
+      </md-tab>
+    </md-tab-group>
+  </md-sidenav>
+</md-sidenav-container>
+
+<span class="app-action" [class.m2app-dark]="isDarkTheme">
+  <button class="app-fab-button" md-fab>
+    <md-icon>check</md-icon>
+  </button>
+</span>
