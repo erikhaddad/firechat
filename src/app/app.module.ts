@@ -8,15 +8,16 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {MaterialModule} from './material/material.module';
 
-import {AngularFireModule} from 'angularfire2';
-import {AngularFireDatabaseModule} from 'angularfire2/database';
-import {AngularFireAuthModule} from 'angularfire2/auth';
-import {environment} from '../environments/environment';
-
 import {AppComponent} from './app.component';
 import {AuthModule} from './auth/auth.module';
 import {SignInModule} from './sign-in/sign-in.module';
+import {MessagesModule} from './messages/messages.module';
 import {DataService} from './common/data.service';
+import {RouterModule, Routes} from '@angular/router';
+
+const routes: Routes = [
+    { path: '', redirectTo: '/messages', pathMatch: 'full'}
+];
 
 @NgModule({
     declarations: [
@@ -30,14 +31,14 @@ import {DataService} from './common/data.service';
         FormsModule,
         HttpModule,
         BrowserAnimationsModule,
+        RouterModule.forRoot(routes, {useHash: false}),
+
         FlexLayoutModule,
         MaterialModule,
-        AngularFireModule.initializeApp(environment.firebase),
-        AngularFireDatabaseModule,
-        AngularFireAuthModule,
 
         AuthModule,
-        SignInModule
+        SignInModule,
+        MessagesModule
     ],
     providers: [DataService],
     bootstrap: [AppComponent]

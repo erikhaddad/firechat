@@ -7,7 +7,7 @@ import {
     MdCheckboxModule,
     MdIconModule,
     MdInputModule,
-    MdSidenavModule, MdTabsModule,
+    MdSidenavModule, MdSnackBarModule, MdTabsModule,
     MdToolbarModule,
     MdTooltipModule
 } from '@angular/material';
@@ -21,6 +21,7 @@ import {
         MdIconModule,
         MdInputModule,
         MdSidenavModule,
+        MdSnackBarModule,
         MdTabsModule,
         MdToolbarModule,
         MdTooltipModule
@@ -32,6 +33,7 @@ import {
         MdIconModule,
         MdInputModule,
         MdSidenavModule,
+        MdSnackBarModule,
         MdTabsModule,
         MdToolbarModule,
         MdTooltipModule

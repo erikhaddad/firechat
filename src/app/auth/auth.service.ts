@@ -7,7 +7,7 @@ import {FirebaseError} from 'firebase/app';
 
 // import UserInfo = firebase.UserInfo;
 
-export declare enum AuthProviders {
+export enum AuthProviders {
     Github = 0,
     Twitter = 1,
     Facebook = 2,

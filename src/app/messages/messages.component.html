@@ -1,0 +1,22 @@
+<div class="inner" id="inner">
+  <div class="content" id="content">
+    <div class="message-wrapper"
+         *ngFor="let msg of messages"
+         [ngClass]="{'me': msg.userId == currentUser.id, 'them': msg.userId != currentUser.id}">
+
+      <div class="circle-wrapper animated bounceIn"
+           [mdTooltip]="msg.name + ' @ ' + msg.timestamp"
+           mdTooltipPosition="below"
+           [@bounceInOut]="'in'"
+           (click)="details.open()"
+           [style.backgroundImage]="'url(' + msg.avatar + ')'"></div>
+
+      <div class="text-wrapper animated fadeIn" [@flyInOut]="'in'">{{ msg.message }}</div>
+    </div>
+  </div>
+</div>
+
+<div class="bottom" id="bottom">
+  <textarea class="input" id="input"></textarea>
+  <div class="send" id="send"></div>
+</div>

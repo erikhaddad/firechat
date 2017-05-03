@@ -86,6 +86,15 @@ export class Metadata implements IMetadata {
     name: string; // The public display name of the room.
     type: string; // The type of room, public or private.
 }
+export interface IRoom {
+    roomId?: string; // room-id
+    metadata: IMetadata[];
+    messages: IMessage[];
+}
+export class Room implements IRoom {
+    metadata: IMetadata[];
+    messages: IMessage[];
+}
 
 export interface IRoomUsers {
     $key?: string; // room-id

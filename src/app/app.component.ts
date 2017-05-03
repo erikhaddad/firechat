@@ -1,71 +1,23 @@
 import {
     Component,
-    Input
+    ViewEncapsulation
 } from '@angular/core';
-import {
-    trigger,
-    state,
-    style,
-    animate,
-    transition,
-    group,
-    keyframes
-} from '@angular/animations';
+import {FirebaseListObservable} from 'angularfire2/database';
 import {
     IModerator, IRoomMessages, IMessage, IRoomMetadata, IUser, Message, IRoomUsers,
     ISuspendedUsers
 } from './common/data-model';
 import {DataService} from './common/data.service';
-import {FirebaseListObservable} from 'angularfire2/database';
+import {DomSanitizer} from '@angular/platform-browser';
+import {MdIconRegistry, MdSnackBar} from '@angular/material';
+import {AuthService} from './auth/auth.service';
+import {Router} from '@angular/router';
 
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss'],
-    animations: [
-        trigger('bounceInOut', [
-            transition('void => *', [
-                animate(300, keyframes([
-                    style({opacity: 0, transform: 'scale(0.1)', offset: 0}),
-                    style({opacity: 1, transform: 'scale(1.2)', offset: 0.3}),
-                    style({opacity: 1, transform: 'scale(1)', offset: 1})
-                ]))
-            ]),
-            transition('* => void', [
-                animate(300, keyframes([
-                    style({opacity: 1, transform: 'scale(1)', offset: 0}),
-                    style({opacity: 1, transform: 'scale(1.2)', offset: 0.7}),
-                    style({opacity: 0, transform: 'scale(0.1)', offset: 1})
-                ]))
-            ])
-        ]),
-        trigger('flyInOut', [
-            state('in', style({width: '60%', transform: 'translateX(0)', opacity: 1})),
-            transition('void => *', [
-                style({width: 10, transform: 'translateX(50px)', opacity: 0}),
-                group([
-                    animate('0.3s 0.1s ease', style({
-                        transform: 'translateX(0)',
-                        width: '60%'
-                    })),
-                    animate('0.3s ease', style({
-                        opacity: 1
-                    }))
-                ])
-            ]),
-            transition('* => void', [
-                group([
-                    animate('0.3s ease', style({
-                        transform: 'translateX(50px)',
-                        width: 10
-                    })),
-                    animate('0.3s 0.2s ease', style({
-                        opacity: 0
-                    }))
-                ])
-            ])
-        ])
-    ]
+    encapsulation: ViewEncapsulation.None
 })
 export class AppComponent {
     title: string;
@@ -77,20 +29,46 @@ export class AppComponent {
     currentUser: IUser;
 
     users: IUser[];
-    messages: IMessage[];
 
     testUsers: IUser[];
-    testMessages: IMessage[];
 
     users$: FirebaseListObservable<IUser[]>;
 
-    constructor (dataService: DataService) {
+    constructor (private auth: AuthService,
+                 private dataService: DataService,
+                 private router: Router,
+                 public snackBar: MdSnackBar,
+                 iconRegistry: MdIconRegistry,
+                 sanitizer: DomSanitizer) {
+        iconRegistry.addSvgIcon(
+            'google',
+            sanitizer.bypassSecurityTrustResourceUrl('assets/icons/auth/google.svg'));
+
+        iconRegistry.addSvgIcon(
+            'facebook',
+            sanitizer.bypassSecurityTrustResourceUrl('assets/icons/auth/facebook.svg'));
+
+        iconRegistry.addSvgIcon(
+            'twitter',
+            sanitizer.bypassSecurityTrustResourceUrl('assets/icons/auth/twitter.svg'));
+
+        iconRegistry.addSvgIcon(
+            'github',
+            sanitizer.bypassSecurityTrustResourceUrl('assets/icons/auth/github.svg'));
+
+        iconRegistry.addSvgIcon(
+            'logo_white',
+            sanitizer.bypassSecurityTrustResourceUrl('assets/images/logo_fireplace_white.svg'));
+
+        iconRegistry.addSvgIcon(
+            'logo_color',
+            sanitizer.bypassSecurityTrustResourceUrl('assets/images/logo_fireplace_color.svg'));
+
         this.title = 'firechat';
 
         this.selectedLanguage = 'en';
         this.isModerated = false;
         this.isDarkTheme = true;
-
 
         this.testUsers = [
             {
@@ -222,131 +200,15 @@ export class AppComponent {
 
         this.users$ = dataService.users;
 
-        this.testMessages = [
-            {
-                $key: '',
-                userId: this.users[0].id,
-                name: this.users[0].name,
-                avatar: this.users[0].avatar,
-                message: 'Is this the real life?',
-                timestamp: Date.now(),
-            },
-            {
-                $key: '',
-                userId: this.users[1].id,
-                name: this.users[1].name,
-                avatar: this.users[1].avatar,
-                message: 'Is this just fantasy?',
-                timestamp: Date.now(),
-            },
-            {
-                $key: '',
-                userId: this.users[0].id,
-                name: this.users[0].name,
-                avatar: this.users[0].avatar,
-                message: 'Caught in a landslide',
-                timestamp: Date.now(),
-            },
-            {
-                $key: '',
-                userId: this.users[2].id,
-                name: this.users[2].name,
-                avatar: this.users[2].avatar,
-                message: 'No escape from reality.',
-                timestamp: Date.now(),
-            },
-            {
-                $key: '',
-                userId: this.users[0].id,
-                name: this.users[0].name,
-                avatar: this.users[0].avatar,
-                message: 'Open your eyes',
-                timestamp: Date.now(),
-            },
-            {
-                $key: '',
-                userId: this.users[3].id,
-                name: this.users[3].name,
-                avatar: this.users[3].avatar,
-                message: 'Look up to the skies and see',
-                timestamp: Date.now(),
-            },
-            {
-                $key: '',
-                userId: this.users[0].id,
-                name: this.users[0].name,
-                avatar: this.users[0].avatar,
-                message: 'I\'m just a poor boy, I need no sympathy',
-                timestamp: Date.now(),
-            },
-            {
-                $key: '',
-                userId: this.users[4].id,
-                name: this.users[4].name,
-                avatar: this.users[4].avatar,
-                message: 'Because I\'m easy come, easy go',
-                timestamp: Date.now(),
-            },
-            {
-                $key: '',
-                userId: this.users[0].id,
-                name: this.users[0].name,
-                avatar: this.users[0].avatar,
-                message: 'Little high, little low',
-                timestamp: Date.now(),
-            },
-            {
-                $key: '',
-                userId: this.users[5].id,
-                name: this.users[5].name,
-                avatar: this.users[5].avatar,
-                message: 'Anyway the wind blows doesn\'t really matter to me, to me',
-                timestamp: Date.now(),
-            },
-            {
-                $key: '',
-                userId: this.users[0].id,
-                name: this.users[0].name,
-                avatar: this.users[0].avatar,
-                message: 'Mama, just killed a man',
-                timestamp: Date.now(),
-            },
-            {
-                $key: '',
-                userId: this.users[6].id,
-                name: this.users[6].name,
-                avatar: this.users[6].avatar,
-                message: 'Put a gun against his head',
-                timestamp: Date.now(),
-            },
-            {
-                $key: '',
-                userId: this.users[0].id,
-                name: this.users[0].name,
-                avatar: this.users[0].avatar,
-                message: 'Pulled my trigger, now he\'s dead.',
-                timestamp: Date.now(),
-            }
-        ];
-        this.messages = [];
+        console.log(this.auth);
+    }
 
-        // this.messages = this.testMessages;
-        let msgIndex = 0;
-        const that = this;
-        const interval = setInterval(() => {
+    signOut(message: string): void {
+        this.auth.signOut();
+        this.router.navigate(['/landing']);
 
-            that.messages.push(that.testMessages[msgIndex]);
-
-            setTimeout(() => {
-                const panel = document.getElementById('inner');
-                panel.scrollTop = panel.scrollHeight;
-            }, 200);
-
-            msgIndex++;
-
-            if (msgIndex >= that.testMessages.length) {
-                clearInterval(interval);
-            }
-        }, 1000);
+        this.snackBar.open(message, null, {
+            duration: 1000
+        });
     }
 }

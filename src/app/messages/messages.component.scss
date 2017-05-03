@@ -1,0 +1,188 @@
+$blue: #2196F3;
+$dingy: #495B6A;
+$white: #ffffff;
+$purple: #673AB7;
+$yellow: #FFEB3B;
+$red: #F44336;
+$orange: #FF5722;
+$black: #333333;
+
+$nav: 100;
+$navHeight: 64px;
+$trans: 0.3s ease;
+
+.inner {
+  overflow: scroll;
+  height: 100%;
+  padding-bottom: 64px;
+  box-sizing: border-box;
+  font-family: 'Roboto', sans-serif;
+
+  -ms-overflow-style: none;
+  overflow: -moz-scrollbars-none;
+  //gotta hide windows scrollbars
+
+  &::-webkit-scrollbar {
+    width: 0 !important
+  }
+
+  .content {
+    padding: ($navHeight - ($navHeight/1.5)) / 2;
+    position: relative;
+
+    :first-child {
+      margin-top: 0;
+    }
+  }
+}
+
+.bottom {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: $navHeight;
+  background: #696c75;
+
+  /* box-shadow: 0px -3px 3px 0px rgba(50, 50, 50, 0.1); */
+
+  .input {
+    height: $navHeight;
+    background: #696c75;
+    border: none;
+    width: calc(100% - #{$navHeight});
+    position: absolute;
+    left: 0;
+    top: 0;
+    padding: 0 5%;
+    resize: none;
+    overflow: scroll;
+    padding-top: ($navHeight/2) - 8;
+    font-weight: 300;
+    font-size: 16px;
+
+    &:focus {
+      outline: none;
+    }
+
+    -ms-overflow-style: none;
+    overflow: -moz-scrollbars-none;
+    //gotta hide windows scrollbars
+
+    &::-webkit-scrollbar {
+      width: 0 !important
+    }
+  }
+
+  .send {
+    position: fixed;
+    height: $navHeight/1.5;
+    width: $navHeight/1.5;
+    border-radius: 50%;
+    border: 0;
+    background: $red;
+    color: $white;
+
+    bottom: ($navHeight - ($navHeight/1.5)) / 2;
+    right: ($navHeight - ($navHeight/1.5)) / 2;
+
+    &:before {
+      content: '';
+      background: url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/104946/ic_send_white_48dp.png) no-repeat center center;
+      background-size: $navHeight/2.5;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+    }
+
+    &:focus {
+      outline: none;
+    }
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
+}
+
+.message-wrapper {
+  position: relative;
+  overflow: hidden;
+
+  width: 100%;
+  margin: (($navHeight - ($navHeight/1.5)) / 2) 0;
+  padding: (($navHeight - ($navHeight/1.5)) / 2) 0;
+  font-family: 'Roboto', sans-serif;
+
+  .circle-wrapper {
+    height: $navHeight/1.5;
+    width: $navHeight/1.5;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+
+  .text-wrapper {
+    padding: ($navHeight - ($navHeight/1.5)) / 2;
+    min-height: $navHeight/1.5;
+    width: 60%;
+    margin: 0 ($navHeight - ($navHeight/1.5)) / 2;
+    box-shadow: 0px 1px 0px 0px rgba(50, 50, 50, 0.3);
+    border-radius: 2px;
+    font-weight: 300;
+    position: relative;
+    /* word-break: break-all; */
+    /*opacity: 0;*/
+
+    &:before {
+      content: '';
+      width: 0;
+      height: 0;
+      border-style: solid;
+    }
+  }
+
+  &.them {
+    .circle-wrapper, .text-wrapper {
+      background: $red;
+      float: left;
+      color: $white;
+    }
+
+    .text-wrapper {
+      &:before {
+        border-width: 0 10px 10px 0;
+        border-color: transparent $red transparent transparent;
+        position: absolute;
+        top: 0;
+        left: -9px;
+      }
+    }
+  }
+
+  &.me {
+    .circle-wrapper,
+    .text-wrapper {
+      background: $orange;
+      float: right;
+      color: $black;
+    }
+
+    .circle-wrapper {
+      display: none;
+    }
+
+    .text-wrapper {
+      background: $white;
+
+      &:before {
+        border-width: 10px 10px 0 0;
+        border-color: $white transparent transparent transparent;
+        position: absolute;
+        top: 0;
+        right: -9px;
+      }
+    }
+  }
+}

@@ -21,6 +21,21 @@
             (click)="isDarkTheme = !isDarkTheme">
       <md-icon>lightbulb_outline</md-icon>
     </button>
+
+    <!-- Signed-in User Info -->
+    <div class="user-info" [ngSwitch]="auth.authenticated">
+      <a md-button href="/sign-in" *ngSwitchCase="false">
+        <md-icon>account_circle</md-icon>
+        <span>Sign in</span>
+      </a>
+
+      <div class="signed-in-user-container" *ngSwitchCase="true">
+        <a md-button class="usernamelink" [href]="'/person/'+auth.user.uid">
+          <div class="avatar" [ngStyle]="{'background-image': 'url(' + auth.user.photoURL + ')'}"></div>
+          <div class="username">{{ auth.user.displayName }}</div>
+        </a>
+      </div>
+    </div>
   </md-toolbar>
 </div>
 
@@ -44,30 +59,9 @@
   </md-sidenav>
 
   <div class="app-content">
-    <div class="inner" id="inner">
-      <div class="content" id="content">
-        <div class="message-wrapper"
-             *ngFor="let msg of messages"
-             [ngClass]="{'me': msg.userId == currentUser.id, 'them': msg.userId != currentUser.id}">
-
-          <div class="circle-wrapper animated bounceIn"
-               [mdTooltip]="msg.name + ' @ ' + msg.timestamp"
-               mdTooltipPosition="below"
-               [@bounceInOut]="'in'"
-               (click)="details.open()"
-               [style.backgroundImage]="'url(' + msg.avatar + ')'"></div>
-
-          <div class="text-wrapper animated fadeIn" [@flyInOut]="'in'">{{ msg.message }}</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="bottom" id="bottom">
-      <textarea class="input" id="input"></textarea>
-      <div class="send" id="send"></div>
-    </div>
+    <router-outlet></router-outlet>
   </div>
-  <md-sidenav #details id="sidenav-details" align="end" mode="side" opened="true">
+  <md-sidenav #details id="sidenav-details" align="end" mode="side" opened="false">
     <md-tab-group>
       <md-tab>
         <ng-template md-tab-label>Details</ng-template>
