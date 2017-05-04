@@ -1,0 +1,8 @@
+{
+  "name": "new-user-record",
+  "description": "Create a new user record on authentication",
+  "dependencies": {
+    "firebase-admin": "^4.1.1",
+    "firebase-functions": "^0.5.1"
+  }
+}

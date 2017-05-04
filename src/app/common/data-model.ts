@@ -28,6 +28,9 @@
     <user-id>
         id - The id of the user.
         name - The display name of the user.
+        email - user email address
+        avatar - user photo url
+        status - user login status
         invites - A list of invites the user has received.
         muted - A list of user ids currently muted by the user.
         rooms - A list of currently active rooms, used for sessioning.
@@ -55,45 +58,30 @@ export interface IMessage {
     name: string; // The name of the user that sent the message.
     avatar: string; // URL of avatar image
     message: string; // The content of the message.
-    timestamp: number; // The time at which the message was sent.
+    timestamp: number|object; // The time at which the message was sent.
 }
 export class Message implements IMessage {
     userId: string; // The id of the user that sent the message.
     name: string; // The name of the user that sent the message.
     avatar: string; // URL of avatar image
     message: string; // The content of the message.
-    timestamp: number; // The time at which the message was sent.
+    timestamp: number|object; // The time at which the message was sent.
 }
 
-export interface IRoomMetadata {
-    $key?: string; // room-id
-    metadata: IMetadata[];
-}
-export class RoomMetadata implements IRoomMetadata {
-    metadata: IMetadata[];
-}
-
-export interface IMetadata {
-    $key?: string; // room-id
-    createdAt: number; // The time at which the room was created.
-    createdByUserId: string; // The id of the user that created the room.
-    name: string; // The public display name of the room.
-    type: string; // The type of room, public or private.
-}
-export class Metadata implements IMetadata {
-    createdAt: number; // The time at which the room was created.
-    createdByUserId: string; // The id of the user that created the room.
-    name: string; // The public display name of the room.
-    type: string; // The type of room, public or private.
-}
 export interface IRoom {
-    roomId?: string; // room-id
-    metadata: IMetadata[];
-    messages: IMessage[];
+    $key?: string; // room-id
+    createdAt: number|object; // The time at which the room was created.
+    createdByUserId: string; // The id of the user that created the room.
+    name: string; // The public display name of the room.
+    type: string; // The type of room, public or private.
+    authorizedUsers: { [userId: string]: boolean };
 }
 export class Room implements IRoom {
-    metadata: IMetadata[];
-    messages: IMessage[];
+    createdAt: number|object; // The time at which the room was created.
+    createdByUserId: string; // The id of the user that created the room.
+    name: string; // The public display name of the room.
+    type: string; // The type of room, public or private.
+    authorizedUsers: { [userId: string]: boolean };
 }
 
 export interface IRoomUsers {
@@ -112,24 +100,34 @@ export class SuspendedUsers implements ISuspendedUsers {
     users: User[];
 }
 
+export interface INotification {
+    $key?: string;
+    fromUserId: string;
+}
+export class Notification implements INotification {
+    fromUserId: string;
+}
+
 export interface IUser {
     $key?: string; // user-id
     id: string; // The id of the user.
     name: string; // The display name of the user.
     email: string; // Email address of the user.
     avatar: string; // URL of avatar image
-    status: string; // Online or how long user has been away
+    createdAt: string; // Online or how long user has been away
     invites: string[]; // A list of invites the user has received.
     muted: string[]; // A list of user ids currently muted by the user.
     rooms: string[]; // A list of currently active rooms, used for sessioning.
+    notifications: INotification[];
 }
 export class User implements IUser {
     id: string; // The id of the user.
     name: string; // The display name of the user.
     email: string; // Email address of the user.
     avatar: string; // URL of avatar image
-    status: string; // Online or how long user has been away
+    createdAt: string; // Online or how long user has been away
     invites: string[]; // A list of invites the user has received.
     muted: string[]; // A list of user ids currently muted by the user.
     rooms: string[]; // A list of currently active rooms, used for sessioning.
+    notifications: Notification[];
 }

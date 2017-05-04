@@ -34,7 +34,7 @@ export class AppComponent {
 
     users$: FirebaseListObservable<IUser[]>;
 
-    constructor (private auth: AuthService,
+    constructor (public auth: AuthService,
                  private dataService: DataService,
                  private router: Router,
                  public snackBar: MdSnackBar,

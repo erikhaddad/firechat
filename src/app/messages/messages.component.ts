@@ -1,8 +1,8 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
 import {FirebaseListObservable} from 'angularfire2/database';
 import {
-    IModerator, IRoomMessages, IMessage, IRoomMetadata, IUser, Message, IRoomUsers,
-    ISuspendedUsers
+    IModerator, IRoomMessages, IMessage, IRoom, IUser, Message, IRoomUsers,
+    ISuspendedUsers, Room
 } from '../common/data-model';
 import {DataService} from '../common/data.service';
 import {AuthService} from '../auth/auth.service';
@@ -71,10 +71,10 @@ export class MessagesComponent implements OnInit, OnDestroy {
 
     // Param and object
     roomId: string;
-    personId: string;
+    // personId: string;
     paramSubscription: any;
     currentRoomMessages: IRoomMessages;
-    currentRoomMetadata: IRoomMetadata;
+    currentRoomMetadata: IRoom;
 
     currentUser: IUser;
 
@@ -87,6 +87,7 @@ export class MessagesComponent implements OnInit, OnDestroy {
     users$: FirebaseListObservable<IUser[]>;
 
     constructor (private dataService: DataService,
+                 private authService: AuthService,
                 private route: ActivatedRoute) {
 
         // Remove these once done
@@ -97,10 +98,11 @@ export class MessagesComponent implements OnInit, OnDestroy {
                 name: 'Jason Hall',
                 email: 'jasonhall@example.com',
                 avatar: 'http://lorempixel.com/50/50/people/0',
-                status: 'online',
+                createdAt: '',
                 invites: [],
                 muted: [],
-                rooms: []
+                rooms: [],
+                notifications: []
             },
             {
                 $key: '',
@@ -108,10 +110,11 @@ export class MessagesComponent implements OnInit, OnDestroy {
                 name: 'Russell Hopkins',
                 email: 'russell_83@example.com ',
                 avatar: 'http://lorempixel.com/50/50/people/1',
-                status: 'online',
+                createdAt: '',
                 invites: [],
                 muted: [],
-                rooms: []
+                rooms: [],
+                notifications: []
             },
             {
                 $key: '',
@@ -119,10 +122,11 @@ export class MessagesComponent implements OnInit, OnDestroy {
                 name: 'Ronald Lopez',
                 email: 'ronald-lopez@example.com',
                 avatar: 'http://lorempixel.com/50/50/people/2',
-                status: 'online',
+                createdAt: '',
                 invites: [],
                 muted: [],
-                rooms: []
+                rooms: [],
+                notifications: []
             },
             {
                 $key: '',
@@ -130,10 +134,11 @@ export class MessagesComponent implements OnInit, OnDestroy {
                 name: 'Judy Reynolds',
                 email: 'judy-87@example.com',
                 avatar: 'http://lorempixel.com/50/50/people/3',
-                status: 'left 3 min ago',
+                createdAt: '',
                 invites: [],
                 muted: [],
-                rooms: []
+                rooms: [],
+                notifications: []
             },
             {
                 $key: '',
@@ -141,10 +146,11 @@ export class MessagesComponent implements OnInit, OnDestroy {
                 name: 'Sara Stanley',
                 email: 'sarastanley@example.com',
                 avatar: 'http://lorempixel.com/50/50/people/4',
-                status: 'left 5 min ago',
+                createdAt: '',
                 invites: [],
                 muted: [],
-                rooms: []
+                rooms: [],
+                notifications: []
             },
             {
                 $key: '',
@@ -152,10 +158,11 @@ export class MessagesComponent implements OnInit, OnDestroy {
                 name: 'Robert Wagner',
                 email: 'robert85@example.com',
                 avatar: 'http://lorempixel.com/50/50/people/5',
-                status: 'left 3 hours ago',
+                createdAt: '',
                 invites: [],
                 muted: [],
-                rooms: []
+                rooms: [],
+                notifications: []
             },
             {
                 $key: '',
@@ -163,10 +170,11 @@ export class MessagesComponent implements OnInit, OnDestroy {
                 name: 'Jacqueline Snyder',
                 email: 'jacqueline82@example.com',
                 avatar: 'http://lorempixel.com/50/50/people/6',
-                status: 'left 5 hours ago',
+                createdAt: '',
                 invites: [],
                 muted: [],
-                rooms: []
+                rooms: [],
+                notifications: []
             },
             {
                 $key: '',
@@ -174,10 +182,11 @@ export class MessagesComponent implements OnInit, OnDestroy {
                 name: 'Paul Wallace',
                 email: 'paulwallace@example.com',
                 avatar: 'http://lorempixel.com/50/50/people/7',
-                status: 'left 12 hours ago',
+                createdAt: '',
                 invites: [],
                 muted: [],
-                rooms: []
+                rooms: [],
+                notifications: []
             },
             {
                 $key: '',
@@ -185,10 +194,11 @@ export class MessagesComponent implements OnInit, OnDestroy {
                 name: 'Tammy Reyes',
                 email: 'tammy-reyes@example.com',
                 avatar: 'http://lorempixel.com/50/50/people/8',
-                status: 'left 18 hours ago',
+                createdAt: '',
                 invites: [],
                 muted: [],
-                rooms: []
+                rooms: [],
+                notifications: []
             },
             {
                 $key: '',
@@ -196,10 +206,11 @@ export class MessagesComponent implements OnInit, OnDestroy {
                 name: 'Marie King',
                 email: 'marieking@example.com',
                 avatar: 'http://lorempixel.com/50/50/people/9',
-                status: 'left 1 day ago',
+                createdAt: '',
                 invites: [],
                 muted: [],
-                rooms: []
+                rooms: [],
+                notifications: []
             },
             {
                 $key: '',
@@ -207,10 +218,11 @@ export class MessagesComponent implements OnInit, OnDestroy {
                 name: 'Emily Barrett',
                 email: 'emily_82@example.com',
                 avatar: 'http://lorempixel.com/50/50/people/10',
-                status: 'left 3 days ago',
+                createdAt: '',
                 invites: [],
                 muted: [],
-                rooms: []
+                rooms: [],
+                notifications: []
             }
         ];
         this.users = [];
@@ -219,6 +231,8 @@ export class MessagesComponent implements OnInit, OnDestroy {
         this.currentUser = this.users[0];
 
         this.users$ = this.dataService.users;
+
+
 
         this.testMessages = [
             {
@@ -351,21 +365,20 @@ export class MessagesComponent implements OnInit, OnDestroy {
     ngOnInit() {
         this.paramSubscription = this.route.params.subscribe(params => {
             this.roomId = params['roomId'];
-            this.personId = params['personId'];
 
             if (typeof this.roomId !== 'undefined') {
                 console.log('found a room id!', this.roomId);
-                /* */
+
                 this.dataService.getRoomMessages(this.roomId)
                     .subscribe(messages => {
-                        // this.messages = messages;
+                        this.messages = messages;
                     });
-                /* */
             }
 
+            /*
             if (typeof this.personId !== 'undefined') {
                 console.log('found a person id!', this.personId);
-                /*
+
                 this.dataService.getPerson(this.personId)
                     .subscribe(person => {
                         this.currentPerson = person;
@@ -373,8 +386,8 @@ export class MessagesComponent implements OnInit, OnDestroy {
                         this.getFollowers();
                         this.getFollowing();
                     });
-                */
             }
+             */
 
 
         });
@@ -382,4 +395,12 @@ export class MessagesComponent implements OnInit, OnDestroy {
 
     ngOnDestroy() {}
 
+    createRoom(name: string, type: string) {
+        const newRoom = new Room();
+        newRoom.name = name;
+        newRoom.type = type;
+        newRoom.createdByUserId = this.authService.id;
+
+        this.dataService.createRoom(newRoom);
+    }
 }

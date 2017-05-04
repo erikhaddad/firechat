@@ -5,8 +5,8 @@ import {Injectable} from '@angular/core';
 import {AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable} from 'angularfire2/database';
 import {AuthService} from '../auth/auth.service';
 import {
-    IModerator, IRoomMessages, IMessage, IRoomMetadata, IUser, Message, IRoomUsers,
-    ISuspendedUsers
+    IModerator, IRoomMessages, IMessage, IRoom, IUser, Message, IRoomUsers,
+    ISuspendedUsers, Room
 } from './data-model';
 
 import * as firebase from 'firebase';
@@ -39,7 +39,7 @@ export class DataService {
         return this.afd.list(this.roomMessagesPath);
     }
 
-    get roomMetadata(): FirebaseListObservable<IRoomMetadata[]> {
+    get rooms(): FirebaseListObservable<IRoom[]> {
         return this.afd.list(this.roomMetadataPath);
     }
 
@@ -57,6 +57,23 @@ export class DataService {
 
     get users(): FirebaseListObservable<IUser[]> {
         return this.afd.list(this.usersPath);
+    }
+
+    /** ROOM METADATA **/
+    createRoom(room: Room): firebase.Promise<any> {
+        room.createdAt = firebase.database.ServerValue.TIMESTAMP;
+        room.authorizedUsers[this.auth.id] = true;
+
+        return this.afd.list(this.roomMetadataPath).push(room);
+    }
+    getRoomMetadata(roomId: string): FirebaseObjectObservable<any> {
+        return this.afd.object(this.roomMetadataPath + '/' + roomId);
+    }
+    removeRoomMetadata(metadata: IRoom): firebase.Promise<any> {
+        return this.afd.list(this.roomMetadataPath).remove(metadata.$key);
+    }
+    updateRoomMetadata(metadata: IRoom, changes: any): firebase.Promise<any> {
+        return this.afd.list(this.roomMetadataPath).update(metadata.$key, changes);
     }
 
     /** ROOM MESSAGES **/
@@ -164,9 +181,9 @@ export class DataService {
     }
 
     // Create and automatically enter a new chat room.
-    public createRoom(roomName, roomType, callback) {
+    // public createRoom(roomName, roomType, callback) {
 
-    }
+    // }
 
     // Enter a chat room.
     public enterRoom(roomId) {
