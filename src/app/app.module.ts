@@ -14,6 +14,7 @@ import {SignInModule} from './sign-in/sign-in.module';
 import {MessagesModule} from './messages/messages.module';
 import {DataService} from './common/data.service';
 import {RouterModule, Routes} from '@angular/router';
+import {RoomMetadataComponent} from './room-metadata/room-metadata.component';
 
 const routes: Routes = [
     { path: '', redirectTo: '/messages', pathMatch: 'full'}
@@ -21,7 +22,8 @@ const routes: Routes = [
 
 @NgModule({
     declarations: [
-        AppComponent
+        AppComponent,
+        RoomMetadataComponent
     ],
     exports: [
         AppComponent
@@ -40,6 +42,7 @@ const routes: Routes = [
         SignInModule,
         MessagesModule
     ],
+    entryComponents: [RoomMetadataComponent],
     providers: [DataService],
     bootstrap: [AppComponent]
 })

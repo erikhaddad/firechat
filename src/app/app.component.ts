@@ -1,17 +1,18 @@
 import {
-    Component,
+    Component, ViewContainerRef,
     ViewEncapsulation
 } from '@angular/core';
 import {FirebaseListObservable} from 'angularfire2/database';
 import {
-    IModerator, IRoomMessages, IMessage, IRoomMetadata, IUser, Message, IRoomUsers,
+    IModerator, IRoomMessages, IMessage, IRoom, IUser, Message, IRoomUsers,
     ISuspendedUsers
 } from './common/data-model';
 import {DataService} from './common/data.service';
 import {DomSanitizer} from '@angular/platform-browser';
-import {MdIconRegistry, MdSnackBar} from '@angular/material';
+import {MdDialog, MdDialogConfig, MdDialogRef, MdIconRegistry, MdSnackBar} from '@angular/material';
 import {AuthService} from './auth/auth.service';
 import {Router} from '@angular/router';
+import {RoomMetadataComponent} from './room-metadata/room-metadata.component';
 
 @Component({
     selector: 'app-root',
@@ -34,9 +35,13 @@ export class AppComponent {
 
     users$: FirebaseListObservable<IUser[]>;
 
+    private roomMetadataDialogRef: MdDialogRef<RoomMetadataComponent>;
+
     constructor (public auth: AuthService,
                  private dataService: DataService,
                  private router: Router,
+                 public dialog: MdDialog,
+                 public viewContainerRef: ViewContainerRef,
                  public snackBar: MdSnackBar,
                  iconRegistry: MdIconRegistry,
                  sanitizer: DomSanitizer) {
@@ -77,10 +82,11 @@ export class AppComponent {
                 name: 'Jason Hall',
                 email: 'jasonhall@example.com',
                 avatar: 'http://lorempixel.com/50/50/people/0',
-                status: 'online',
+                createdAt: '',
                 invites: [],
                 muted: [],
-                rooms: []
+                rooms: [],
+                notifications: []
             },
             {
                 $key: '',
@@ -88,10 +94,11 @@ export class AppComponent {
                 name: 'Russell Hopkins',
                 email: 'russell_83@example.com ',
                 avatar: 'http://lorempixel.com/50/50/people/1',
-                status: 'online',
+                createdAt: '',
                 invites: [],
                 muted: [],
-                rooms: []
+                rooms: [],
+                notifications: []
             },
             {
                 $key: '',
@@ -99,10 +106,11 @@ export class AppComponent {
                 name: 'Ronald Lopez',
                 email: 'ronald-lopez@example.com',
                 avatar: 'http://lorempixel.com/50/50/people/2',
-                status: 'online',
+                createdAt: '',
                 invites: [],
                 muted: [],
-                rooms: []
+                rooms: [],
+                notifications: []
             },
             {
                 $key: '',
@@ -110,10 +118,11 @@ export class AppComponent {
                 name: 'Judy Reynolds',
                 email: 'judy-87@example.com',
                 avatar: 'http://lorempixel.com/50/50/people/3',
-                status: 'left 3 min ago',
+                createdAt: '',
                 invites: [],
                 muted: [],
-                rooms: []
+                rooms: [],
+                notifications: []
             },
             {
                 $key: '',
@@ -121,10 +130,11 @@ export class AppComponent {
                 name: 'Sara Stanley',
                 email: 'sarastanley@example.com',
                 avatar: 'http://lorempixel.com/50/50/people/4',
-                status: 'left 5 min ago',
+                createdAt: '',
                 invites: [],
                 muted: [],
-                rooms: []
+                rooms: [],
+                notifications: []
             },
             {
                 $key: '',
@@ -132,10 +142,11 @@ export class AppComponent {
                 name: 'Robert Wagner',
                 email: 'robert85@example.com',
                 avatar: 'http://lorempixel.com/50/50/people/5',
-                status: 'left 3 hours ago',
+                createdAt: '',
                 invites: [],
                 muted: [],
-                rooms: []
+                rooms: [],
+                notifications: []
             },
             {
                 $key: '',
@@ -143,10 +154,11 @@ export class AppComponent {
                 name: 'Jacqueline Snyder',
                 email: 'jacqueline82@example.com',
                 avatar: 'http://lorempixel.com/50/50/people/6',
-                status: 'left 5 hours ago',
+                createdAt: '',
                 invites: [],
                 muted: [],
-                rooms: []
+                rooms: [],
+                notifications: []
             },
             {
                 $key: '',
@@ -154,10 +166,11 @@ export class AppComponent {
                 name: 'Paul Wallace',
                 email: 'paulwallace@example.com',
                 avatar: 'http://lorempixel.com/50/50/people/7',
-                status: 'left 12 hours ago',
+                createdAt: '',
                 invites: [],
                 muted: [],
-                rooms: []
+                rooms: [],
+                notifications: []
             },
             {
                 $key: '',
@@ -165,10 +178,11 @@ export class AppComponent {
                 name: 'Tammy Reyes',
                 email: 'tammy-reyes@example.com',
                 avatar: 'http://lorempixel.com/50/50/people/8',
-                status: 'left 18 hours ago',
+                createdAt: '',
                 invites: [],
                 muted: [],
-                rooms: []
+                rooms: [],
+                notifications: []
             },
             {
                 $key: '',
@@ -176,10 +190,11 @@ export class AppComponent {
                 name: 'Marie King',
                 email: 'marieking@example.com',
                 avatar: 'http://lorempixel.com/50/50/people/9',
-                status: 'left 1 day ago',
+                createdAt: '',
                 invites: [],
                 muted: [],
-                rooms: []
+                rooms: [],
+                notifications: []
             },
             {
                 $key: '',
@@ -187,10 +202,11 @@ export class AppComponent {
                 name: 'Emily Barrett',
                 email: 'emily_82@example.com',
                 avatar: 'http://lorempixel.com/50/50/people/10',
-                status: 'left 3 days ago',
+                createdAt: '',
                 invites: [],
                 muted: [],
-                rooms: []
+                rooms: [],
+                notifications: []
             }
         ];
         this.users = [];
@@ -203,12 +219,28 @@ export class AppComponent {
         console.log(this.auth);
     }
 
-    signOut(message: string): void {
+    signOut(message: string) {
         this.auth.signOut();
         this.router.navigate(['/landing']);
 
         this.snackBar.open(message, null, {
             duration: 1000
+        });
+    }
+
+    createNewRoom(evt: Event) {
+        const config = new MdDialogConfig();
+        // config.height = '400px';
+        // config.width = '600px';
+        config.viewContainerRef = this.viewContainerRef;
+
+        this.roomMetadataDialogRef = this.dialog.open(RoomMetadataComponent, config);
+
+        // if room already exists, pass it to the dialog for editing
+        // this.roomMetadataDialogRef.componentInstance.currentPost = post;
+
+        this.roomMetadataDialogRef.afterClosed().subscribe(result => {
+            console.log(`Dialog result: ${result}`);
         });
     }
 }
