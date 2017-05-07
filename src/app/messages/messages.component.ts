@@ -232,8 +232,6 @@ export class MessagesComponent implements OnInit, OnDestroy {
 
         this.users$ = this.dataService.users;
 
-
-
         this.testMessages = [
             {
                 $key: '',
@@ -371,7 +369,10 @@ export class MessagesComponent implements OnInit, OnDestroy {
 
                 this.dataService.getRoomMessages(this.roomId)
                     .subscribe(messages => {
-                        this.messages = messages;
+                        console.log(messages);
+                        if (messages.$exists) {
+                            // this.messages = messages;
+                        }
                     });
             }
 

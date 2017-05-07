@@ -15,7 +15,7 @@ export class RoomMetadataComponent implements OnInit, OnDestroy {
     newRoom: Room;
 
     constructor(public dialogRef: MdDialogRef<RoomMetadataComponent>) {
-
+        this.newRoom = new Room();
     }
 
     ngOnInit() {

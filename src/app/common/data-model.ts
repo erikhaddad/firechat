@@ -73,6 +73,7 @@ export interface IRoom {
     createdAt: number|object; // The time at which the room was created.
     createdByUserId: string; // The id of the user that created the room.
     name: string; // The public display name of the room.
+    description: string; // The public description of the room.
     type: string; // The type of room, public or private.
     authorizedUsers: { [userId: string]: boolean };
 }
@@ -80,6 +81,7 @@ export class Room implements IRoom {
     createdAt: number|object; // The time at which the room was created.
     createdByUserId: string; // The id of the user that created the room.
     name: string; // The public display name of the room.
+    description: string; // The public description of the room.
     type: string; // The type of room, public or private.
     authorizedUsers: { [userId: string]: boolean };
 }
@@ -130,4 +132,16 @@ export class User implements IUser {
     muted: string[]; // A list of user ids currently muted by the user.
     rooms: string[]; // A list of currently active rooms, used for sessioning.
     notifications: Notification[];
+}
+
+export interface ILanguage {
+    id: string;
+    abbreviation: string;
+    name: string;
+}
+
+export interface IUserPreference {
+    language: number;
+    theme: number;
+    moderate: boolean;
 }

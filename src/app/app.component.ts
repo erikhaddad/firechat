@@ -5,7 +5,7 @@ import {
 import {FirebaseListObservable} from 'angularfire2/database';
 import {
     IModerator, IRoomMessages, IMessage, IRoom, IUser, Message, IRoomUsers,
-    ISuspendedUsers
+    ISuspendedUsers, ILanguage
 } from './common/data-model';
 import {DataService} from './common/data.service';
 import {DomSanitizer} from '@angular/platform-browser';
@@ -29,11 +29,15 @@ export class AppComponent {
 
     currentUser: IUser;
 
+    rooms: IRoom[];
     users: IUser[];
 
+    testRooms: IRoom[];
     testUsers: IUser[];
 
     users$: FirebaseListObservable<IUser[]>;
+
+    languages: ILanguage[];
 
     private roomMetadataDialogRef: MdDialogRef<RoomMetadataComponent>;
 
@@ -45,6 +49,7 @@ export class AppComponent {
                  public snackBar: MdSnackBar,
                  iconRegistry: MdIconRegistry,
                  sanitizer: DomSanitizer) {
+
         iconRegistry.addSvgIcon(
             'google',
             sanitizer.bypassSecurityTrustResourceUrl('assets/icons/auth/google.svg'));
@@ -74,6 +79,19 @@ export class AppComponent {
         this.selectedLanguage = 'en';
         this.isModerated = false;
         this.isDarkTheme = true;
+
+        this.testRooms = [
+            {
+                $key: '1234',
+                name: 'Test Room 1',
+                description: 'This is a test room',
+                type: 'public',
+                createdByUserId: 'abcd',
+                createdAt: +Date,
+                authorizedUsers: {}
+            }
+        ];
+        this.rooms = this.testRooms;
 
         this.testUsers = [
             {
@@ -216,6 +234,44 @@ export class AppComponent {
 
         this.users$ = dataService.users;
 
+        // ["en", "es", "pt", "de", "ja", "hi", "nl"]
+        this.languages = [
+            {
+                id: 'en',
+                abbreviation: 'en',
+                name: 'English'
+            },
+            {
+                id: 'es',
+                abbreviation: 'ES',
+                name: 'Spanish'
+            },
+            {
+                id: 'pt',
+                abbreviation: 'PT',
+                name: 'Portuguese'
+            },
+            {
+                id: 'de',
+                abbreviation: 'DE',
+                name: 'German'
+            },
+            {
+                id: 'ja',
+                abbreviation: 'JA',
+                name: 'Japanese'
+            },
+            {
+                id: 'hi',
+                abbreviation: 'HI',
+                name: 'Hindi'
+            },
+            {
+                id: 'nl',
+                abbreviation: 'NL',
+                name: 'Dutch'
+            }
+        ];
         console.log(this.auth);
     }
 

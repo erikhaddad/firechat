@@ -7,20 +7,39 @@
     <span class="app-toolbar-title">{{ title }}</span>
     <span class="app-toolbar-filler"></span>
     <button md-icon-button
+            mdTooltip="Select a language"
+            [mdMenuTriggerFor]="menuLanguages"
             class="app-toolbar-theme">
       <md-icon>language</md-icon>
     </button>
+    <md-menu #menuLanguages="mdMenu" xPosition="before">
+      <button md-menu-item *ngFor="let language of languages">
+        <span>{{ language.abbreviation }} - {{ language.name }}</span>
+      </button>
+    </md-menu>
+
     <button md-icon-button
+            mdTooltip="Toggle message moderation"
             class="app-toolbar-theme"
             (click)="isModerated = !isModerated">
       <md-icon *ngIf="!isModerated">lock_open</md-icon>
       <md-icon *ngIf="isModerated">lock_outline</md-icon>
     </button>
+
     <button md-icon-button
-            class="app-toolbar-theme"
-            (click)="isDarkTheme = !isDarkTheme">
-      <md-icon>lightbulb_outline</md-icon>
+            mdTooltip="Select a theme"
+            [mdMenuTriggerFor]="menuThemes"
+            class="app-toolbar-theme">
+      <md-icon>palette</md-icon>
     </button>
+    <md-menu #menuThemes="mdMenu" xPosition="before">
+      <button md-menu-item (click)="isDarkTheme = false">
+        <span>Light Theme</span>
+      </button>
+      <button md-menu-item (click)="isDarkTheme = true">
+        <span>Dark Theme</span>
+      </button>
+    </md-menu>
 
     <!-- Signed-in User Info -->
     <div class="user-info" [ngSwitch]="auth.authenticated">
@@ -41,6 +60,7 @@
 
 <md-sidenav-container class="app-sidenav-container" [class.m2app-dark]="isDarkTheme">
   <md-sidenav #community id="sidenav-community" class="app-sidenav" mode="side" opened="true" fxLayout="column">
+    <!--
     <form action="#" class="search">
       <input placeholder="search..." type="search" name="" id="">
       <i class="material-icons">search</i>
@@ -56,6 +76,18 @@
         </div>
       </li>
     </ul>
+    -->
+
+    <md-nav-list fxFlex>
+      <h3 md-subheader>Rooms</h3>
+      <a md-list-item [routerLink]="['/messages/room', room.$key]" *ngFor="let room of rooms">
+        <h3 md-line>{{ room.name }}</h3>
+        <p md-line>
+          <span>{{ room.description }}</span>
+          <span class="demo-2"> -- {{ room.type }}</span>
+        </p>
+      </a>
+    </md-nav-list>
 
     <button md-raised-button (click)="createNewRoom($event)">+ New Room</button>
   </md-sidenav>
@@ -68,6 +100,17 @@
       <md-tab>
         <ng-template md-tab-label>Details</ng-template>
         <div fxLayout="column" fxLayoutAlign="center center" style="margin: 24px 0">
+          <ul class="list-friends" fxFlex>
+            <li *ngFor="let user of users">
+              <img width="50" height="50" [src]="user.avatar">
+              <div class="info">
+                <div class="user">{{ user.name }}</div>
+                <div class="status"
+                     [ngClass]="{'on': user.status == 'online', 'off': user.status != 'online'}"> {{ user.status }}</div>
+              </div>
+            </li>
+          </ul>
+
           <button md-raised-button (click)="details.close()" color="accent">CLOSE</button>
         </div>
       </md-tab>
