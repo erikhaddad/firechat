@@ -6,7 +6,7 @@ import {AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable} f
 import {AuthService} from '../auth/auth.service';
 import {
     IModerator, IRoomMessages, IMessage, IRoom, IUser, Message, IRoomUsers,
-    ISuspendedUsers, Room
+    ISuspendedUsers, Room, User
 } from './data-model';
 
 import * as firebase from 'firebase';
@@ -31,6 +31,7 @@ export class DataService {
         this.usersPath = '/users';
     }
 
+    /*
     get moderators(): FirebaseListObservable<IModerator[]> {
         return this.afd.list(this.moderatorsPath);
     }
@@ -58,6 +59,28 @@ export class DataService {
     get users(): FirebaseListObservable<IUser[]> {
         return this.afd.list(this.usersPath);
     }
+    */
+
+    get rooms(): FirebaseListObservable<IRoom[]> {
+        return this.afd.list(this.roomMetadataPath);
+    }
+
+    /** USERS **/
+    createUser(user: User): firebase.Promise<any> {
+        return this.afd.list(this.usersPath).push(user);
+    }
+    getUser(userId: string): FirebaseObjectObservable<any> {
+        return this.afd.object(this.usersPath + '/' + userId);
+    }
+    removeUser(user: IUser): firebase.Promise<any> {
+        return this.afd.list(this.usersPath).remove(user.$key);
+    }
+    updateUser(user: IUser): firebase.Promise<any> {
+        const path = this.usersPath + '/' + user.$key;
+        console.log('user update path', path);
+        console.log('user update value', user);
+        return this.afd.list(this.usersPath).update(user.$key, user);
+    }
 
     /** ROOM METADATA **/
     createRoom(room: Room): firebase.Promise<any> {
@@ -80,14 +103,28 @@ export class DataService {
     createRoomMessage(roomId: string, message: Message): firebase.Promise<any> {
         return this.afd.list(this.roomMessagesPath + '/' + roomId).push(message);
     }
-    getRoomMessages(roomId: string): FirebaseObjectObservable<any> {
-        return this.afd.object(this.roomMessagesPath + '/' + roomId);
+    getRoomMessages(roomId: string): FirebaseListObservable<any> {
+        return this.afd.list(this.roomMessagesPath + '/' + roomId);
     }
     removeRoomMessage(roomId: string, message: IMessage): firebase.Promise<any> {
         return this.afd.list(this.roomMessagesPath + '/' + roomId).remove(message.$key);
     }
     updateRoomMessage(roomId: string, message: IMessage, changes: any): firebase.Promise<any> {
         return this.afd.list(this.roomMessagesPath + '/' + roomId).update(message.$key, changes);
+    }
+
+    /** ROOM USERS **/
+    createRoomUsers(roomId: string, user: User): firebase.Promise<any> {
+        return this.afd.list(this.roomUsersPath + '/' + roomId).push(user);
+    }
+    getRoomUsers(roomId: string): FirebaseListObservable<IRoomUsers[]> {
+        return this.afd.list(this.roomUsersPath + '/' + roomId);
+    }
+    removeRoomUser(roomId: string, user: IUser): firebase.Promise<any> {
+        return this.afd.list(this.roomUsersPath + '/' + roomId).remove(user.$key);
+    }
+    updateRoomUser(roomId: string, user: IUser, changes: any): firebase.Promise<any> {
+        return this.afd.list(this.roomUsersPath + '/' + roomId).update(user.$key, changes);
     }
 
 
@@ -133,7 +170,7 @@ export class DataService {
 
     }
 
-    // Event to monitor current auth + user state.
+    // Event to monitor current authService + user state.
     private onAuthRequired() {
 
     }

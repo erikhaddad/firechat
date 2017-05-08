@@ -123,6 +123,7 @@ export interface IUser {
     muted: string[]; // A list of user ids currently muted by the user.
     rooms: string[]; // A list of currently active rooms, used for sessioning.
     notifications: INotification[];
+    preferences: IUserPreferences;
 }
 export class User implements IUser {
     id: string; // The id of the user.
@@ -157,6 +158,6 @@ export enum Themes {
 
 export interface IUserPreferences {
     language: number;
-    theme: number;
     moderate: boolean;
+    theme: number;
 }

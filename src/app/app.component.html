@@ -1,4 +1,4 @@
-<div class="app-toolbar-container" [class.m2app-dark]="isDarkTheme">
+<div class="app-toolbar-container" [class.m2app-dark]="currentUser && currentUser.preferences && currentUser.preferences.theme == THEMES.Dark">
   <md-toolbar class="app-toolbar mat-elevation-z6" color="primary">
     <button class="app-toolbar-menu" (click)="community.toggle()">
       <i class="material-icons app-toolbar-menu-icon">menu</i>
@@ -6,43 +6,52 @@
 
     <span class="app-toolbar-title">{{ title }}</span>
     <span class="app-toolbar-filler"></span>
-    <button md-icon-button
-            mdTooltip="Select a language"
-            [mdMenuTriggerFor]="menuLanguages"
-            class="app-toolbar-theme">
-      <md-icon>language</md-icon>
-    </button>
-    <md-menu #menuLanguages="mdMenu" xPosition="before">
-      <button md-menu-item *ngFor="let language of languages">
-        <span>{{ language.abbreviation }} - {{ language.name }}</span>
-      </button>
-    </md-menu>
 
-    <button md-icon-button
-            mdTooltip="Toggle message moderation"
-            class="app-toolbar-theme"
-            (click)="isModerated = !isModerated">
-      <md-icon *ngIf="!isModerated">lock_open</md-icon>
-      <md-icon *ngIf="isModerated">lock_outline</md-icon>
-    </button>
+    <div *ngIf="currentUser && currentUser.preferences">
+      <button md-icon-button
+              mdTooltip="Select a language"
+              [mdMenuTriggerFor]="menuLanguages"
+              class="app-toolbar-theme">
+        <md-icon>language</md-icon>
+      </button>
+      <md-menu #menuLanguages="mdMenu" xPosition="before">
+        <button md-menu-item *ngFor="let language of languages"
+                (click)="updateUserPreferenceLanguage($event, language.id)"
+                [ngClass]="{'active': currentUser.preferences && currentUser.preferences.language}">
+          <span>{{ language.abbreviation }} - {{ language.name }}</span>
+        </button>
+      </md-menu>
 
-    <button md-icon-button
-            mdTooltip="Select a theme"
-            [mdMenuTriggerFor]="menuThemes"
-            class="app-toolbar-theme">
-      <md-icon>palette</md-icon>
-    </button>
-    <md-menu #menuThemes="mdMenu" xPosition="before">
-      <button md-menu-item (click)="isDarkTheme = false">
-        <span>Light Theme</span>
+      <button md-icon-button
+              mdTooltip="Toggle message moderation"
+              class="app-toolbar-theme"
+              (click)="updateUserPreferenceModerate($event, !currentUser.preferences.moderate)">
+        <md-icon *ngIf="!currentUser.preferences.moderate">lock_open</md-icon>
+        <md-icon *ngIf="currentUser.preferences.moderate">lock_outline</md-icon>
       </button>
-      <button md-menu-item (click)="isDarkTheme = true">
-        <span>Dark Theme</span>
+
+      <button md-icon-button
+              mdTooltip="Select a theme"
+              [mdMenuTriggerFor]="menuThemes"
+              class="app-toolbar-theme">
+        <md-icon>palette</md-icon>
       </button>
-    </md-menu>
+      <md-menu #menuThemes="mdMenu" xPosition="before">
+        <button md-menu-item
+                (click)="updateUserPreferenceTheme($event, THEMES.Light)"
+                [ngClass]="{'active': currentUser.preferences && currentUser.preferences.theme == THEMES.Light}">
+          <span>Light Theme</span>
+        </button>
+        <button md-menu-item
+                (click)="updateUserPreferenceTheme($event, THEMES.Dark)"
+                [ngClass]="{'active': currentUser.preferences && currentUser.preferences.theme == THEMES.Dark}">
+          <span>Dark Theme</span>
+        </button>
+      </md-menu>
+    </div>
 
     <!-- Signed-in User Info -->
-    <div class="user-info" [ngSwitch]="auth.authenticated">
+    <div class="user-info" [ngSwitch]="authService.authenticated">
       <a md-button href="/sign-in" *ngSwitchCase="false">
         <md-icon>account_circle</md-icon>
         <span>Sign in</span>
@@ -50,8 +59,8 @@
 
       <div class="signed-in-user-container" *ngSwitchCase="true">
         <button md-button class="usernamelink" [mdMenuTriggerFor]="menuPerson">
-          <div class="avatar" [ngStyle]="{'background-image': 'url(' + auth.user.photoURL + ')'}"></div>
-          <div class="username">{{ auth.user.displayName }}</div>
+          <div class="avatar" [ngStyle]="{'background-image': 'url(' + authService.user.photoURL + ')'}"></div>
+          <div class="username">{{ authService.user.displayName }}</div>
         </button>
         <md-menu #menuPerson="mdMenu" xPosition="before">
           <button md-menu-item (click)="logout($event)">
@@ -64,7 +73,7 @@
   </md-toolbar>
 </div>
 
-<md-sidenav-container class="app-sidenav-container" [class.m2app-dark]="isDarkTheme">
+<md-sidenav-container class="app-sidenav-container" [class.m2app-dark]="currentUser && currentUser.preferences && currentUser.preferences.theme == THEMES.Dark">
   <md-sidenav #community id="sidenav-community" class="app-sidenav" mode="side" opened="true" fxLayout="column">
     <!--
     <form action="#" class="search">
@@ -95,7 +104,9 @@
       </a>
     </md-nav-list>
 
-    <button md-raised-button (click)="createNewRoom($event)">+ New Room</button>
+    <button md-raised-button
+            *ngIf="authService.authenticated"
+            (click)="createNewRoom($event)">+ New Room</button>
   </md-sidenav>
 
   <div class="app-content">
@@ -127,7 +138,7 @@
   </md-sidenav>
 </md-sidenav-container>
 
-<span class="app-action" [class.m2app-dark]="isDarkTheme">
+<span class="app-action" [class.m2app-dark]="currentUser && currentUser.preferences && currentUser.preferences.theme == THEMES.Dark">
   <button class="app-fab-button" md-fab>
     <md-icon>check</md-icon>
   </button>

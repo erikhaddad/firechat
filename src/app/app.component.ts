@@ -1,17 +1,17 @@
 import {
-    Component, ViewContainerRef,
+    Component, OnDestroy, OnInit, ViewContainerRef,
     ViewEncapsulation
 } from '@angular/core';
-import {FirebaseListObservable} from 'angularfire2/database';
+import {FirebaseListObservable, FirebaseObjectObservable} from 'angularfire2/database';
 import {
     IModerator, IRoomMessages, IMessage, IRoom, IUser, Message, IRoomUsers,
-    ISuspendedUsers, ILanguage, Languages
+    ISuspendedUsers, ILanguage, Languages, Themes
 } from './common/data-model';
 import {DataService} from './common/data.service';
 import {DomSanitizer} from '@angular/platform-browser';
 import {MdDialog, MdDialogConfig, MdDialogRef, MdIconRegistry, MdSnackBar} from '@angular/material';
 import {AuthService} from './auth/auth.service';
-import {Router} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {RoomMetadataComponent} from './room-metadata/room-metadata.component';
 
 @Component({
@@ -20,29 +20,53 @@ import {RoomMetadataComponent} from './room-metadata/room-metadata.component';
     styleUrls: ['./app.component.scss'],
     encapsulation: ViewEncapsulation.None
 })
-export class AppComponent {
+export class AppComponent implements OnInit, OnDestroy {
     title: string;
 
-    selectedLanguage: string;
-    isModerated: boolean;
-    isDarkTheme: boolean;
+    LANGUAGES = Languages;
+    THEMES = Themes;
 
+    roomId: string;
+    paramSubscription: any;
+
+    currentUser$: FirebaseObjectObservable<IUser>;
     currentUser: IUser;
 
     rooms: IRoom[];
-    users: IUser[];
+    rooms$: FirebaseListObservable<IRoom[]>;
 
-    testRooms: IRoom[];
-    testUsers: IUser[];
+    roomUsers: IRoomUsers[];
+    roomUsers$: FirebaseListObservable<IRoomUsers[]>;
 
-    users$: FirebaseListObservable<IUser[]>;
-
-    languages: ILanguage[];
+    // ["en", "es", "pt", "de", "ja", "hi", "nl"]
+    languages: ILanguage[] = [
+        {
+            id: this.LANGUAGES.English,
+            abbreviation: 'en',
+            name: 'English'
+        },
+        {
+            id: this.LANGUAGES.Spanish,
+            abbreviation: 'ES',
+            name: 'Spanish'
+        },
+        {
+            id: this.LANGUAGES.Portuguese,
+            abbreviation: 'PT',
+            name: 'Portuguese'
+        },
+        {
+            id: this.LANGUAGES.German,
+            abbreviation: 'DE',
+            name: 'German'
+        }
+    ];
 
     private roomMetadataDialogRef: MdDialogRef<RoomMetadataComponent>;
 
-    constructor (public auth: AuthService,
+    constructor (public authService: AuthService,
                  private dataService: DataService,
+                 private route: ActivatedRoute,
                  private router: Router,
                  public dialog: MdDialog,
                  public viewContainerRef: ViewContainerRef,
@@ -52,19 +76,19 @@ export class AppComponent {
 
         iconRegistry.addSvgIcon(
             'google',
-            sanitizer.bypassSecurityTrustResourceUrl('assets/icons/auth/google.svg'));
+            sanitizer.bypassSecurityTrustResourceUrl('assets/icons/authService/google.svg'));
 
         iconRegistry.addSvgIcon(
             'facebook',
-            sanitizer.bypassSecurityTrustResourceUrl('assets/icons/auth/facebook.svg'));
+            sanitizer.bypassSecurityTrustResourceUrl('assets/icons/authService/facebook.svg'));
 
         iconRegistry.addSvgIcon(
             'twitter',
-            sanitizer.bypassSecurityTrustResourceUrl('assets/icons/auth/twitter.svg'));
+            sanitizer.bypassSecurityTrustResourceUrl('assets/icons/authService/twitter.svg'));
 
         iconRegistry.addSvgIcon(
             'github',
-            sanitizer.bypassSecurityTrustResourceUrl('assets/icons/auth/github.svg'));
+            sanitizer.bypassSecurityTrustResourceUrl('assets/icons/authService/github.svg'));
 
         iconRegistry.addSvgIcon(
             'logo_white',
@@ -76,235 +100,47 @@ export class AppComponent {
 
         this.title = 'firechat';
 
-        this.selectedLanguage = 'en';
-        this.isModerated = false;
-        this.isDarkTheme = true;
-
-        this.testRooms = [
-            {
-                $key: '1234',
-                name: 'Test Room 1',
-                description: 'This is a test room',
-                type: 'public',
-                createdByUserId: 'abcd',
-                createdAt: +Date,
-                authorizedUsers: {}
-            }
-        ];
-        this.rooms = this.testRooms;
-
-        this.testUsers = [
-            {
-                $key: '',
-                id: '0',
-                name: 'Jason Hall',
-                email: 'jasonhall@example.com',
-                avatar: 'http://lorempixel.com/50/50/people/0',
-                createdAt: '',
-                invites: [],
-                muted: [],
-                rooms: [],
-                notifications: []
-            },
-            {
-                $key: '',
-                id: '1',
-                name: 'Russell Hopkins',
-                email: 'russell_83@example.com ',
-                avatar: 'http://lorempixel.com/50/50/people/1',
-                createdAt: '',
-                invites: [],
-                muted: [],
-                rooms: [],
-                notifications: []
-            },
-            {
-                $key: '',
-                id: '2',
-                name: 'Ronald Lopez',
-                email: 'ronald-lopez@example.com',
-                avatar: 'http://lorempixel.com/50/50/people/2',
-                createdAt: '',
-                invites: [],
-                muted: [],
-                rooms: [],
-                notifications: []
-            },
-            {
-                $key: '',
-                id: '3',
-                name: 'Judy Reynolds',
-                email: 'judy-87@example.com',
-                avatar: 'http://lorempixel.com/50/50/people/3',
-                createdAt: '',
-                invites: [],
-                muted: [],
-                rooms: [],
-                notifications: []
-            },
-            {
-                $key: '',
-                id: '4',
-                name: 'Sara Stanley',
-                email: 'sarastanley@example.com',
-                avatar: 'http://lorempixel.com/50/50/people/4',
-                createdAt: '',
-                invites: [],
-                muted: [],
-                rooms: [],
-                notifications: []
-            },
-            {
-                $key: '',
-                id: '5',
-                name: 'Robert Wagner',
-                email: 'robert85@example.com',
-                avatar: 'http://lorempixel.com/50/50/people/5',
-                createdAt: '',
-                invites: [],
-                muted: [],
-                rooms: [],
-                notifications: []
-            },
-            {
-                $key: '',
-                id: '6',
-                name: 'Jacqueline Snyder',
-                email: 'jacqueline82@example.com',
-                avatar: 'http://lorempixel.com/50/50/people/6',
-                createdAt: '',
-                invites: [],
-                muted: [],
-                rooms: [],
-                notifications: []
-            },
-            {
-                $key: '',
-                id: '7',
-                name: 'Paul Wallace',
-                email: 'paulwallace@example.com',
-                avatar: 'http://lorempixel.com/50/50/people/7',
-                createdAt: '',
-                invites: [],
-                muted: [],
-                rooms: [],
-                notifications: []
-            },
-            {
-                $key: '',
-                id: '8',
-                name: 'Tammy Reyes',
-                email: 'tammy-reyes@example.com',
-                avatar: 'http://lorempixel.com/50/50/people/8',
-                createdAt: '',
-                invites: [],
-                muted: [],
-                rooms: [],
-                notifications: []
-            },
-            {
-                $key: '',
-                id: '9',
-                name: 'Marie King',
-                email: 'marieking@example.com',
-                avatar: 'http://lorempixel.com/50/50/people/9',
-                createdAt: '',
-                invites: [],
-                muted: [],
-                rooms: [],
-                notifications: []
-            },
-            {
-                $key: '',
-                id: '10',
-                name: 'Emily Barrett',
-                email: 'emily_82@example.com',
-                avatar: 'http://lorempixel.com/50/50/people/10',
-                createdAt: '',
-                invites: [],
-                muted: [],
-                rooms: [],
-                notifications: []
-            }
-        ];
-        this.users = [];
-        this.users = this.testUsers;
-
-        this.currentUser = this.users[0];
-
-        this.users$ = dataService.users;
-        this.users$.subscribe(users => {
-            console.log('database users', users);
+        authService.authState$.subscribe(authUser => {
+            this.currentUser$ = dataService.getUser(authUser.uid);
+            this.currentUser$.subscribe(user => {
+                this.currentUser = user;
+                console.log(user);
+            });
         });
 
-        // ["en", "es", "pt", "de", "ja", "hi", "nl"]
-        /*
-        this.languages = [
-            {
-                id: 'en',
-                abbreviation: 'en',
-                name: 'English'
-            },
-            {
-                id: 'es',
-                abbreviation: 'ES',
-                name: 'Spanish'
-            },
-            {
-                id: 'pt',
-                abbreviation: 'PT',
-                name: 'Portuguese'
-            },
-            {
-                id: 'de',
-                abbreviation: 'DE',
-                name: 'German'
-            },
-            {
-                id: 'ja',
-                abbreviation: 'JA',
-                name: 'Japanese'
-            },
-            {
-                id: 'hi',
-                abbreviation: 'HI',
-                name: 'Hindi'
-            },
-            {
-                id: 'nl',
-                abbreviation: 'NL',
-                name: 'Dutch'
-            }
-        ];
-        */
-        this.languages = [
-            {
-                id: Languages.English,
-                abbreviation: 'en',
-                name: 'English'
-            },
-            {
-                id: Languages.Spanish,
-                abbreviation: 'ES',
-                name: 'Spanish'
-            },
-            {
-                id: Languages.Portuguese,
-                abbreviation: 'PT',
-                name: 'Portuguese'
-            },
-            {
-                id: Languages.German,
-                abbreviation: 'DE',
-                name: 'German'
-            }
-        ];
-        console.log(this.auth);
+        this.roomUsers = [];
+        this.rooms = [];
+
+        this.rooms$ = this.dataService.rooms;
+        this.rooms$.subscribe(rooms => {
+            console.log('rooms', rooms);
+            this.rooms = rooms;
+        });
+
+        console.log(this.authService);
     }
+
+    ngOnInit() {
+        this.paramSubscription = this.route.params.subscribe(params => {
+            this.roomId = params['roomId'];
+
+            if (typeof this.roomId !== 'undefined') {
+                console.log('found a room id!', this.roomId);
+
+                this.roomUsers$ = this.dataService.getRoomUsers(this.roomId);
+                this.roomUsers$.subscribe(users => {
+                    console.log('room users', users);
+                    this.roomUsers = users;
+                });
+            }
+        });
+    }
+
+    ngOnDestroy() {}
 
     logout(evt: Event) {
         const message = 'You have been signed out';
-        this.auth.signOut();
+        this.authService.signOut();
         this.router.navigate(['/sign-in']);
 
         this.snackBar.open(message, null, {
@@ -326,5 +162,20 @@ export class AppComponent {
         this.roomMetadataDialogRef.afterClosed().subscribe(result => {
             console.log(`Dialog result: ${result}`);
         });
+    }
+
+    updateUserPreferenceLanguage(evt: Event, languageId: number) {
+        this.currentUser.preferences.language = languageId;
+        this.dataService.updateUser(this.currentUser);
+    }
+
+    updateUserPreferenceModerate(evt: Event, val: boolean) {
+        this.currentUser.preferences.moderate = val;
+        this.dataService.updateUser(this.currentUser);
+    }
+
+    updateUserPreferenceTheme(evt: Event, themeId: number) {
+        this.currentUser.preferences.theme = themeId;
+        this.dataService.updateUser(this.currentUser);
     }
 }

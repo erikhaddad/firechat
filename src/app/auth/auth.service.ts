@@ -69,7 +69,7 @@ export class AuthService {
                 const errorCode = error.code;
                 const errorMessage = error.message;
 
-                if (errorCode === 'auth/account-exists-with-different-credential') {
+                if (errorCode === 'authService/account-exists-with-different-credential') {
                     alert('You have signed up with a different provider for that email.');
                     // Handle linking here if your app allows it.
                 } else {
