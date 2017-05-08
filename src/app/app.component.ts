@@ -5,7 +5,7 @@ import {
 import {FirebaseListObservable} from 'angularfire2/database';
 import {
     IModerator, IRoomMessages, IMessage, IRoom, IUser, Message, IRoomUsers,
-    ISuspendedUsers, ILanguage
+    ISuspendedUsers, ILanguage, Languages
 } from './common/data-model';
 import {DataService} from './common/data.service';
 import {DomSanitizer} from '@angular/platform-browser';
@@ -233,8 +233,12 @@ export class AppComponent {
         this.currentUser = this.users[0];
 
         this.users$ = dataService.users;
+        this.users$.subscribe(users => {
+            console.log('database users', users);
+        });
 
         // ["en", "es", "pt", "de", "ja", "hi", "nl"]
+        /*
         this.languages = [
             {
                 id: 'en',
@@ -272,12 +276,36 @@ export class AppComponent {
                 name: 'Dutch'
             }
         ];
+        */
+        this.languages = [
+            {
+                id: Languages.English,
+                abbreviation: 'en',
+                name: 'English'
+            },
+            {
+                id: Languages.Spanish,
+                abbreviation: 'ES',
+                name: 'Spanish'
+            },
+            {
+                id: Languages.Portuguese,
+                abbreviation: 'PT',
+                name: 'Portuguese'
+            },
+            {
+                id: Languages.German,
+                abbreviation: 'DE',
+                name: 'German'
+            }
+        ];
         console.log(this.auth);
     }
 
-    signOut(message: string) {
+    logout(evt: Event) {
+        const message = 'You have been signed out';
         this.auth.signOut();
-        this.router.navigate(['/landing']);
+        this.router.navigate(['/sign-in']);
 
         this.snackBar.open(message, null, {
             duration: 1000

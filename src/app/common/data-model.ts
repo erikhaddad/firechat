@@ -57,6 +57,7 @@ export interface IMessage {
     userId: string; // The id of the user that sent the message.
     name: string; // The name of the user that sent the message.
     avatar: string; // URL of avatar image
+    language: number; // Language ID of originating text
     message: string; // The content of the message.
     timestamp: number|object; // The time at which the message was sent.
 }
@@ -64,6 +65,7 @@ export class Message implements IMessage {
     userId: string; // The id of the user that sent the message.
     name: string; // The name of the user that sent the message.
     avatar: string; // URL of avatar image
+    language: number; // Language ID of originating text
     message: string; // The content of the message.
     timestamp: number|object; // The time at which the message was sent.
 }
@@ -132,15 +134,28 @@ export class User implements IUser {
     muted: string[]; // A list of user ids currently muted by the user.
     rooms: string[]; // A list of currently active rooms, used for sessioning.
     notifications: Notification[];
+    preferences: IUserPreferences;
+}
+
+export enum Languages {
+    English = 0,
+    Spanish = 1,
+    Portuguese = 2,
+    German = 3
 }
 
 export interface ILanguage {
-    id: string;
+    id: number;
     abbreviation: string;
     name: string;
 }
 
-export interface IUserPreference {
+export enum Themes {
+    Light = 0,
+    Dark = 1
+}
+
+export interface IUserPreferences {
     language: number;
     theme: number;
     moderate: boolean;
