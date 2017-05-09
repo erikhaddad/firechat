@@ -85,6 +85,8 @@ export class DataService {
     /** ROOM METADATA **/
     createRoom(room: Room): firebase.Promise<any> {
         room.createdAt = firebase.database.ServerValue.TIMESTAMP;
+        room.createdByUserId = this.auth.id;
+        room.authorizedUsers = {};
         room.authorizedUsers[this.auth.id] = true;
 
         return this.afd.list(this.roomMetadataPath).push(room);
@@ -101,6 +103,7 @@ export class DataService {
 
     /** ROOM MESSAGES **/
     createRoomMessage(roomId: string, message: Message): firebase.Promise<any> {
+        message.timestamp = firebase.database.ServerValue.TIMESTAMP;
         return this.afd.list(this.roomMessagesPath + '/' + roomId).push(message);
     }
     getRoomMessages(roomId: string): FirebaseListObservable<any> {

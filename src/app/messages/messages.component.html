@@ -1,7 +1,7 @@
 <div class="inner" id="inner">
   <div class="content" id="content">
     <div class="message-wrapper"
-         *ngFor="let msg of messages"
+         *ngFor="let msg of roomMessages"
          [ngClass]="{'me': msg.userId == currentUser.id, 'them': msg.userId != currentUser.id}">
 
       <div class="circle-wrapper animated bounceIn"
@@ -17,7 +17,10 @@
 </div>
 
 <div class="bottom" id="bottom">
-  <textarea class="input" id="message-text-
-  input"></textarea>
-  <button class="send" id="send" (click)="sendMessage($event)"></button>
+  <textarea class="input" id="message-text-input"
+            [(ngModel)]="newMessage.message"
+            (keyup.enter)="sendRoomMessage($event)"></textarea>
+  <button class="send" id="send"
+          [disabled]="!newMessage.message"
+          (click)="sendRoomMessage($event)"></button>
 </div>

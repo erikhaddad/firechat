@@ -1,15 +1,17 @@
 <md-dialog-content>
   <md-input-container class="input-full-width">
-    <input mdInput #name placeholder="Name">
+    <input mdInput #name [(ngModel)]="newRoom.name" placeholder="Name">
   </md-input-container>
 
   <md-input-container class="input-full-width">
-    <textarea mdInput #description placeholder="Description"></textarea>
+    <textarea mdInput #description [(ngModel)]="newRoom.description" placeholder="Description"></textarea>
   </md-input-container>
 
+  <!--
   <md-slide-toggle color="accent" [checked]="newRoom.type == 'public'">
     Public
   </md-slide-toggle>
+  -->
 </md-dialog-content>
 
 <md-dialog-actions>
@@ -20,5 +22,6 @@
   <span fxFlex></span>
 
   <button md-button (click)="cancel($event)">Cancel</button>
-  <button md-raised-button color="primary" (click)="save($event)">Save</button>
+  <button md-raised-button color="primary"
+          (click)="save($event)">Save</button>
 </md-dialog-actions>

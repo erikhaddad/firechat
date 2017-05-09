@@ -159,8 +159,16 @@ export class AppComponent implements OnInit, OnDestroy {
         // if room already exists, pass it to the dialog for editing
         // this.roomMetadataDialogRef.componentInstance.currentPost = post;
 
-        this.roomMetadataDialogRef.afterClosed().subscribe(result => {
-            console.log(`Dialog result: ${result}`);
+        this.roomMetadataDialogRef.afterClosed().subscribe(room => {
+            console.log('Dialog result:', room);
+
+            const promise = this.dataService.createRoom(room);
+
+            promise
+                .then(result => {
+                    this.router.navigate(['/messages/room', result.$key]);
+                })
+                .catch(err => console.log(err, 'You do not have access!'));
         });
     }
 

@@ -104,6 +104,10 @@ $trans: 0.3s ease;
     &:hover {
       cursor: pointer;
     }
+
+    &[disabled] {
+      background: #AAA;
+    }
   }
 }
 

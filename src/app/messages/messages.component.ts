@@ -1,8 +1,8 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
-import {FirebaseListObservable} from 'angularfire2/database';
+import {FirebaseListObservable, FirebaseObjectObservable} from 'angularfire2/database';
 import {
     IModerator, IRoomMessages, IMessage, IRoom, IUser, Message, IRoomUsers,
-    ISuspendedUsers, Room
+    ISuspendedUsers, Room, RoomMessages
 } from '../common/data-model';
 import {DataService} from '../common/data.service';
 import {AuthService} from '../auth/auth.service';
@@ -73,7 +73,10 @@ export class MessagesComponent implements OnInit, OnDestroy {
     roomId: string;
     paramSubscription: any;
 
-    currentUser: firebase.UserInfo;
+    newMessage: Message;
+
+    currentUser$: FirebaseObjectObservable<IUser>;
+    currentUser: IUser;
 
     roomMessages$: FirebaseListObservable<IMessage[]>;
     roomMessages: IMessage[];
@@ -84,8 +87,15 @@ export class MessagesComponent implements OnInit, OnDestroy {
                  private route: ActivatedRoute) {
 
         this.roomMessages = [];
+        this.newMessage = new Message();
 
-        this.currentUser = authService.user;
+        authService.authState$.subscribe(authUser => {
+            this.currentUser$ = dataService.getUser(authUser.uid);
+            this.currentUser$.subscribe(user => {
+                this.currentUser = user;
+                console.log('user', user);
+            });
+        });
     }
 
     ngOnInit() {
@@ -98,9 +108,9 @@ export class MessagesComponent implements OnInit, OnDestroy {
                 this.roomMessages$ = this.dataService.getRoomMessages(this.roomId);
 
                 this.roomMessages$.subscribe(messages => {
-                    console.log(messages);
+                    console.log('messages', messages);
                     if (messages) {
-                        // this.roomMessages = messages;
+                        this.roomMessages = messages;
                     }
                 });
             } else {
@@ -111,13 +121,13 @@ export class MessagesComponent implements OnInit, OnDestroy {
 
     ngOnDestroy() {}
 
-    createRoom(name: string, type: string) {
-        const newRoom = new Room();
-        newRoom.name = name;
-        newRoom.type = type;
-        newRoom.createdByUserId = this.authService.id;
-        newRoom.createdAt = firebase.database.ServerValue.TIMESTAMP;
+    sendRoomMessage($event) {
+        this.newMessage.userId = this.currentUser.id;
+        this.newMessage.name = this.currentUser.name;
+        this.newMessage.avatar = this.currentUser.avatar;
+        this.newMessage.language = this.currentUser.preferences.language;
 
-        this.dataService.createRoom(newRoom);
+        this.dataService.createRoomMessage(this.roomId, this.newMessage);
+        this.newMessage = new Message();
     }
 }

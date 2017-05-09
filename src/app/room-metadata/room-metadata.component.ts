@@ -25,8 +25,10 @@ export class RoomMetadataComponent implements OnInit, OnDestroy {
     ngOnDestroy() {}
 
     save(evt: Event) {
+        this.newRoom.type = 'public';
+
         // close the dialog
-        this.dialogRef.close();
+        this.dialogRef.close(this.newRoom);
     }
 
     cancel(evt: Event) {
