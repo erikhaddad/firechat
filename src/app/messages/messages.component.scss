@@ -42,13 +42,13 @@ $trans: 0.3s ease;
   left: 0;
   right: 0;
   height: $navHeight;
-  background: #696c75;
+  background: #CCCCCC;
 
   /* box-shadow: 0px -3px 3px 0px rgba(50, 50, 50, 0.1); */
 
   .input {
     height: $navHeight;
-    background: #696c75;
+    background: #CCCCCC;
     border: none;
     width: calc(100% - #{$navHeight});
     position: absolute;
@@ -107,6 +107,14 @@ $trans: 0.3s ease;
 
     &[disabled] {
       background: #AAA;
+    }
+  }
+
+  &.m2app-dark {
+    background: #696c75;
+
+    .input {
+      background: #696c75;
     }
   }
 }

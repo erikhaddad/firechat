@@ -17,7 +17,6 @@ import {MaterialModule} from '../material/material.module';
 
 const routes: Routes = [
     {path: 'messages/room/:roomId', component: MessagesComponent, canActivate: [AuthGuard]},
-    // {path: 'messages/person/:personId', component: MessagesComponent, canActivate: [AuthGuard]},
     {path: 'messages', component: MessagesComponent, canActivate: [AuthGuard]},
     {path: '', redirectTo: '/messages', pathMatch: 'full'}
 ];

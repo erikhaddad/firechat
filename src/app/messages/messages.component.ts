@@ -2,7 +2,7 @@ import {Component, OnInit, OnDestroy} from '@angular/core';
 import {FirebaseListObservable, FirebaseObjectObservable} from 'angularfire2/database';
 import {
     IModerator, IRoomMessages, IMessage, IRoom, IUser, Message, IRoomUsers,
-    ISuspendedUsers, Room, RoomMessages
+    ISuspendedUsers, Room, RoomMessages, Themes
 } from '../common/data-model';
 import {DataService} from '../common/data.service';
 import {AuthService} from '../auth/auth.service';
@@ -16,6 +16,7 @@ import {
     keyframes
 } from '@angular/animations';
 import {ActivatedRoute, Router} from '@angular/router';
+import {Subject} from 'rxjs/Subject';
 
 @Component({
     selector: 'app-messages',
@@ -69,9 +70,13 @@ import {ActivatedRoute, Router} from '@angular/router';
 
 export class MessagesComponent implements OnInit, OnDestroy {
 
+    THEMES = Themes;
+
     // Param and object
     roomId: string;
     paramSubscription: any;
+    languageSubject: Subject<any>;
+    languageQuery: object;
 
     newMessage: Message;
 
@@ -86,6 +91,7 @@ export class MessagesComponent implements OnInit, OnDestroy {
                  private router: Router,
                  private route: ActivatedRoute) {
 
+        this.languageSubject = new Subject();
         this.roomMessages = [];
         this.newMessage = new Message();
 
@@ -94,6 +100,8 @@ export class MessagesComponent implements OnInit, OnDestroy {
             this.currentUser$.subscribe(user => {
                 this.currentUser = user;
                 console.log('user', user);
+
+                this.filterByLanguage(this.currentUser.preferences.language);
             });
         });
     }
@@ -103,16 +111,27 @@ export class MessagesComponent implements OnInit, OnDestroy {
             this.roomId = params['roomId'];
 
             if (typeof this.roomId !== 'undefined') {
-                console.log('found a room id!', this.roomId);
+                console.log('found a room id in messages component!', this.roomId);
 
-                this.roomMessages$ = this.dataService.getRoomMessages(this.roomId);
+                // console.log('deleting room messages for', this.roomId);
+                // this.dataService.deleteRoomMessages(this.roomId);
+                /**/
+                this.languageSubject = new Subject();
+                this.languageQuery =  {
+                    orderByChild: 'language',
+                    equalTo: this.languageSubject
+                    // equalTo: 0
+                };
+                this.roomMessages$ = this.dataService.getRoomMessagesByQuery(this.roomId, this.languageQuery);
 
+                // this.roomMessages$ = this.dataService.getRoomMessages(this.roomId);
                 this.roomMessages$.subscribe(messages => {
                     console.log('messages', messages);
                     if (messages) {
                         this.roomMessages = messages;
                     }
                 });
+                /**/
             } else {
                 this.router.navigate(['/message']);
             }
@@ -121,13 +140,21 @@ export class MessagesComponent implements OnInit, OnDestroy {
 
     ngOnDestroy() {}
 
-    sendRoomMessage($event) {
-        this.newMessage.userId = this.currentUser.id;
-        this.newMessage.name = this.currentUser.name;
-        this.newMessage.avatar = this.currentUser.avatar;
-        this.newMessage.language = this.currentUser.preferences.language;
+    filterByLanguage(language: number) {
+        this.languageSubject.next(language);
+    }
 
-        this.dataService.createRoomMessage(this.roomId, this.newMessage);
-        this.newMessage = new Message();
+    sendRoomMessage($event) {
+        if (this.newMessage.message !== 'undefined') {
+            this.newMessage.message = this.newMessage.message.trim();
+            this.newMessage.userId = this.currentUser.id;
+            this.newMessage.name = this.currentUser.name;
+            this.newMessage.avatar = this.currentUser.avatar;
+            this.newMessage.language = this.currentUser.preferences.language;
+            this.newMessage.moderated = false;
+
+            this.dataService.createRoomMessage(this.roomId, this.newMessage);
+            this.newMessage = new Message();
+        }
     }
 }

@@ -5,25 +5,37 @@ const capitalizeSentence = require('capitalize-sentence');
 const Filter = require('bad-words');
 const badWordsFilter = new Filter();
 
+let languagesEnum = {
+    ENGLISH: 0,
+    SPANISH: 1,
+    PORTUGUESE: 2,
+    GERMAN: 3
+};
+
 // Moderates messages by lowering all uppercase messages and removing swearwords.
 exports.moderator = functions.database
-    .ref('/room-messages/{roomId}/{messageId}').onWrite(event => {
+    .ref('/room-messages/{roomId}/SOURCE/{messageId}').onWrite(event => {
         const message = event.data.val();
 
-        if (message && !message.sanitized) {
+        if (message && !message.moderated && (message.language === languagesEnum.ENGLISH)) {
             // Retrieved the message values.
             console.log('Retrieved message content: ', message);
 
             // Run moderation checks on on the message and moderate if needed.
-            const moderatedMessage = moderateMessage(message.text);
+            const moderatedMessage = moderateMessage(message.message);
 
             // Update the Firebase DB with checked message.
             console.log('Message has been moderated. Saving to DB: ', moderatedMessage);
-            return event.data.adminRef.update({
-                text: moderatedMessage,
-                sanitized: true,
-                moderated: message.text !== moderatedMessage
-            });
+
+            message.message = moderatedMessage;
+            message.moderated = true;
+
+            return event.data.adminRef.root
+                .child("room-messages")
+                .child(event.params.roomId)
+                .child("OUTPUT")
+                .child(event.params.messageId + '-mod')
+                .set(message);
         }
     });
 

@@ -59,6 +59,7 @@ export interface IMessage {
     avatar: string; // URL of avatar image
     language: number; // Language ID of originating text
     message: string; // The content of the message.
+    moderated: boolean; // Is message moderated
     timestamp: number|object; // The time at which the message was sent.
 }
 export class Message implements IMessage {
@@ -67,6 +68,7 @@ export class Message implements IMessage {
     avatar: string; // URL of avatar image
     language: number; // Language ID of originating text
     message: string; // The content of the message.
+    moderated: boolean; // Is message moderated
     timestamp: number|object; // The time at which the message was sent.
 }
 

@@ -47,17 +47,17 @@ export class AppComponent implements OnInit, OnDestroy {
         },
         {
             id: this.LANGUAGES.Spanish,
-            abbreviation: 'ES',
+            abbreviation: 'es',
             name: 'Spanish'
         },
         {
             id: this.LANGUAGES.Portuguese,
-            abbreviation: 'PT',
+            abbreviation: 'pt',
             name: 'Portuguese'
         },
         {
             id: this.LANGUAGES.German,
-            abbreviation: 'DE',
+            abbreviation: 'de',
             name: 'German'
         }
     ];
@@ -125,7 +125,10 @@ export class AppComponent implements OnInit, OnDestroy {
             this.roomId = params['roomId'];
 
             if (typeof this.roomId !== 'undefined') {
-                console.log('found a room id!', this.roomId);
+                console.log('found a room id in app component!', this.roomId);
+
+                console.log('deleting room messages for', this.roomId);
+                this.dataService.deleteRoomMessages(this.roomId);
 
                 this.roomUsers$ = this.dataService.getRoomUsers(this.roomId);
                 this.roomUsers$.subscribe(users => {

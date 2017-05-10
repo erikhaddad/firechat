@@ -5,6 +5,37 @@ const functions = require('firebase-functions');
 const Translate = require('@google-cloud/translate');
 const translate = Translate({keyFilename: "service-account-credentials.json"});
 
+let languagesEnum = {
+    ENGLISH: 0,
+    SPANISH: 1,
+    PORTUGUESE: 2,
+    GERMAN: 3
+};
+
+// sample: ["en", "es", "pt", "de", "ja", "hi", "nl"]
+let languages = [
+    {
+        id: languagesEnum.ENGLISH,
+        abbreviation: 'en',
+        name: 'English'
+    },
+    {
+        id: languagesEnum.SPANISH,
+        abbreviation: 'es',
+        name: 'Spanish'
+    },
+    {
+        id: languagesEnum.PORTUGUESE,
+        abbreviation: 'pt',
+        name: 'Portuguese'
+    },
+    {
+        id: languagesEnum.GERMAN,
+        abbreviation: 'de',
+        name: 'German'
+    }
+];
+
 function getLanguageWithoutLocale(languageCode) {
     if (languageCode.indexOf("-") >= 0) {
         return languageCode.substring(0, languageCode.indexOf("-"));
@@ -13,20 +44,28 @@ function getLanguageWithoutLocale(languageCode) {
 }
 
 exports.translator = functions.database
-    .ref('/room-messages/{roomId}/{messageId}')
+    .ref('/room-messages/{roomId}/SOURCE/{messageId}')
     .onWrite((event) => {
-        let value = event.data.val();
-        let text = value.text ? value.text : value;
-        let languages = ["en", "es", "pt", "de", "ja", "hi", "nl"];
+        const message = event.data.val();
+        let text = message.message ? message.message : message;
+        let languageOriginal = languages[message.language];
+
         // all supported languages: https://cloud.google.com/translate/docs/languages
-        let from = value.language ? getLanguageWithoutLocale(value.language) : "en";
-        let promises = languages.map(to => {
+        let from = languageOriginal.abbreviation ? getLanguageWithoutLocale(languageOriginal.abbreviation) : "en";
+
+        let promises = languages.map(language => {
+            let to = language.abbreviation;
+
             console.log(`translating from '${from}' to '${to}', text '${text}'`);
+            
             // call the Google Cloud Platform Translate API
             if (from == to) {
                 return event.data.adminRef.root
-                    .child("translations").child(event.params.transcriptId).child(to)
-                    .set({text: text, language: from});
+                    .child("room-messages")
+                    .child(event.params.roomId)
+                    .child("OUTPUT")
+                    .child(event.params.messageId + '-' + to)
+                    .set(message);
             } else {
                 return translate.translate(text, {
                     from: from,
@@ -34,9 +73,16 @@ exports.translator = functions.database
                 }).then(result => {
                     // write the translation to the database
                     let translation = result[0];
+
+                    message.language = language.id;
+                    message.message = translation;
+
                     return event.data.adminRef.root
-                        .child("translations").child(event.params.transcriptId).child(to)
-                        .set({text: translation, language: to});
+                        .child("room-messages")
+                        .child(event.params.roomId)
+                        .child("OUTPUT")
+                        .child(event.params.messageId + '-' + to)
+                        .set(message);
                 });
             }
         });

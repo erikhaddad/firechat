@@ -104,16 +104,22 @@ export class DataService {
     /** ROOM MESSAGES **/
     createRoomMessage(roomId: string, message: Message): firebase.Promise<any> {
         message.timestamp = firebase.database.ServerValue.TIMESTAMP;
-        return this.afd.list(this.roomMessagesPath + '/' + roomId).push(message);
+        return this.afd.list(this.roomMessagesPath + '/' + roomId + '/SOURCE').push(message);
     }
     getRoomMessages(roomId: string): FirebaseListObservable<any> {
-        return this.afd.list(this.roomMessagesPath + '/' + roomId);
+        return this.afd.list(this.roomMessagesPath + '/' + roomId + '/OUTPUT');
+    }
+    getRoomMessagesByQuery(roomId: string, query: object): FirebaseListObservable<any> {
+        return this.afd.list(this.roomMessagesPath + '/' + roomId + '/OUTPUT', {query: query});
     }
     removeRoomMessage(roomId: string, message: IMessage): firebase.Promise<any> {
         return this.afd.list(this.roomMessagesPath + '/' + roomId).remove(message.$key);
     }
     updateRoomMessage(roomId: string, message: IMessage, changes: any): firebase.Promise<any> {
         return this.afd.list(this.roomMessagesPath + '/' + roomId).update(message.$key, changes);
+    }
+    deleteRoomMessages(roomId: string): firebase.Promise<any> {
+        return this.afd.list(this.roomMessagesPath + '/' + roomId).remove();
     }
 
     /** ROOM USERS **/

@@ -1,4 +1,5 @@
-<div class="app-toolbar-container" [class.m2app-dark]="currentUser && currentUser.preferences && currentUser.preferences.theme == THEMES.Dark">
+<div class="app-toolbar-container"
+     [class.m2app-dark]="currentUser && currentUser.preferences && currentUser.preferences.theme == THEMES.Dark">
   <md-toolbar class="app-toolbar mat-elevation-z6" color="primary">
     <button class="app-toolbar-menu" (click)="community.toggle()">
       <i class="material-icons app-toolbar-menu-icon">menu</i>
@@ -17,7 +18,7 @@
       <md-menu #menuLanguages="mdMenu" xPosition="before">
         <button md-menu-item *ngFor="let language of languages"
                 (click)="updateUserPreferenceLanguage($event, language.id)"
-                [ngClass]="{'active': currentUser.preferences && currentUser.preferences.language}">
+                [ngClass]="{'active': currentUser.preferences && currentUser.preferences.language == language.id}">
           <span>{{ language.abbreviation }} - {{ language.name }}</span>
         </button>
       </md-menu>
@@ -73,40 +74,25 @@
   </md-toolbar>
 </div>
 
-<md-sidenav-container class="app-sidenav-container" [class.m2app-dark]="currentUser && currentUser.preferences && currentUser.preferences.theme == THEMES.Dark">
-  <md-sidenav #community id="sidenav-community" class="app-sidenav" mode="side" opened="true" fxLayout="column">
-    <!--
-    <form action="#" class="search">
-      <input placeholder="search..." type="search" name="" id="">
-      <i class="material-icons">search</i>
-    </form>
-
-    <ul class="list-friends" fxFlex>
-      <li *ngFor="let user of users">
-        <img width="50" height="50" [src]="user.avatar">
-        <div class="info">
-          <div class="user">{{ user.name }}</div>
-          <div class="status"
-               [ngClass]="{'on': user.status == 'online', 'off': user.status != 'online'}"> {{ user.status }}</div>
-        </div>
-      </li>
-    </ul>
-    -->
-
+<md-sidenav-container class="app-sidenav-container"
+                      [class.m2app-dark]="currentUser && currentUser.preferences && currentUser.preferences.theme == THEMES.Dark">
+  <md-sidenav #community id="sidenav-rooms" class="app-sidenav" mode="side" opened="true" fxLayout="column">
     <md-nav-list fxFlex>
       <h3 md-subheader>Rooms</h3>
-      <a md-list-item [routerLink]="['/messages/room', room.$key]" *ngFor="let room of rooms">
+      <a md-list-item [routerLink]="['/messages/room', room.$key]"
+         *ngFor="let room of rooms"
+         [class.active]="room.$key == roomId">
         <h3 md-line>{{ room.name }}</h3>
         <p md-line>
           <span>{{ room.description }}</span>
-          <span class="demo-2"> -- {{ room.type }}</span>
         </p>
       </a>
     </md-nav-list>
 
     <button md-raised-button
             *ngIf="authService.authenticated"
-            (click)="createNewRoom($event)">+ New Room</button>
+            (click)="createNewRoom($event)">+ New Room
+    </button>
   </md-sidenav>
 
   <div class="app-content">
@@ -117,13 +103,14 @@
       <md-tab>
         <ng-template md-tab-label>Details</ng-template>
         <div fxLayout="column" fxLayoutAlign="center center" style="margin: 24px 0">
-          <ul class="list-friends" fxFlex>
-            <li *ngFor="let user of users">
+          <ul class="list-friends" fxFlex *ngIf="roomUsers">
+            <li *ngFor="let user of roomUsers">
               <img width="50" height="50" [src]="user.avatar">
               <div class="info">
                 <div class="user">{{ user.name }}</div>
                 <div class="status"
-                     [ngClass]="{'on': user.status == 'online', 'off': user.status != 'online'}"> {{ user.status }}</div>
+                     [ngClass]="{'on': user.status == 'online', 'off': user.status != 'online'}"> {{ user.status }}
+                </div>
               </div>
             </li>
           </ul>
@@ -138,7 +125,8 @@
   </md-sidenav>
 </md-sidenav-container>
 
-<span class="app-action" [class.m2app-dark]="currentUser && currentUser.preferences && currentUser.preferences.theme == THEMES.Dark">
+<span class="app-action"
+      [class.m2app-dark]="currentUser && currentUser.preferences && currentUser.preferences.theme == THEMES.Dark">
   <button class="app-fab-button" md-fab>
     <md-icon>check</md-icon>
   </button>

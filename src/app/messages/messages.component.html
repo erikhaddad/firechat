@@ -16,10 +16,12 @@
   </div>
 </div>
 
-<div class="bottom" id="bottom">
+<div class="bottom" id="bottom" *ngIf="roomId"
+     [class.m2app-dark]="currentUser && currentUser.preferences && currentUser.preferences.theme == THEMES.Dark">
   <textarea class="input" id="message-text-input"
             [(ngModel)]="newMessage.message"
             (keyup.enter)="sendRoomMessage($event)"></textarea>
+
   <button class="send" id="send"
           [disabled]="!newMessage.message"
           (click)="sendRoomMessage($event)"></button>

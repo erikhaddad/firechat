@@ -99,13 +99,13 @@ $trans: 0.3s ease;
   &.m2app-dark {
     background: #333333;
 
-    #sidenav-community,
+    #sidenav-rooms,
     #sidenav-details {
       background: #434753;
       color: #ffffff;
     }
 
-    #sidenav-community {
+    #sidenav-rooms {
       .list-friends {
         .user {
           color: rgba(255,255,255,.87);
@@ -127,7 +127,7 @@ $trans: 0.3s ease;
     }
   }
 
-  #sidenav-community {
+  #sidenav-rooms {
     font-family: 'Roboto', sans-serif;
     box-sizing: content-box;
     height: 100%;
@@ -138,6 +138,13 @@ $trans: 0.3s ease;
     /*width: 29%;*/
     width: 274px;
     max-width: 324px;
+
+    .mat-list-item.active {
+      background: rgba(255,255,255,.04);
+    }
+  }
+  #sidenav-details {
+    min-width: 256px;
 
     .search {
       position: relative;
@@ -245,9 +252,6 @@ $trans: 0.3s ease;
       }
     }
   }
-  #sidenav-details {
-    min-width: 256px;
-  }
 
   .app-content {
     background: darken($white, 5%);
@@ -262,7 +266,9 @@ $trans: 0.3s ease;
     right: 20px;
   }
 }
-
+.mat-menu-item.active {
+  font-weight:bold;
+}
 @media (max-width: 600px) {
   .app-sidenav-container {
     height: calc(100% - 56px);
