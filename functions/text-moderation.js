@@ -17,26 +17,42 @@ exports.moderator = functions.database
     .ref('/room-messages/{roomId}/SOURCE/{messageId}').onWrite(event => {
         const message = event.data.val();
 
-        if (message && !message.moderated && (message.language === languagesEnum.ENGLISH)) {
-            // Retrieved the message values.
-            console.log('Retrieved message content: ', message);
+        const msgVersions = [];
 
-            // Run moderation checks on on the message and moderate if needed.
-            const moderatedMessage = moderateMessage(message.message);
+        if (message) {
+            // Update the Firebase DB with original message.
+            console.log('Detected new message for copying and moderation', message);
 
-            // Update the Firebase DB with checked message.
-            console.log('Message has been moderated. Saving to DB: ', moderatedMessage);
+            // push original message
+            msgVersions.push(message);
 
-            message.message = moderatedMessage;
-            message.moderated = true;
-
-            return event.data.adminRef.root
-                .child("room-messages")
-                .child(event.params.roomId)
-                .child("OUTPUT")
-                .child(event.params.messageId + '-mod')
-                .set(message);
+            // copy original message for moderation
+            let moderatedMessage = JSON.parse(JSON.stringify(message));
+            moderatedMessage.message = moderateMessage(message.message);
+            moderatedMessage.moderated = true;
+            // push moderated version
+            msgVersions.push(moderatedMessage);
         }
+
+        let promises = msgVersions.map(version => {
+            if (version.moderated) {
+                return event.data.adminRef.root
+                    .child("room-messages")
+                    .child(event.params.roomId)
+                    .child("TRANSLATE")
+                    .child(event.params.messageId + '-mod')
+                    .set(version);
+            } else {
+                return event.data.adminRef.root
+                    .child("room-messages")
+                    .child(event.params.roomId)
+                    .child("TRANSLATE")
+                    .child(event.params.messageId + '-raw')
+                    .set(version);
+            }
+        });
+
+        return Promise.all(promises);
     });
 
 // Moderates the given message if appropriate.

@@ -17,6 +17,7 @@ import {
 } from '@angular/animations';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Subject} from 'rxjs/Subject';
+import * as _ from 'lodash';
 
 @Component({
     selector: 'app-messages',
@@ -129,7 +130,13 @@ export class MessagesComponent implements OnInit, OnDestroy {
                 this.roomMessages$.subscribe(messages => {
                     console.log('messages', messages);
                     if (messages) {
-                        this.roomMessages = messages;
+                        if (this.currentUser.preferences.moderate) {
+                            console.log('moderating');
+                            this.roomMessages = _.filter(messages, {moderated: true});
+                        } else {
+                            console.log('not moderating');
+                            this.roomMessages = _.filter(messages, {moderated: false});
+                        }
                     } else {
                         this.roomMessages = [];
                     }

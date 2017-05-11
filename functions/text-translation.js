@@ -44,7 +44,7 @@ function getLanguageWithoutLocale(languageCode) {
 }
 
 exports.translator = functions.database
-    .ref('/room-messages/{roomId}/SOURCE/{messageId}')
+    .ref('/room-messages/{roomId}/TRANSLATE/{messageId}')
     .onWrite((event) => {
         const message = event.data.val();
         let text = message.message ? message.message : message;
