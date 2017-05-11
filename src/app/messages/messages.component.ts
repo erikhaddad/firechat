@@ -122,6 +122,7 @@ export class MessagesComponent implements OnInit, OnDestroy {
                     equalTo: this.languageSubject
                     // equalTo: 0
                 };
+
                 this.roomMessages$ = this.dataService.getRoomMessagesByQuery(this.roomId, this.languageQuery);
 
                 // this.roomMessages$ = this.dataService.getRoomMessages(this.roomId);
@@ -129,11 +130,17 @@ export class MessagesComponent implements OnInit, OnDestroy {
                     console.log('messages', messages);
                     if (messages) {
                         this.roomMessages = messages;
+                    } else {
+                        this.roomMessages = [];
                     }
                 });
+
+                if (this.currentUser && this.currentUser.preferences) {
+                    this.filterByLanguage(this.currentUser.preferences.language);
+                }
                 /**/
             } else {
-                this.router.navigate(['/message']);
+                this.router.navigate(['/messages']);
             }
         });
     }

@@ -1,8 +1,12 @@
 <div class="app-toolbar-container"
      [class.m2app-dark]="currentUser && currentUser.preferences && currentUser.preferences.theme == THEMES.Dark">
   <md-toolbar class="app-toolbar mat-elevation-z6" color="primary">
-    <button class="app-toolbar-menu" (click)="community.toggle()">
+    <button class="app-toolbar-menu" (click)="community.toggle()" *ngIf="currentUser">
       <i class="material-icons app-toolbar-menu-icon">menu</i>
+    </button>
+
+    <button md-icon-button *ngIf="!currentUser">
+      <md-icon>chat_bubble_outline</md-icon>
     </button>
 
     <span class="app-toolbar-title">{{ title }}</span>
@@ -76,8 +80,8 @@
 
 <md-sidenav-container class="app-sidenav-container"
                       [class.m2app-dark]="currentUser && currentUser.preferences && currentUser.preferences.theme == THEMES.Dark">
-  <md-sidenav #community id="sidenav-rooms" class="app-sidenav" mode="side" opened="true" fxLayout="column">
-    <md-nav-list fxFlex>
+  <md-sidenav #community id="sidenav-rooms" class="app-sidenav" mode="side" [opened]="currentUser" fxLayout="column">
+    <md-nav-list fxFlex *ngIf="currentUser">
       <h3 md-subheader>Rooms</h3>
       <a md-list-item [routerLink]="['/messages/room', room.$key]"
          *ngFor="let room of rooms"

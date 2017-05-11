@@ -17,7 +17,7 @@ import {RouterModule, Routes} from '@angular/router';
 import {RoomMetadataComponent} from './room-metadata/room-metadata.component';
 
 const routes: Routes = [
-    { path: '', redirectTo: '/messages', pathMatch: 'full'}
+    // { path: '', redirectTo: '/messages', pathMatch: 'full'}
 ];
 
 @NgModule({

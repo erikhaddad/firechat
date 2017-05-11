@@ -76,36 +76,30 @@ export class AppComponent implements OnInit, OnDestroy {
 
         iconRegistry.addSvgIcon(
             'google',
-            sanitizer.bypassSecurityTrustResourceUrl('assets/icons/authService/google.svg'));
+            sanitizer.bypassSecurityTrustResourceUrl('assets/icons/auth/google.svg'));
 
         iconRegistry.addSvgIcon(
             'facebook',
-            sanitizer.bypassSecurityTrustResourceUrl('assets/icons/authService/facebook.svg'));
+            sanitizer.bypassSecurityTrustResourceUrl('assets/icons/auth/facebook.svg'));
 
         iconRegistry.addSvgIcon(
             'twitter',
-            sanitizer.bypassSecurityTrustResourceUrl('assets/icons/authService/twitter.svg'));
+            sanitizer.bypassSecurityTrustResourceUrl('assets/icons/auth/twitter.svg'));
 
         iconRegistry.addSvgIcon(
             'github',
-            sanitizer.bypassSecurityTrustResourceUrl('assets/icons/authService/github.svg'));
-
-        iconRegistry.addSvgIcon(
-            'logo_white',
-            sanitizer.bypassSecurityTrustResourceUrl('assets/images/logo_fireplace_white.svg'));
-
-        iconRegistry.addSvgIcon(
-            'logo_color',
-            sanitizer.bypassSecurityTrustResourceUrl('assets/images/logo_fireplace_color.svg'));
+            sanitizer.bypassSecurityTrustResourceUrl('assets/icons/auth/github.svg'));
 
         this.title = 'firechat';
 
         authService.authState$.subscribe(authUser => {
-            this.currentUser$ = dataService.getUser(authUser.uid);
-            this.currentUser$.subscribe(user => {
-                this.currentUser = user;
-                console.log(user);
-            });
+            if (authUser != null) {
+                this.currentUser$ = dataService.getUser(authUser.uid);
+                this.currentUser$.subscribe(user => {
+                    this.currentUser = user;
+                    console.log(user);
+                });
+            }
         });
 
         this.roomUsers = [];
