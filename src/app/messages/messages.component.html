@@ -1,5 +1,5 @@
 <div class="inner" id="inner">
-  <div class="content" id="content">
+  <div id="content" class="content">
     <div class="message-wrapper"
          *ngFor="let msg of roomMessages"
          [ngClass]="{'me': msg.userId == currentUser.id, 'them': msg.userId != currentUser.id}">

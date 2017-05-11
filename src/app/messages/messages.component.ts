@@ -1,8 +1,8 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
+import {Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewChecked} from '@angular/core';
 import {FirebaseListObservable, FirebaseObjectObservable} from 'angularfire2/database';
 import {
     IModerator, IRoomMessages, IMessage, IRoom, IUser, Message, IRoomUsers,
-    ISuspendedUsers, Room, RoomMessages, Themes
+    ISuspendedUsers, Room, RoomMessages, Themes, Languages
 } from '../common/data-model';
 import {DataService} from '../common/data.service';
 import {AuthService} from '../auth/auth.service';
@@ -69,7 +69,7 @@ import * as _ from 'lodash';
     ]
 })
 
-export class MessagesComponent implements OnInit, OnDestroy {
+export class MessagesComponent implements OnInit, AfterViewChecked, OnDestroy {
 
     THEMES = Themes;
 
@@ -100,9 +100,12 @@ export class MessagesComponent implements OnInit, OnDestroy {
             this.currentUser$ = dataService.getUser(authUser.uid);
             this.currentUser$.subscribe(user => {
                 this.currentUser = user;
-                console.log('user', user);
 
-                this.filterByLanguage(this.currentUser.preferences.language);
+                if (this.currentUser.preferences.language) {
+                    this.filterByLanguage(this.currentUser.preferences.language);
+                } else {
+                    this.filterByLanguage(Languages.English);
+                }
             });
         });
     }
@@ -112,31 +115,23 @@ export class MessagesComponent implements OnInit, OnDestroy {
             this.roomId = params['roomId'];
 
             if (typeof this.roomId !== 'undefined') {
-                console.log('found a room id in messages component!', this.roomId);
-
-                // console.log('deleting room messages for', this.roomId);
-                // this.dataService.deleteRoomMessages(this.roomId);
-                /**/
                 this.languageSubject = new Subject();
                 this.languageQuery =  {
                     orderByChild: 'language',
                     equalTo: this.languageSubject
-                    // equalTo: 0
                 };
 
+                // this.roomMessages$ = this.dataService.getRoomMessages(this.roomId);
                 this.roomMessages$ = this.dataService.getRoomMessagesByQuery(this.roomId, this.languageQuery);
 
-                // this.roomMessages$ = this.dataService.getRoomMessages(this.roomId);
                 this.roomMessages$.subscribe(messages => {
-                    console.log('messages', messages);
                     if (messages) {
                         if (this.currentUser.preferences.moderate) {
-                            console.log('moderating');
                             this.roomMessages = _.filter(messages, {moderated: true});
                         } else {
-                            console.log('not moderating');
                             this.roomMessages = _.filter(messages, {moderated: false});
                         }
+                        this.roomMessages = _.orderBy(this.roomMessages, 'timestamp', 'asc');
                     } else {
                         this.roomMessages = [];
                     }
@@ -145,14 +140,22 @@ export class MessagesComponent implements OnInit, OnDestroy {
                 if (this.currentUser && this.currentUser.preferences) {
                     this.filterByLanguage(this.currentUser.preferences.language);
                 }
-                /**/
             } else {
                 this.router.navigate(['/messages']);
             }
         });
     }
 
-    ngOnDestroy() {}
+    ngAfterViewChecked() {
+        this.scrollToBottom();
+    }
+
+    ngOnDestroy() {
+        this.paramSubscription.unsubscribe();
+        this.languageSubject.unsubscribe();
+        // this.roomMessages$.unsubscribe();
+        // this.currentUser$.unsubscribe();
+    }
 
     filterByLanguage(language: number) {
         this.languageSubject.next(language);
@@ -169,6 +172,14 @@ export class MessagesComponent implements OnInit, OnDestroy {
 
             this.dataService.createRoomMessage(this.roomId, this.newMessage);
             this.newMessage = new Message();
+        }
+    }
+
+    scrollToBottom(): void {
+        try {
+            document.getElementById('inner').scrollTop = document.getElementById('inner').scrollHeight;
+        } catch (err) {
+            console.error(err);
         }
     }
 }

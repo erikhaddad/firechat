@@ -97,7 +97,6 @@ export class AppComponent implements OnInit, OnDestroy {
                 this.currentUser$ = dataService.getUser(authUser.uid);
                 this.currentUser$.subscribe(user => {
                     this.currentUser = user;
-                    console.log(user);
                 });
             }
         });
@@ -107,11 +106,8 @@ export class AppComponent implements OnInit, OnDestroy {
 
         this.rooms$ = this.dataService.rooms;
         this.rooms$.subscribe(rooms => {
-            console.log('rooms', rooms);
             this.rooms = rooms;
         });
-
-        console.log(this.authService);
     }
 
     ngOnInit() {
@@ -121,12 +117,8 @@ export class AppComponent implements OnInit, OnDestroy {
             if (typeof this.roomId !== 'undefined') {
                 console.log('found a room id in app component!', this.roomId);
 
-                console.log('deleting room messages for', this.roomId);
-                this.dataService.deleteRoomMessages(this.roomId);
-
                 this.roomUsers$ = this.dataService.getRoomUsers(this.roomId);
                 this.roomUsers$.subscribe(users => {
-                    console.log('room users', users);
                     this.roomUsers = users;
                 });
             }
@@ -157,15 +149,13 @@ export class AppComponent implements OnInit, OnDestroy {
         // this.roomMetadataDialogRef.componentInstance.currentPost = post;
 
         this.roomMetadataDialogRef.afterClosed().subscribe(room => {
-            console.log('Dialog result:', room);
-
             const promise = this.dataService.createRoom(room);
 
             promise
                 .then(result => {
                     this.router.navigate(['/messages/room', result.$key]);
                 })
-                .catch(err => console.log(err, 'You do not have access!'));
+                .catch(err => console.error(err, 'You do not have access!'));
         });
     }
 
