@@ -97,6 +97,10 @@ export class AppComponent implements OnInit, OnDestroy {
     authService.authState$.subscribe(authUser => {
       if (authUser != null) {
         this.currentUser$ = dataService.getUser(authUser.uid);
+
+        this.currentUser$.subscribe(user => {
+          this.currentUser = user;
+        });
       }
     });
 
