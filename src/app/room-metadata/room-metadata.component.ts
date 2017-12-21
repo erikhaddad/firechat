@@ -1,7 +1,6 @@
 import {Component, OnInit, ViewEncapsulation, OnDestroy} from '@angular/core';
 import {Room} from '../common/data-model';
-import {FirebaseListObservable} from 'angularfire2/database';
-import {MdDialogRef} from '@angular/material';
+import {MatDialogRef} from '@angular/material';
 
 @Component({
     selector: 'app-new-room',
@@ -14,7 +13,7 @@ export class RoomMetadataComponent implements OnInit, OnDestroy {
     // Param and object
     newRoom: Room;
 
-    constructor(public dialogRef: MdDialogRef<RoomMetadataComponent>) {
+    constructor(public dialogRef: MatDialogRef<RoomMetadataComponent>) {
         this.newRoom = new Room();
     }
 

@@ -3,7 +3,6 @@ import {NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {HttpModule} from '@angular/http';
 
-import 'hammerjs';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {MaterialModule} from './material/material.module';
@@ -15,6 +14,7 @@ import {MessagesModule} from './messages/messages.module';
 import {DataService} from './common/data.service';
 import {RouterModule, Routes} from '@angular/router';
 import {RoomMetadataComponent} from './room-metadata/room-metadata.component';
+import {HttpClientModule} from '@angular/common/http';
 
 const routes: Routes = [
     // { path: '', redirectTo: '/messages', pathMatch: 'full'}
@@ -32,6 +32,7 @@ const routes: Routes = [
         BrowserModule,
         FormsModule,
         HttpModule,
+        HttpClientModule,
         BrowserAnimationsModule,
         RouterModule.forRoot(routes, {useHash: false}),
 

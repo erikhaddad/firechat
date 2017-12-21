@@ -1,176 +1,178 @@
 import {
-    Component, OnDestroy, OnInit, ViewContainerRef,
-    ViewEncapsulation
+  Component, OnDestroy, OnInit, ViewContainerRef,
+  ViewEncapsulation
 } from '@angular/core';
-import {FirebaseListObservable, FirebaseObjectObservable} from 'angularfire2/database';
+import {AngularFireDatabase, AngularFireList, AngularFireObject} from 'angularfire2/database';
 import {
-    IModerator, IRoomMessages, IMessage, IRoom, IUser, Message, IRoomUsers,
-    ISuspendedUsers, ILanguage, Languages, Themes
+  IModerator, IRoomMessages, IMessage, IRoom, IUser, Message, IRoomUsers,
+  ISuspendedUsers, ILanguage, Languages, Themes
 } from './common/data-model';
 import {DataService} from './common/data.service';
 import {DomSanitizer} from '@angular/platform-browser';
-import {MdDialog, MdDialogConfig, MdDialogRef, MdIconRegistry, MdSnackBar} from '@angular/material';
+import {MatDialog, MatDialogConfig, MatDialogRef, MatIconRegistry, MatSnackBar} from '@angular/material';
 import {AuthService} from './auth/auth.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {RoomMetadataComponent} from './room-metadata/room-metadata.component';
 
+import {Observable} from 'rxjs/Observable';
+
 @Component({
-    selector: 'app-root',
-    templateUrl: './app.component.html',
-    styleUrls: ['./app.component.scss'],
-    encapsulation: ViewEncapsulation.None
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.scss'],
+  encapsulation: ViewEncapsulation.None
 })
 export class AppComponent implements OnInit, OnDestroy {
-    title: string;
+  title: string;
 
-    LANGUAGES = Languages;
-    THEMES = Themes;
+  LANGUAGES = Languages;
+  THEMES = Themes;
 
-    roomId: string;
-    paramSubscription: any;
+  roomId: string;
+  paramSubscription: any;
 
-    currentUser$: FirebaseObjectObservable<IUser>;
-    currentUser: IUser;
+  currentUser$: Observable<IUser>;
+  currentUser: IUser;
 
-    rooms: IRoom[];
-    rooms$: FirebaseListObservable<IRoom[]>;
+  rooms$: Observable<IRoom[]>;
+  rooms: IRoom[];
 
-    roomUsers: IRoomUsers[];
-    roomUsers$: FirebaseListObservable<IRoomUsers[]>;
+  roomUsers$: Observable<IRoomUsers[]>;
+  roomUsers: IRoomUsers[];
 
-    // ["en", "es", "pt", "de", "ja", "hi", "nl"]
-    languages: ILanguage[] = [
-        {
-            id: this.LANGUAGES.English,
-            abbreviation: 'en',
-            name: 'English'
-        },
-        {
-            id: this.LANGUAGES.Spanish,
-            abbreviation: 'es',
-            name: 'Spanish'
-        },
-        {
-            id: this.LANGUAGES.Portuguese,
-            abbreviation: 'pt',
-            name: 'Portuguese'
-        },
-        {
-            id: this.LANGUAGES.German,
-            abbreviation: 'de',
-            name: 'German'
-        }
-    ];
+  // ["en", "es", "pt", "de", "ja", "hi", "nl"]
+  languages: ILanguage[] = [
+    {
+      id: this.LANGUAGES.English,
+      abbreviation: 'en',
+      name: 'English'
+    },
+    {
+      id: this.LANGUAGES.Spanish,
+      abbreviation: 'es',
+      name: 'Spanish'
+    },
+    {
+      id: this.LANGUAGES.Portuguese,
+      abbreviation: 'pt',
+      name: 'Portuguese'
+    },
+    {
+      id: this.LANGUAGES.German,
+      abbreviation: 'de',
+      name: 'German'
+    }
+  ];
 
-    private roomMetadataDialogRef: MdDialogRef<RoomMetadataComponent>;
+  private roomMetadataDialogRef: MatDialogRef<RoomMetadataComponent>;
 
-    constructor (public authService: AuthService,
-                 private dataService: DataService,
-                 private route: ActivatedRoute,
-                 private router: Router,
-                 public dialog: MdDialog,
-                 public viewContainerRef: ViewContainerRef,
-                 public snackBar: MdSnackBar,
-                 iconRegistry: MdIconRegistry,
-                 sanitizer: DomSanitizer) {
+  constructor(public authService: AuthService,
+              private dataService: DataService,
+              private route: ActivatedRoute,
+              private router: Router,
+              public dialog: MatDialog,
+              public viewContainerRef: ViewContainerRef,
+              public snackBar: MatSnackBar,
+              iconRegistry: MatIconRegistry,
+              sanitizer: DomSanitizer) {
 
-        iconRegistry.addSvgIcon(
-            'google',
-            sanitizer.bypassSecurityTrustResourceUrl('assets/icons/auth/google.svg'));
+    iconRegistry.addSvgIcon(
+      'google',
+      sanitizer.bypassSecurityTrustResourceUrl('assets/icons/auth/google.svg'));
 
-        iconRegistry.addSvgIcon(
-            'facebook',
-            sanitizer.bypassSecurityTrustResourceUrl('assets/icons/auth/facebook.svg'));
+    iconRegistry.addSvgIcon(
+      'facebook',
+      sanitizer.bypassSecurityTrustResourceUrl('assets/icons/auth/facebook.svg'));
 
-        iconRegistry.addSvgIcon(
-            'twitter',
-            sanitizer.bypassSecurityTrustResourceUrl('assets/icons/auth/twitter.svg'));
+    iconRegistry.addSvgIcon(
+      'twitter',
+      sanitizer.bypassSecurityTrustResourceUrl('assets/icons/auth/twitter.svg'));
 
-        iconRegistry.addSvgIcon(
-            'github',
-            sanitizer.bypassSecurityTrustResourceUrl('assets/icons/auth/github.svg'));
+    iconRegistry.addSvgIcon(
+      'github',
+      sanitizer.bypassSecurityTrustResourceUrl('assets/icons/auth/github.svg'));
 
-        this.title = 'firechat';
+    this.title = 'firechat';
 
-        authService.authState$.subscribe(authUser => {
-            if (authUser != null) {
-                this.currentUser$ = dataService.getUser(authUser.uid);
-                this.currentUser$.subscribe(user => {
-                    this.currentUser = user;
-                });
-            }
+    authService.authState$.subscribe(authUser => {
+      if (authUser != null) {
+        this.currentUser$ = dataService.getUser(authUser.uid);
+      }
+    });
+
+    this.roomUsers = [];
+    this.rooms = [];
+
+    this.rooms$ = this.dataService.getRooms();
+    this.rooms$.subscribe(rooms => {
+      this.rooms = rooms;
+    });
+  }
+
+  ngOnInit() {
+    this.paramSubscription = this.route.params.subscribe(params => {
+      this.roomId = params['roomId'];
+
+      if (typeof this.roomId !== 'undefined') {
+        console.log('found a room id in app component!', this.roomId);
+
+        this.roomUsers$ = this.dataService.getRoomUsers(this.roomId);
+        this.roomUsers$.subscribe(users => {
+          this.roomUsers = users;
         });
+      }
+    });
+  }
 
-        this.roomUsers = [];
-        this.rooms = [];
+  ngOnDestroy() {
+  }
 
-        this.rooms$ = this.dataService.rooms;
-        this.rooms$.subscribe(rooms => {
-            this.rooms = rooms;
-        });
-    }
+  logout(evt: Event) {
+    const message = 'You have been signed out';
+    this.authService.signOut();
+    this.router.navigate(['/sign-in']);
 
-    ngOnInit() {
-        this.paramSubscription = this.route.params.subscribe(params => {
-            this.roomId = params['roomId'];
+    this.snackBar.open(message, null, {
+      duration: 1000
+    });
+  }
 
-            if (typeof this.roomId !== 'undefined') {
-                console.log('found a room id in app component!', this.roomId);
+  createNewRoom(evt: Event) {
+    const config = new MatDialogConfig();
+    // config.height = '400px';
+    // config.width = '600px';
+    config.viewContainerRef = this.viewContainerRef;
 
-                this.roomUsers$ = this.dataService.getRoomUsers(this.roomId);
-                this.roomUsers$.subscribe(users => {
-                    this.roomUsers = users;
-                });
-            }
-        });
-    }
+    this.roomMetadataDialogRef = this.dialog.open(RoomMetadataComponent, config);
 
-    ngOnDestroy() {}
+    // if room already exists, pass it to the dialog for editing
+    // this.roomMetadataDialogRef.componentInstance.currentPost = post;
 
-    logout(evt: Event) {
-        const message = 'You have been signed out';
-        this.authService.signOut();
-        this.router.navigate(['/sign-in']);
+    this.roomMetadataDialogRef.afterClosed().subscribe(room => {
+      const promise = this.dataService.createRoom(room);
 
-        this.snackBar.open(message, null, {
-            duration: 1000
-        });
-    }
+      promise
+        .then(
+          result => {
+            this.router.navigate(['/messages/room', result.$key]);
+          },
+          err => console.error(err, 'You do not have access!')
+        );
+    });
+  }
 
-    createNewRoom(evt: Event) {
-        const config = new MdDialogConfig();
-        // config.height = '400px';
-        // config.width = '600px';
-        config.viewContainerRef = this.viewContainerRef;
+  updateUserPreferenceLanguage(evt: Event, languageId: number) {
+    this.currentUser.preferences.language = languageId;
+    this.dataService.updateUser(this.currentUser);
+  }
 
-        this.roomMetadataDialogRef = this.dialog.open(RoomMetadataComponent, config);
+  updateUserPreferenceModerate(evt: Event, val: boolean) {
+    this.currentUser.preferences.moderate = val;
+    this.dataService.updateUser(this.currentUser);
+  }
 
-        // if room already exists, pass it to the dialog for editing
-        // this.roomMetadataDialogRef.componentInstance.currentPost = post;
-
-        this.roomMetadataDialogRef.afterClosed().subscribe(room => {
-            const promise = this.dataService.createRoom(room);
-
-            promise
-                .then(result => {
-                    this.router.navigate(['/messages/room', result.$key]);
-                })
-                .catch(err => console.error(err, 'You do not have access!'));
-        });
-    }
-
-    updateUserPreferenceLanguage(evt: Event, languageId: number) {
-        this.currentUser.preferences.language = languageId;
-        this.dataService.updateUser(this.currentUser);
-    }
-
-    updateUserPreferenceModerate(evt: Event, val: boolean) {
-        this.currentUser.preferences.moderate = val;
-        this.dataService.updateUser(this.currentUser);
-    }
-
-    updateUserPreferenceTheme(evt: Event, themeId: number) {
-        this.currentUser.preferences.theme = themeId;
-        this.dataService.updateUser(this.currentUser);
-    }
+  updateUserPreferenceTheme(evt: Event, themeId: number) {
+    this.currentUser.preferences.theme = themeId;
+    this.dataService.updateUser(this.currentUser);
+  }
 }

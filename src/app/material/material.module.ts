@@ -2,50 +2,61 @@ import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 
 import {
-    MdButtonModule,
-    MdCardModule,
-    MdCheckboxModule, MdDialogModule,
-    MdIconModule,
-    MdInputModule, MdListModule, MdMenuModule,
-    MdSidenavModule, MdSlideToggleModule, MdSnackBarModule, MdTabsModule,
-    MdToolbarModule,
-    MdTooltipModule
+  MatAutocompleteModule,
+  MatButtonModule,
+  MatCardModule,
+  MatCheckboxModule, MatDatepickerModule, MatDialogModule,
+  MatIconModule,
+  MatInputModule, MatListModule, MatMenuModule, MatNativeDateModule, MatProgressBarModule, MatSelectModule,
+  MatSidenavModule, MatSlideToggleModule, MatSnackBarModule, MatTabsModule,
+  MatToolbarModule,
+  MatTooltipModule
 } from '@angular/material';
 
 @NgModule({
-    imports: [
-        CommonModule,
-        MdButtonModule,
-        MdCardModule,
-        MdCheckboxModule,
-        MdDialogModule,
-        MdIconModule,
-        MdInputModule,
-        MdListModule,
-        MdMenuModule,
-        MdSidenavModule,
-        MdSlideToggleModule,
-        MdSnackBarModule,
-        MdTabsModule,
-        MdToolbarModule,
-        MdTooltipModule
-    ],
-    exports: [
-        MdButtonModule,
-        MdCardModule,
-        MdCheckboxModule,
-        MdDialogModule,
-        MdIconModule,
-        MdInputModule,
-        MdListModule,
-        MdMenuModule,
-        MdSidenavModule,
-        MdSlideToggleModule,
-        MdSnackBarModule,
-        MdTabsModule,
-        MdToolbarModule,
-        MdTooltipModule
-    ],
-    declarations: []
+  imports: [
+    CommonModule,
+    MatAutocompleteModule,
+    MatButtonModule,
+    MatCardModule,
+    MatCheckboxModule,
+    MatDatepickerModule,
+    MatDialogModule,
+    MatIconModule,
+    MatInputModule,
+    MatListModule,
+    MatMenuModule,
+    MatNativeDateModule,
+    MatProgressBarModule,
+    MatSelectModule,
+    MatSidenavModule,
+    MatSlideToggleModule,
+    MatSnackBarModule,
+    MatTabsModule,
+    MatToolbarModule,
+    MatTooltipModule
+  ],
+  exports: [
+    MatAutocompleteModule,
+    MatButtonModule,
+    MatCardModule,
+    MatCheckboxModule,
+    MatDatepickerModule,
+    MatDialogModule,
+    MatIconModule,
+    MatInputModule,
+    MatListModule,
+    MatMenuModule,
+    MatNativeDateModule,
+    MatProgressBarModule,
+    MatSelectModule,
+    MatSidenavModule,
+    MatSlideToggleModule,
+    MatSnackBarModule,
+    MatTabsModule,
+    MatToolbarModule,
+    MatTooltipModule
+  ],
+  declarations: []
 })
 export class MaterialModule {}

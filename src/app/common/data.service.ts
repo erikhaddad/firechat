@@ -2,310 +2,349 @@ import 'rxjs/add/observable/merge';
 import 'rxjs/add/operator/switchMap';
 
 import {Injectable} from '@angular/core';
-import {AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable} from 'angularfire2/database';
+import {AngularFireDatabase, AngularFireList, AngularFireObject} from 'angularfire2/database';
 import {AuthService} from '../auth/auth.service';
 import {
-    IModerator, IRoomMessages, IMessage, IRoom, IUser, Message, IRoomUsers,
-    ISuspendedUsers, Room, User
+  IModerator, IRoomMessages, IMessage, IRoom, IUser, Message, IRoomUsers,
+  ISuspendedUsers, Room, User
 } from './data-model';
 
 import * as firebase from 'firebase';
+import {Observable} from 'rxjs/Observable';
+import ThenableReference = firebase.database.ThenableReference;
+import {Subject} from 'rxjs/Subject';
+import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 
 @Injectable()
 export class DataService {
-    private moderatorsPath: string;
-    private roomMessagesPath: string;
-    private roomMetadataPath: string;
-    private roomUsersPath: string;
-    private suspensionsPath: string;
-    private userNamesOnlinePath: string;
-    private usersPath: string;
-
-    constructor(private afd: AngularFireDatabase, private auth: AuthService) {
-        this.moderatorsPath = '/moderators';
-        this.roomMessagesPath = '/room-messages';
-        this.roomMetadataPath = '/room-metadata';
-        this.roomUsersPath = '/room-users';
-        this.suspensionsPath = '/suspensions';
-        this.userNamesOnlinePath = '/user-names-online';
-        this.usersPath = '/users';
-    }
-
-    /*
-    get moderators(): FirebaseListObservable<IModerator[]> {
-        return this.afd.list(this.moderatorsPath);
-    }
-
-    get roomMessages(): FirebaseListObservable<IRoomMessages[]> {
-        return this.afd.list(this.roomMessagesPath);
-    }
-
-    get rooms(): FirebaseListObservable<IRoom[]> {
-        return this.afd.list(this.roomMetadataPath);
-    }
-
-    get roomUsers(): FirebaseListObservable<IRoomUsers[]> {
-        return this.afd.list(this.roomUsersPath);
-    }
-
-    get suspensions(): FirebaseObjectObservable<ISuspendedUsers> {
-        return this.afd.object(this.suspensionsPath);
-    }
-
-    get userNamesOnline(): FirebaseListObservable<IModerator[]> {
-        return this.afd.list(this.userNamesOnlinePath);
-    }
-
-    get users(): FirebaseListObservable<IUser[]> {
-        return this.afd.list(this.usersPath);
-    }
-    */
-
-    get rooms(): FirebaseListObservable<IRoom[]> {
-        return this.afd.list(this.roomMetadataPath);
-    }
-
-    /** USERS **/
-    createUser(user: User): firebase.Promise<any> {
-        return this.afd.list(this.usersPath).push(user);
-    }
-    getUser(userId: string): FirebaseObjectObservable<any> {
-        return this.afd.object(this.usersPath + '/' + userId);
-    }
-    removeUser(user: IUser): firebase.Promise<any> {
-        return this.afd.list(this.usersPath).remove(user.$key);
-    }
-    updateUser(user: IUser): firebase.Promise<any> {
-        const path = this.usersPath + '/' + user.$key;
-        console.log('user update path', path);
-        console.log('user update value', user);
-        return this.afd.list(this.usersPath).update(user.$key, user);
-    }
-
-    /** ROOM METADATA **/
-    createRoom(room: Room): firebase.Promise<any> {
-        room.createdAt = firebase.database.ServerValue.TIMESTAMP;
-        room.createdByUserId = this.auth.id;
-        room.authorizedUsers = {};
-        room.authorizedUsers[this.auth.id] = true;
-
-        return this.afd.list(this.roomMetadataPath).push(room);
-    }
-    getRoomMetadata(roomId: string): FirebaseObjectObservable<any> {
-        return this.afd.object(this.roomMetadataPath + '/' + roomId);
-    }
-    removeRoomMetadata(metadata: IRoom): firebase.Promise<any> {
-        return this.afd.list(this.roomMetadataPath).remove(metadata.$key);
-    }
-    updateRoomMetadata(metadata: IRoom, changes: any): firebase.Promise<any> {
-        return this.afd.list(this.roomMetadataPath).update(metadata.$key, changes);
-    }
-
-    /** ROOM MESSAGES **/
-    createRoomMessage(roomId: string, message: Message): firebase.Promise<any> {
-        message.timestamp = firebase.database.ServerValue.TIMESTAMP;
-        return this.afd.list(this.roomMessagesPath + '/' + roomId + '/SOURCE').push(message);
-    }
-    getRoomMessages(roomId: string): FirebaseListObservable<any> {
-        return this.afd.list(this.roomMessagesPath + '/' + roomId + '/OUTPUT');
-    }
-    getRoomMessagesByQuery(roomId: string, query: object): FirebaseListObservable<any> {
-        return this.afd.list(this.roomMessagesPath + '/' + roomId + '/OUTPUT', {query: query});
-    }
-    removeRoomMessage(roomId: string, message: IMessage): firebase.Promise<any> {
-        return this.afd.list(this.roomMessagesPath + '/' + roomId).remove(message.$key);
-    }
-    updateRoomMessage(roomId: string, message: IMessage, changes: any): firebase.Promise<any> {
-        return this.afd.list(this.roomMessagesPath + '/' + roomId).update(message.$key, changes);
-    }
-    deleteRoomMessages(roomId: string): firebase.Promise<any> {
-        return this.afd.list(this.roomMessagesPath + '/' + roomId).remove();
-    }
+  private moderatorsPath: string;
+  private roomMessagesPath: string;
+  private roomMetadataPath: string;
+  private roomUsersPath: string;
+  private suspensionsPath: string;
+  private userNamesOnlinePath: string;
+  private usersPath: string;
+
+  private roomsRef: AngularFireList<IRoom>;
+  private usersRef: AngularFireList<IUser>;
+
+  constructor(private afd: AngularFireDatabase, private auth: AuthService) {
+    this.moderatorsPath = '/moderators';
+    this.roomMessagesPath = '/room-messages';
+    this.roomMetadataPath = '/room-metadata';
+    this.roomUsersPath = '/room-users';
+    this.suspensionsPath = '/suspensions';
+    this.userNamesOnlinePath = '/user-names-online';
+    this.usersPath = '/users';
+
+    this.roomsRef = this.afd.list(this.roomMetadataPath);
+    this.usersRef = this.afd.list(this.usersPath);
+  }
+
+  /*
+  get moderators(): AngularFireList<IModerator[]> {
+      return this.afd.list(this.moderatorsPath);
+  }
+
+  get roomMessages(): AngularFireList<IRoomMessages[]> {
+      return this.afd.list(this.roomMessagesPath);
+  }
+
+  get rooms(): AngularFireList<IRoom[]> {
+      return this.afd.list(this.roomMetadataPath);
+  }
+
+  get roomUsers(): AngularFireList<IRoomUsers[]> {
+      return this.afd.list(this.roomUsersPath);
+  }
+
+  get suspensions(): AngularFireObject<ISuspendedUsers> {
+      return this.afd.object(this.suspensionsPath);
+  }
+
+  get userNamesOnline(): AngularFireList<IModerator[]> {
+      return this.afd.list(this.userNamesOnlinePath);
+  }
+
+  get users(): AngularFireList<IUser[]> {
+      return this.afd.list(this.usersPath);
+  }
+  */
+
+  /** USERS **/
+  createUser(user: User): ThenableReference {
+    return this.afd.list(this.usersPath).push(user);
+  }
+
+  getUser(userId: string): Observable<IUser> {
+    const userPath = `${this.usersPath}/${userId}`;
+    return this.afd.object(userPath).snapshotChanges().map(action => {
+      return { $key: action.payload.key, ...action.payload.val() };
+    });
+  }
+
+  removeUser(user: IUser): Promise<any> {
+    return this.afd.list(this.usersPath).remove(user.$key);
+  }
+
+  updateUser(user: IUser): Promise<any> {
+    const path = this.usersPath + '/' + user.$key;
+    console.log('user update path', path);
+    console.log('user update value', user);
+    return this.afd.list(this.usersPath).update(user.$key, user);
+  }
+
+  /** ROOM METADATA **/
+  getRooms(): Observable<IRoom[]> {
+    return this.roomsRef.snapshotChanges().map(changes => {
+      return changes.map(c => ({ $key: c.payload.key, ...c.payload.val() }));
+    });
+  }
+
+  createRoom(room: Room): ThenableReference {
+    room.createdAt = firebase.database.ServerValue.TIMESTAMP;
+    room.createdByUserId = this.auth.id;
+    room.authorizedUsers = {};
+    room.authorizedUsers[this.auth.id] = true;
+
+    return this.roomsRef.push(room);
+  }
+
+  getRoom(roomId: string): Observable<IRoom> {
+    const roomPath = `${this.roomMetadataPath}/${roomId}`;
+    return this.afd.object(roomPath).snapshotChanges().map(action => {
+      return { $key: action.payload.key, ...action.payload.val() };
+    });
+  }
+
+  removeRoom(metadata: IRoom): Promise<any> {
+    return this.afd.list(this.roomMetadataPath).remove(metadata.$key);
+  }
 
-    /** ROOM USERS **/
-    createRoomUsers(roomId: string, user: User): firebase.Promise<any> {
-        return this.afd.list(this.roomUsersPath + '/' + roomId).push(user);
-    }
-    getRoomUsers(roomId: string): FirebaseListObservable<IRoomUsers[]> {
-        return this.afd.list(this.roomUsersPath + '/' + roomId);
-    }
-    removeRoomUser(roomId: string, user: IUser): firebase.Promise<any> {
-        return this.afd.list(this.roomUsersPath + '/' + roomId).remove(user.$key);
-    }
-    updateRoomUser(roomId: string, user: IUser, changes: any): firebase.Promise<any> {
-        return this.afd.list(this.roomUsersPath + '/' + roomId).update(user.$key, changes);
-    }
+  updateRoom(metadata: IRoom, changes: any): Promise<any> {
+    return this.afd.list(this.roomMetadataPath).update(metadata.$key, changes);
+  }
 
+  /** ROOM MESSAGES **/
+  createRoomMessage(roomId: string, message: Message): ThenableReference {
+    message.timestamp = firebase.database.ServerValue.TIMESTAMP;
+    return this.afd.list(`${this.roomMessagesPath}/${roomId}/SOURCE`).push(message);
+  }
 
+  getRoomMessages(roomId: string): AngularFireList<any> {
+    return this.afd.list(`${this.roomMessagesPath}/${roomId}/OUTPUT`);
+  }
 
+  getRoomMessagesByQuery(roomId: string, subject$: BehaviorSubject<string|null>): Observable<IMessage[]> {
+    return subject$.switchMap(subject => {
+      return this.afd.list(`${this.roomMessagesPath}/${roomId}/OUTPUT`,
+        ref => subject ? ref.orderByChild('language').equalTo(subject) : ref)
+        .snapshotChanges()
+        .map(changes => {
+          return changes.map(c => ({ $key: c.payload.key, ...c.payload.val() }));
+        });
+    });
+  }
 
-    // Load the initial metadata for the user's account and set initial state.
-    private loadUserMetadata(onComplete) {
+  removeRoomMessage(roomId: string, message: IMessage): Promise<any> {
+    return this.afd.list(`${this.roomMessagesPath}/${roomId}`).remove(message.$key);
+  }
 
-    }
+  updateRoomMessage(roomId: string, message: IMessage, changes: any): Promise<any> {
+    return this.afd.list(this.roomMessagesPath + '/' + roomId).update(message.$key, changes);
+  }
 
-    // Initialize Firebase listeners and callbacks for the supported bindings.
-    private setupDataEvents() {
+  deleteRoomMessages(roomId: string): Promise<any> {
+    return this.afd.list(this.roomMessagesPath + '/' + roomId).remove();
+  }
 
-    }
+  /** ROOM USERS **/
+  createRoomUser(roomId: string, user: User): ThenableReference {
+    return this.afd.list(this.roomUsersPath + '/' + roomId).push(user);
+  }
 
-    // Append the new callback to our list of event handlers.
-    private addEventCallback(eventId, callback) {
+  getRoomUsers(roomId: string): Observable<IRoomUsers[]> {
+    return this.afd.list(`${this.roomUsersPath}/${roomId}`)
+      .snapshotChanges().map(changes => {
+        return changes.map(c => ({ $key: c.payload.key, ...c.payload.val() }));
+      });
+  }
 
-    }
+  removeRoomUser(roomId: string, user: IUser): Promise<any> {
+    return this.afd.list(this.roomUsersPath + '/' + roomId).remove(user.$key);
+  }
 
-    // Retrieve the list of event handlers for a given event id.
-    private getEventCallbacks(eventId) {
+  updateRoomUser(roomId: string, user: IUser, changes: any): Promise<any> {
+    return this.afd.list(this.roomUsersPath + '/' + roomId).update(user.$key, changes);
+  }
 
-    }
 
-    // Invoke each of the event handlers for a given event id with specified data.
-    private invokeEventCallbacks(eventId) {
+  // Load the initial metadata for the user's account and set initial state.
+  private loadUserMetadata(onComplete) {
 
-    }
+  }
 
-    // Keep track of on-disconnect events so they can be requeued if we disconnect the reconnect.
-    private queuePresenceOperation(ref, onlineValue, offlineValue) {
+  // Initialize Firebase listeners and callbacks for the supported bindings.
+  private setupDataEvents() {
 
-    }
+  }
 
-    // Remove an on-disconnect event from firing upon future disconnect and reconnect.
-    private removePresenceOperation(ref, value) {
+  // Append the new callback to our list of event handlers.
+  private addEventCallback(eventId, callback) {
 
-    }
+  }
 
-    // Event to monitor current user state.
-    private onUpdateUser(snapshot) {
+  // Retrieve the list of event handlers for a given event id.
+  private getEventCallbacks(eventId) {
 
-    }
+  }
 
-    // Event to monitor current authService + user state.
-    private onAuthRequired() {
+  // Invoke each of the event handlers for a given event id with specified data.
+  private invokeEventCallbacks(eventId) {
 
-    }
+  }
 
-    // Events to monitor room entry / exit and messages additional / removal.
-    private onEnterRoom(room) {
+  // Keep track of on-disconnect events so they can be requeued if we disconnect the reconnect.
+  private queuePresenceOperation(ref, onlineValue, offlineValue) {
 
-    }
-    private onNewMessage(roomId, snapshot) {
+  }
 
-    }
-    private onRemoveMessage(roomId, snapshot) {
+  // Remove an on-disconnect event from firing upon future disconnect and reconnect.
+  private removePresenceOperation(ref, value) {
 
-    }
-    private onLeaveRoom(roomId) {
+  }
 
-    }
+  // Event to monitor current user state.
+  private onUpdateUser(snapshot) {
 
-    // Event to listen for notifications from administrators and moderators.
-    private onNotification(snapshot) {
+  }
 
-    }
+  // Event to monitor current authService + user state.
+  private onAuthRequired() {
 
-    // Events to monitor chat invitations and invitation replies.
-    private onFirechatInvite(snapshot) {
+  }
 
-    }
-    private onFirechatInviteResponse(snapshot) {
+  // Events to monitor room entry / exit and messages additional / removal.
+  private onEnterRoom(room) {
 
-    }
+  }
 
+  private onNewMessage(roomId, snapshot) {
 
-    public setUser(userId, userName, callback) {
+  }
 
-    }
+  private onRemoveMessage(roomId, snapshot) {
 
-    // Resumes the previous session by automatically entering rooms.
-    public resumeSession() {
+  }
 
-    }
+  private onLeaveRoom(roomId) {
 
-    // Callback registration. Supports each of the following events:
-    public on(eventType, cb) {
+  }
 
-    }
+  // Event to listen for notifications from administrators and moderators.
+  private onNotification(snapshot) {
 
-    // Create and automatically enter a new chat room.
-    // public createRoom(roomName, roomType, callback) {
+  }
 
-    // }
+  // Events to monitor chat invitations and invitation replies.
+  private onFirechatInvite(snapshot) {
 
-    // Enter a chat room.
-    public enterRoom(roomId) {
+  }
 
-    }
+  private onFirechatInviteResponse(snapshot) {
 
-    // Leave a chat room.
-    public leaveRoom(roomId) {
+  }
 
-    }
 
-    public sendMessage(roomId, messageContent, messageType, cb) {
+  public setUser(userId, userName, callback) {
 
-    }
+  }
 
-    public deleteMessage(roomId, messageId, cb) {
+  // Resumes the previous session by automatically entering rooms.
+  public resumeSession() {
 
-    }
+  }
 
-    // Mute or unmute a given user by id. This list will be stored internally and
-    // all messages from the muted clients will be filtered client-side after
-    // receipt of each new message.
-    public toggleUserMute(userId, cb) {
+  // Callback registration. Supports each of the following events:
+  public on(eventType, cb) {
 
-    }
+  }
 
-    // Send a moderator notification to a specific user.
-    public sendSuperuserNotification(userId, notificationType, data, cb) {
+  // Create and automatically enter a new chat room.
+  // public createRoom(roomName, roomType, callback) {
 
-    }
+  // }
 
-    // Warn a user for violating the terms of service or being abusive.
-    public warnUser(userId) {
+  // Enter a chat room.
+  public enterRoom(roomId) {
 
-    }
+  }
 
-    // Suspend a user by putting the user into read-only mode for a period.
-    public suspendUser(userId, timeLengthSeconds, cb) {
+  // Leave a chat room.
+  public leaveRoom(roomId) {
 
-    }
+  }
 
-    // Invite a user to a specific chat room.
-    public inviteUser(userId, roomId) {
+  public sendMessage(roomId, messageContent, messageType, cb) {
 
-    }
+  }
 
-    public acceptInvite(inviteId, cb) {
+  public deleteMessage(roomId, messageId, cb) {
 
-    }
+  }
 
-    public declineInvite(inviteId, cb) {
+  // Mute or unmute a given user by id. This list will be stored internally and
+  // all messages from the muted clients will be filtered client-side after
+  // receipt of each new message.
+  public toggleUserMute(userId, cb) {
 
-    }
+  }
 
-    public getRoomList(cb) {
+  // Send a moderator notification to a specific user.
+  public sendSuperuserNotification(userId, notificationType, data, cb) {
 
-    }
+  }
 
-    public getUsersByRoom() {
+  // Warn a user for violating the terms of service or being abusive.
+  public warnUser(userId) {
 
-    }
+  }
 
-    public getUsersByPrefix(prefix, startAt, endAt, limit, cb) {
+  // Suspend a user by putting the user into read-only mode for a period.
+  public suspendUser(userId, timeLengthSeconds, cb) {
 
-    }
+  }
 
-    // Miscellaneous helper methods.
-    public getRoom(roomId, callback) {
+  // Invite a user to a specific chat room.
+  public inviteUser(userId, roomId) {
 
-    }
+  }
 
-    public userIsModerator() {
+  public acceptInvite(inviteId, cb) {
 
-    }
+  }
 
-    public warn(msg) {
+  public declineInvite(inviteId, cb) {
 
-    }
+  }
+
+  public getRoomList(cb) {
+
+  }
+
+  public getUsersByRoom() {
+
+  }
+
+  public getUsersByPrefix(prefix, startAt, endAt, limit, cb) {
+
+  }
+
+  public userIsModerator() {
+
+  }
+
+  public warn(msg) {
+
+  }
 }

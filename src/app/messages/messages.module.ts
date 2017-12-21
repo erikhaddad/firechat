@@ -4,7 +4,7 @@ import {FormsModule} from '@angular/forms';
 import {Routes, RouterModule} from '@angular/router';
 import {FlexLayoutModule} from '@angular/flex-layout';
 
-import {AuthGuard} from '../auth/auth.module';
+import {AuthGuard} from '../auth/auth.guard';
 
 import {AngularFireModule} from 'angularfire2';
 import {AngularFireDatabaseModule} from 'angularfire2/database';

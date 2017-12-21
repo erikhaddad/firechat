@@ -5,8 +5,8 @@
          [ngClass]="{'me': msg.userId == currentUser.id, 'them': msg.userId != currentUser.id}">
 
       <div class="circle-wrapper animated bounceIn"
-           [mdTooltip]="msg.name + ' @ ' + msg.timestamp"
-           mdTooltipPosition="below"
+           [matTooltip]="msg.name + ' @ ' + msg.timestamp"
+           matTooltipPosition="below"
            [@bounceInOut]="'in'"
            (click)="details.open()"
            [style.backgroundImage]="'url(' + msg.avatar + ')'"></div>

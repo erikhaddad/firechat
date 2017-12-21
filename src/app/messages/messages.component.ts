@@ -1,5 +1,5 @@
 import {Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewChecked} from '@angular/core';
-import {FirebaseListObservable, FirebaseObjectObservable} from 'angularfire2/database';
+import {AngularFireList, AngularFireObject} from 'angularfire2/database';
 import {
     IModerator, IRoomMessages, IMessage, IRoom, IUser, Message, IRoomUsers,
     ISuspendedUsers, Room, RoomMessages, Themes, Languages
@@ -18,6 +18,8 @@ import {
 import {ActivatedRoute, Router} from '@angular/router';
 import {Subject} from 'rxjs/Subject';
 import * as _ from 'lodash';
+import {BehaviorSubject} from 'rxjs/BehaviorSubject';
+import {Observable} from 'rxjs/Observable';
 
 @Component({
     selector: 'app-messages',
@@ -76,15 +78,15 @@ export class MessagesComponent implements OnInit, AfterViewChecked, OnDestroy {
     // Param and object
     roomId: string;
     paramSubscription: any;
-    languageSubject: Subject<any>;
+    languageSubject: BehaviorSubject<any>;
     languageQuery: object;
 
     newMessage: Message;
 
-    currentUser$: FirebaseObjectObservable<IUser>;
+    currentUser$: Observable<IUser>;
     currentUser: IUser;
 
-    roomMessages$: FirebaseListObservable<IMessage[]>;
+    roomMessages$: Observable<IMessage[]>;
     roomMessages: IMessage[];
 
     constructor (private dataService: DataService,
@@ -92,7 +94,7 @@ export class MessagesComponent implements OnInit, AfterViewChecked, OnDestroy {
                  private router: Router,
                  private route: ActivatedRoute) {
 
-        this.languageSubject = new Subject();
+        this.languageSubject = new BehaviorSubject(null);
         this.roomMessages = [];
         this.newMessage = new Message();
 
@@ -115,14 +117,14 @@ export class MessagesComponent implements OnInit, AfterViewChecked, OnDestroy {
             this.roomId = params['roomId'];
 
             if (typeof this.roomId !== 'undefined') {
-                this.languageSubject = new Subject();
+                this.languageSubject = new BehaviorSubject(null);
                 this.languageQuery =  {
                     orderByChild: 'language',
                     equalTo: this.languageSubject
                 };
 
                 // this.roomMessages$ = this.dataService.getRoomMessages(this.roomId);
-                this.roomMessages$ = this.dataService.getRoomMessagesByQuery(this.roomId, this.languageQuery);
+                this.roomMessages$ = this.dataService.getRoomMessagesByQuery(this.roomId, this.languageSubject);
 
                 this.roomMessages$.subscribe(messages => {
                     if (messages) {

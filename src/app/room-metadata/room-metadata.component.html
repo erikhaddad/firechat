@@ -1,29 +1,29 @@
-<md-dialog-content>
-  <md-input-container class="input-full-width">
+<mat-dialog-content>
+  <mat-input-container class="input-full-width">
     <input mdInput #name [(ngModel)]="newRoom.name" placeholder="Name">
-  </md-input-container>
+  </mat-input-container>
 
-  <md-input-container class="input-full-width">
+  <mat-input-container class="input-full-width">
     <textarea mdInput #description [(ngModel)]="newRoom.description" placeholder="Description"></textarea>
-  </md-input-container>
+  </mat-input-container>
 
   <!--
-  <md-slide-toggle color="accent" [checked]="newRoom.type == 'public'">
+  <mat-slide-toggle color="accent" [checked]="newRoom.type == 'public'">
     Public
-  </md-slide-toggle>
+  </mat-slide-toggle>
   -->
-</md-dialog-content>
+</mat-dialog-content>
 
-<md-dialog-actions>
+<mat-dialog-actions>
   <!--
-  <button md-icon-button>
-    <md-icon>delete</md-icon>
+  <button mat-icon-button>
+    <mat-icon>delete</mat-icon>
   </button>
   -->
 
   <span fxFlex></span>
 
-  <button md-button (click)="cancel($event)">Cancel</button>
-  <button md-raised-button color="primary"
+  <button mat-button (click)="cancel($event)">Cancel</button>
+  <button mat-raised-button color="primary"
           (click)="save($event)">Save</button>
-</md-dialog-actions>
+</mat-dialog-actions>

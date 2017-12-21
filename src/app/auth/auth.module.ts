@@ -15,20 +15,23 @@ const routes: Routes = [
 */
 
 @NgModule({
-    declarations: [],
-    imports: [
-        CommonModule,
-        MaterialModule
-    ],
-    providers: [
-        AuthGuard,
-        AuthService,
-        UnauthGuard
-    ]
+  declarations: [],
+  imports: [
+    CommonModule,
+    MaterialModule
+  ],
+  providers: [
+    AuthGuard,
+    AuthService,
+    UnauthGuard
+  ]
 })
 
 export class AuthModule {}
 
+/*
 export {AuthGuard};
 export {AuthService};
 export {UnauthGuard};
+*/
+
