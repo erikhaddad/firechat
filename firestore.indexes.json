@@ -1,0 +1,30 @@
+{
+  "indexes": [
+    {
+      "collectionId": "orders",
+      "fields": [
+        {
+          "fieldPath": "createdAt",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "progress",
+          "mode": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionId": "patrons",
+      "fields": [
+        {
+          "fieldPath": "patronId",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "mode": "ASCENDING"
+        }
+      ]
+    }
+  ]
+}

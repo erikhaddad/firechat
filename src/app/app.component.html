@@ -1,8 +1,8 @@
 <div class="app-toolbar-container"
      [class.m2app-dark]="currentUser?.preferences && currentUser?.preferences.theme == THEMES.Dark">
   <mat-toolbar class="app-toolbar mat-elevation-z6" color="primary">
-    <button class="app-toolbar-menu" (click)="community.toggle()" *ngIf="currentUser">
-      <i class="material-icons app-toolbar-menu-icon">menu</i>
+    <button mat-icon-button (click)="community.toggle()" *ngIf="currentUser">
+      <mat-icon>menu</mat-icon>
     </button>
 
     <button mat-icon-button *ngIf="!currentUser">
@@ -80,20 +80,25 @@
 
 <mat-sidenav-container class="app-sidenav-container"
                       [class.m2app-dark]="currentUser && currentUser.preferences && currentUser.preferences.theme == THEMES.Dark">
-  <mat-sidenav #community id="sidenav-rooms" class="app-sidenav" mode="side" [opened]="currentUser" fxLayout="column">
-    <mat-nav-list fxFlex *ngIf="currentUser">
-      <h3 mat-subheader>Rooms</h3>
-      <a mat-list-item [routerLink]="['/messages/room', room.$key]"
-         *ngFor="let room of rooms"
-         [class.active]="room.$key == roomId">
-        <h3 mat-line>{{ room.name }}</h3>
-        <p mat-line>
-          <span>{{ room.description }}</span>
-        </p>
-      </a>
-    </mat-nav-list>
+  <mat-sidenav #community id="sidenav-rooms"
+               fxLayout="column"
+               class="app-sidenav" mode="side" [opened]="currentUser">
+    <div class="nav-list-container" fxFlex>
+      <mat-nav-list *ngIf="currentUser">
+        <h3 mat-subheader>Rooms</h3>
+        <a mat-list-item [routerLink]="['/messages/room', room.$key]"
+           *ngFor="let room of rooms"
+           [class.active]="room.$key == roomId">
+          <h3 mat-line>{{ room.name }}</h3>
+          <p mat-line>
+            <span>{{ room.description }}</span>
+          </p>
+        </a>
+      </mat-nav-list>
+    </div>
 
     <button mat-raised-button
+            class="new-room-button"
             *ngIf="authService.authenticated"
             (click)="createNewRoom($event)">+ New Room
     </button>

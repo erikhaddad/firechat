@@ -8,6 +8,10 @@
       {
         "source": "**",
         "destination": "/index.html"
+      },
+      {
+        "source": "/worker-basic.min.js",
+        "destination": "/ngsw-worker.js"
       }
     ]
   }

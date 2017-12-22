@@ -11,12 +11,15 @@ $nav: 100;
 $navHeight: 64px;
 $trans: 0.3s ease;
 
-.inner {
-  overflow: scroll;
+.messages-container {
+  position: relative;
   height: 100%;
-  padding-bottom: 64px;
+}
+
+.inner {
+  overflow: auto;
   box-sizing: border-box;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Open Sans', sans-serif;
 
   -ms-overflow-style: none;
   overflow: -moz-scrollbars-none;
@@ -27,8 +30,10 @@ $trans: 0.3s ease;
   }
 
   .content {
-    padding: ($navHeight - ($navHeight/1.5)) / 2;
+    padding: 12px 18px 0;
     position: relative;
+    margin: 0;
+    box-sizing: border-box;
 
     :first-child {
       margin-top: 0;
@@ -37,27 +42,25 @@ $trans: 0.3s ease;
 }
 
 .bottom {
+  /*
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
-  height: $navHeight;
+  */
+  position: relative;
+  height: 64px;
   background: #CCCCCC;
 
   /* box-shadow: 0px -3px 3px 0px rgba(50, 50, 50, 0.1); */
 
   .input {
-    height: $navHeight;
+    height: 64px;
     background: #CCCCCC;
     border: none;
-    width: calc(100% - #{$navHeight});
-    position: absolute;
-    left: 0;
-    top: 0;
-    padding: 0 5%;
     resize: none;
     overflow: scroll;
-    padding-top: ($navHeight/2) - 8;
+    padding: 24px 12px;
     font-weight: 300;
     font-size: 16px;
 
@@ -74,28 +77,9 @@ $trans: 0.3s ease;
     }
   }
 
-  .send {
-    position: fixed;
-    height: $navHeight/1.5;
-    width: $navHeight/1.5;
-    border-radius: 50%;
-    border: 0;
-    background: $red;
-    color: $white;
-
-    bottom: ($navHeight - ($navHeight/1.5)) / 2;
-    right: ($navHeight - ($navHeight/1.5)) / 2;
-
-    &:before {
-      content: '';
-      background: url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/104946/ic_send_white_48dp.png) no-repeat center center;
-      background-size: $navHeight/2.5;
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-    }
+  .upload, .send {
+    color: rgba(255, 255, 255, 1);
+    margin: 0 12px;
 
     &:focus {
       outline: none;
@@ -108,6 +92,10 @@ $trans: 0.3s ease;
     &[disabled] {
       background: #AAA;
     }
+  }
+
+  .send {
+    background: $red;
   }
 
   &.m2app-dark {
@@ -124,9 +112,9 @@ $trans: 0.3s ease;
   overflow: hidden;
 
   width: 100%;
-  margin: (($navHeight - ($navHeight/1.5)) / 2) 0;
-  padding: (($navHeight - ($navHeight/1.5)) / 2) 0;
-  font-family: 'Roboto', sans-serif;
+  margin: 0;
+  padding: 12px 0;
+  font-family: 'Open Sans', sans-serif;
 
   .circle-wrapper {
     height: $navHeight/1.5;
@@ -141,7 +129,7 @@ $trans: 0.3s ease;
     min-height: $navHeight/1.5;
     width: 60%;
     margin: 0 ($navHeight - ($navHeight/1.5)) / 2;
-    box-shadow: 0px 1px 0px 0px rgba(50, 50, 50, 0.3);
+    box-shadow: 0 1px 0 0 rgba(50, 50, 50, 0.3);
     border-radius: 2px;
     font-weight: 300;
     position: relative;

@@ -29,8 +29,7 @@ $trans: 0.3s ease;
     text-decoration: none;
     outline: none;
 
-    .app-toolbar-menu-icon {
-      padding: 0 14px 0 14px;
+    .mat-icon {
       color: rgba(255, 255, 255, .54);
 
       transition: .2s all linear;
@@ -42,7 +41,7 @@ $trans: 0.3s ease;
   }
 
   .app-toolbar-title {
-    font-family: 'Product Sans', sans-serif;
+    font-family: 'Open Sans', sans-serif;
     color: rgba(255,255,255,1)
   }
 
@@ -79,6 +78,7 @@ $trans: 0.3s ease;
         }
 
         .username {
+          font-family: 'Open Sans', sans-serif;
           display: inline-block;
           line-height: 38px;
           vertical-align: top;
@@ -94,7 +94,7 @@ $trans: 0.3s ease;
 }
 
 .app-sidenav-container {
-  height: calc(100% - 64px);
+  height: calc(100vh - 64px);
 
   &.m2app-dark {
     background: #333333;
@@ -127,10 +127,16 @@ $trans: 0.3s ease;
     }
   }
 
+  .nav-list-container {
+    overflow: scroll;
+  }
+  .new-room-button {
+    height: 64px;
+  }
+
   #sidenav-rooms {
     font-family: 'Roboto', sans-serif;
     box-sizing: content-box;
-    height: 100%;
     background: #ffffff;
     color: rgba(0,0,0,.87);
 
@@ -143,6 +149,7 @@ $trans: 0.3s ease;
       background: rgba(255,255,255,.04);
     }
   }
+
   #sidenav-details {
     min-width: 256px;
 
@@ -271,6 +278,6 @@ $trans: 0.3s ease;
 }
 @media (max-width: 600px) {
   .app-sidenav-container {
-    height: calc(100% - 56px);
+    height: calc(100vh - 56px);
   }
 }

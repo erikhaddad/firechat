@@ -1,28 +1,38 @@
-<div class="inner" id="inner">
-  <div id="content" class="content">
-    <div class="message-wrapper"
-         *ngFor="let msg of roomMessages"
-         [ngClass]="{'me': msg.userId == currentUser.id, 'them': msg.userId != currentUser.id}">
+<div class="messages-container" fxLayout="column">
+  <div id="inner" class="inner" fxFlex>
+    <div class="content">
+      <div class="message-wrapper"
+           *ngFor="let msg of roomMessages"
+           [ngClass]="{'me': msg.userId == currentUser.id, 'them': msg.userId != currentUser.id}">
 
-      <div class="circle-wrapper animated bounceIn"
-           [matTooltip]="msg.name + ' @ ' + msg.timestamp"
-           matTooltipPosition="below"
-           [@bounceInOut]="'in'"
-           (click)="details.open()"
-           [style.backgroundImage]="'url(' + msg.avatar + ')'"></div>
+        <div class="circle-wrapper animated bounceIn"
+             [matTooltip]="msg.name + ' @ ' + msg.timestamp"
+             matTooltipPosition="below"
+             [@bounceInOut]="'in'"
+             (click)="details.open()"
+             [style.backgroundImage]="'url(' + msg.avatar + ')'"></div>
 
-      <div class="text-wrapper animated fadeIn" [@flyInOut]="'in'">{{ msg.message }}</div>
+        <div class="text-wrapper animated fadeIn" [@flyInOut]="'in'">{{ msg.message }}</div>
+      </div>
     </div>
   </div>
-</div>
 
-<div class="bottom" id="bottom" *ngIf="roomId"
-     [class.m2app-dark]="currentUser && currentUser.preferences && currentUser.preferences.theme == THEMES.Dark">
-  <textarea class="input" id="message-text-input"
-            [(ngModel)]="newMessage.message"
-            (keyup.enter)="sendRoomMessage($event)"></textarea>
+  <div class="bottom" id="bottom" *ngIf="roomId"
+       fxLayout="row" fxLayoutAlign="start center"
+       [class.m2app-dark]="currentUser && currentUser.preferences && currentUser.preferences.theme == THEMES.Dark">
+    <button mat-icon-button class="upload">
+      <mat-icon>image</mat-icon>
+    </button>
 
-  <button class="send" id="send"
-          [disabled]="!newMessage.message"
-          (click)="sendRoomMessage($event)"></button>
+    <textarea class="input" id="message-text-input"
+              fxFlex
+              [(ngModel)]="newMessage.message"
+              (keyup.enter)="sendRoomMessage($event)"></textarea>
+
+    <button mat-icon-button class="send"
+            [disabled]="!newMessage.message"
+            (click)="sendRoomMessage($event)">
+      <mat-icon>send</mat-icon>
+    </button>
+  </div>
 </div>
