@@ -5,10 +5,10 @@ const admin = require('firebase-admin');
 admin.initializeApp(functions.config().firebase);
 
 let languagesEnum = {
-    ENGLISH: 0,
-    SPANISH: 1,
-    PORTUGUESE: 2,
-    GERMAN: 3
+    ENGLISH: 1,
+    SPANISH: 2,
+    PORTUGUESE: 3,
+    GERMAN: 4
 };
 
 let themesEnum = {

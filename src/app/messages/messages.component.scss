@@ -1,16 +1,3 @@
-$blue: #2196F3;
-$dingy: #495B6A;
-$white: #ffffff;
-$purple: #673AB7;
-$yellow: #FFEB3B;
-$red: #F44336;
-$orange: #FF5722;
-$black: #333333;
-
-$nav: 100;
-$navHeight: 64px;
-$trans: 0.3s ease;
-
 .messages-container {
   position: relative;
   height: 100%;
@@ -95,7 +82,7 @@ $trans: 0.3s ease;
   }
 
   .send {
-    background: $red;
+    background: #F44336;
   }
 
   &.m2app-dark {
@@ -117,18 +104,18 @@ $trans: 0.3s ease;
   font-family: 'Open Sans', sans-serif;
 
   .circle-wrapper {
-    height: $navHeight/1.5;
-    width: $navHeight/1.5;
+    height: 42px;
+    width: 42px;
     border-radius: 50%;
     cursor: pointer;
     background-size: cover;
   }
 
   .text-wrapper {
-    padding: ($navHeight - ($navHeight/1.5)) / 2;
-    min-height: $navHeight/1.5;
+    padding: 12px;
+    min-height: 42px;
     width: 60%;
-    margin: 0 ($navHeight - ($navHeight/1.5)) / 2;
+    margin: 0 12px;
     box-shadow: 0 1px 0 0 rgba(50, 50, 50, 0.3);
     border-radius: 2px;
     font-weight: 300;
@@ -146,15 +133,15 @@ $trans: 0.3s ease;
 
   &.them {
     .circle-wrapper, .text-wrapper {
-      background-color: $red;
+      background-color: #F44336;
       float: left;
-      color: $white;
+      color: #ffffff;
     }
 
     .text-wrapper {
       &:before {
         border-width: 0 10px 10px 0;
-        border-color: transparent $red transparent transparent;
+        border-color: transparent #F44336 transparent transparent;
         position: absolute;
         top: 0;
         left: -9px;
@@ -165,9 +152,9 @@ $trans: 0.3s ease;
   &.me {
     .circle-wrapper,
     .text-wrapper {
-      background-color: $orange;
+      background-color: #FF5722;
       float: right;
-      color: $black;
+      color: #333333;
     }
 
     .circle-wrapper {
@@ -175,11 +162,11 @@ $trans: 0.3s ease;
     }
 
     .text-wrapper {
-      background: $white;
+      background: #ffffff;
 
       &:before {
         border-width: 10px 10px 0 0;
-        border-color: $white transparent transparent transparent;
+        border-color: #ffffff transparent transparent transparent;
         position: absolute;
         top: 0;
         right: -9px;

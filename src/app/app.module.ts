@@ -5,7 +5,7 @@ import {HttpModule} from '@angular/http';
 
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {FlexLayoutModule} from '@angular/flex-layout';
-import {MaterialModule} from './material/material.module';
+import {MaterialModule} from './common/material.module';
 
 import {AppComponent} from './app.component';
 import {AuthModule} from './auth/auth.module';
@@ -15,6 +15,7 @@ import {DataService} from './common/data.service';
 import {RouterModule, Routes} from '@angular/router';
 import {RoomMetadataComponent} from './room-metadata/room-metadata.component';
 import {HttpClientModule} from '@angular/common/http';
+import {AppStateService} from './common/app-state.service';
 
 const routes: Routes = [
     // { path: '', redirectTo: '/messages', pathMatch: 'full'}
@@ -44,7 +45,7 @@ const routes: Routes = [
         MessagesModule
     ],
     entryComponents: [RoomMetadataComponent],
-    providers: [DataService],
+    providers: [AppStateService, DataService],
     bootstrap: [AppComponent]
 })
 export class AppModule {}

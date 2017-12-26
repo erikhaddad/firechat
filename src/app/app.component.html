@@ -86,14 +86,26 @@
     <div class="nav-list-container" fxFlex>
       <mat-nav-list *ngIf="currentUser">
         <h3 mat-subheader>Rooms</h3>
-        <a mat-list-item [routerLink]="['/messages/room', room.$key]"
-           *ngFor="let room of rooms"
-           [class.active]="room.$key == roomId">
-          <h3 mat-line>{{ room.name }}</h3>
-          <p mat-line>
-            <span>{{ room.description }}</span>
-          </p>
-        </a>
+
+        <div *ngIf="currentRoom">
+          <a mat-list-item class="active" [routerLink]="['/messages/room', roomId]">
+            <h3 mat-line>{{ currentRoom.name }}</h3>
+            <p mat-line>
+              <span>{{ currentRoom.description }}</span>
+            </p>
+          </a>
+        </div>
+
+        <div
+          *ngFor="let room of rooms">
+          <a mat-list-item [routerLink]="['/messages/room', room.$key]"
+             *ngIf="room.$key != roomId">
+            <h3 mat-line>{{ room.name }}</h3>
+            <p mat-line>
+              <span>{{ room.description }}</span>
+            </p>
+          </a>
+        </div>
       </mat-nav-list>
     </div>
 

@@ -6,7 +6,7 @@ import {AngularFireDatabase, AngularFireList, AngularFireObject} from 'angularfi
 import {
   IModerator, IRoomMessages, IMessage, IRoom, IUser, Message, IRoomUsers,
   ISuspendedUsers, ILanguage, Languages, Themes
-} from './common/data-model';
+} from './common/data.model';
 import {DataService} from './common/data.service';
 import {DomSanitizer} from '@angular/platform-browser';
 import {MatDialog, MatDialogConfig, MatDialogRef, MatIconRegistry, MatSnackBar} from '@angular/material';
@@ -15,6 +15,7 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {RoomMetadataComponent} from './room-metadata/room-metadata.component';
 
 import {Observable} from 'rxjs/Observable';
+import {AppStateService} from './common/app-state.service';
 
 @Component({
   selector: 'app-root',
@@ -36,6 +37,9 @@ export class AppComponent implements OnInit, OnDestroy {
 
   rooms$: Observable<IRoom[]>;
   rooms: IRoom[];
+
+  currentRoom$: Observable<IRoom>;
+  currentRoom: IRoom;
 
   roomUsers$: Observable<IRoomUsers[]>;
   roomUsers: IRoomUsers[];
@@ -68,6 +72,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   constructor(public authService: AuthService,
               private dataService: DataService,
+              private appState: AppStateService,
               private route: ActivatedRoute,
               private router: Router,
               public dialog: MatDialog,
@@ -114,11 +119,17 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.paramSubscription = this.route.params.subscribe(params => {
-      this.roomId = params['roomId'];
+    this.appState.params.subscribe(param => {
+      this.roomId = param;
 
       if (typeof this.roomId !== 'undefined') {
-        console.log('found a room id in app component!', this.roomId);
+        console.log('found a roomId id in app component!', this.roomId);
+
+        this.currentRoom$ = this.dataService.getRoom(this.roomId);
+        this.currentRoom$.subscribe(room => {
+          this.currentRoom = room;
+          console.log('got currentRoom', this.currentRoom);
+        });
 
         this.roomUsers$ = this.dataService.getRoomUsers(this.roomId);
         this.roomUsers$.subscribe(users => {
@@ -158,7 +169,8 @@ export class AppComponent implements OnInit, OnDestroy {
       promise
         .then(
           result => {
-            this.router.navigate(['/messages/room', result.$key]);
+            console.log('new room', result);
+            this.router.navigate(['/messages/room', result.key]);
           },
           err => console.error(err, 'You do not have access!')
         );

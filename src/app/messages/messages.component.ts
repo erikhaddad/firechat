@@ -3,7 +3,7 @@ import {AngularFireList, AngularFireObject} from 'angularfire2/database';
 import {
   IModerator, IRoomMessages, IMessage, IRoom, IUser, Message, IRoomUsers,
   ISuspendedUsers, Room, RoomMessages, Themes, Languages
-} from '../common/data-model';
+} from '../common/data.model';
 import {DataService} from '../common/data.service';
 import {AuthService} from '../auth/auth.service';
 import {
@@ -20,6 +20,7 @@ import {Subject} from 'rxjs/Subject';
 import * as _ from 'lodash';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {Observable} from 'rxjs/Observable';
+import {AppStateService} from '../common/app-state.service';
 
 @Component({
   selector: 'app-messages',
@@ -43,13 +44,13 @@ import {Observable} from 'rxjs/Observable';
       ])
     ]),
     trigger('flyInOut', [
-      state('in', style({width: '60%', transform: 'translateX(0)', opacity: 1})),
+      state('in', style({width: '48%', transform: 'translateX(0)', opacity: 1})),
       transition('void => *', [
         style({width: 10, transform: 'translateX(50px)', opacity: 0}),
         group([
           animate('0.3s 0.1s ease', style({
             transform: 'translateX(0)',
-            width: '60%'
+            width: '48%'
           })),
           animate('0.3s ease', style({
             opacity: 1
@@ -91,6 +92,7 @@ export class MessagesComponent implements OnInit, AfterViewChecked, OnDestroy {
 
   constructor(private dataService: DataService,
               public authService: AuthService,
+              private appState: AppStateService,
               private router: Router,
               private route: ActivatedRoute) {
 
@@ -103,7 +105,8 @@ export class MessagesComponent implements OnInit, AfterViewChecked, OnDestroy {
       this.currentUser$.subscribe(user => {
         this.currentUser = user;
 
-        if (this.currentUser.preferences.language) {
+        if (typeof this.currentUser.preferences.language !== 'undefined') {
+          console.log('filtering by language type id', this.currentUser.preferences.language);
           this.filterByLanguage(this.currentUser.preferences.language);
         } else {
           this.filterByLanguage(Languages.English);
@@ -114,6 +117,8 @@ export class MessagesComponent implements OnInit, AfterViewChecked, OnDestroy {
 
   ngOnInit() {
     this.paramSubscription = this.route.params.subscribe(params => {
+      this.appState.setParams(params['roomId']);
+
       this.roomId = params['roomId'];
 
       if (typeof this.roomId !== 'undefined') {
@@ -127,6 +132,8 @@ export class MessagesComponent implements OnInit, AfterViewChecked, OnDestroy {
         this.roomMessages$ = this.dataService.getRoomMessagesByQuery(this.roomId, this.languageSubject);
 
         this.roomMessages$.subscribe(messages => {
+          console.log('messages', messages);
+
           if (messages) {
             if (this.currentUser.preferences.moderate) {
               this.roomMessages = _.filter(messages, {moderated: true});
@@ -137,9 +144,14 @@ export class MessagesComponent implements OnInit, AfterViewChecked, OnDestroy {
           } else {
             this.roomMessages = [];
           }
+
+          console.log('room messages', this.roomMessages);
         });
 
-        if (this.currentUser && this.currentUser.preferences) {
+        console.log('currentUser', this.currentUser);
+
+        if (this.currentUser && typeof this.currentUser.preferences !== 'undefined') {
+          console.log('filtering by language type id', this.currentUser.preferences.language);
           this.filterByLanguage(this.currentUser.preferences.language);
         }
       } else {
@@ -164,6 +176,9 @@ export class MessagesComponent implements OnInit, AfterViewChecked, OnDestroy {
   }
 
   sendRoomMessage($event) {
+    event.preventDefault();
+    event.stopPropagation();
+
     if (this.newMessage.message !== 'undefined') {
       this.newMessage.message = this.newMessage.message.trim();
       this.newMessage.userId = this.currentUser.id;
@@ -177,6 +192,7 @@ export class MessagesComponent implements OnInit, AfterViewChecked, OnDestroy {
         .then(
           result => {
             console.log('create room message result', result);
+            this.scrollToBottom();
           },
           err => console.error(err, 'You do not have access!')
         );
@@ -185,7 +201,7 @@ export class MessagesComponent implements OnInit, AfterViewChecked, OnDestroy {
     }
   }
 
-  scrollToBottom(): void {
+  scrollToBottom() {
     try {
       document.getElementById('inner').scrollTop = document.getElementById('inner').scrollHeight;
     } catch (err) {

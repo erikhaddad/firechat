@@ -6,10 +6,10 @@ const Translate = require('@google-cloud/translate');
 const translate = Translate({keyFilename: "service-account-credentials.json"});
 
 let languagesEnum = {
-    ENGLISH: 0,
-    SPANISH: 1,
-    PORTUGUESE: 2,
-    GERMAN: 3
+    ENGLISH: 1,
+    SPANISH: 2,
+    PORTUGUESE: 3,
+    GERMAN: 4
 };
 
 // sample: ["en", "es", "pt", "de", "ja", "hi", "nl"]
@@ -48,7 +48,7 @@ exports.translator = functions.database
     .onWrite((event) => {
         const message = event.data.val();
         let text = message.message ? message.message : message;
-        let languageOriginal = languages[message.language];
+        let languageOriginal = languages.find(element => element.id === message.language);
 
         // all supported languages: https://cloud.google.com/translate/docs/languages
         let from = languageOriginal.abbreviation ? getLanguageWithoutLocale(languageOriginal.abbreviation) : "en";
@@ -57,9 +57,9 @@ exports.translator = functions.database
             let to = language.abbreviation;
 
             console.log(`translating from '${from}' to '${to}', text '${text}'`);
-            
+
             // call the Google Cloud Platform Translate API
-            if (from == to) {
+            if (from === to) {
                 return event.data.adminRef.root
                     .child("room-messages")
                     .child(event.params.roomId)

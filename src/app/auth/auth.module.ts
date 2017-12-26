@@ -1,7 +1,7 @@
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {Routes, RouterModule} from '@angular/router';
-import {MaterialModule} from '../material/material.module';
+import {MaterialModule} from '../common/material.module';
 
 import {SignInComponent} from '../sign-in/sign-in.component';
 import {AuthGuard} from './auth.guard';

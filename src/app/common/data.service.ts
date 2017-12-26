@@ -7,7 +7,7 @@ import {AuthService} from '../auth/auth.service';
 import {
   IModerator, IRoomMessages, IMessage, IRoom, IUser, Message, IRoomUsers,
   ISuspendedUsers, Room, User
-} from './data-model';
+} from './data.model';
 
 import * as firebase from 'firebase';
 import {Observable} from 'rxjs/Observable';
@@ -88,10 +88,10 @@ export class DataService {
   }
 
   updateUser(user: IUser): Promise<any> {
-    const path = this.usersPath + '/' + user.$key;
-    console.log('user update path', path);
-    console.log('user update value', user);
-    return this.afd.list(this.usersPath).update(user.$key, user);
+    const userCopy = {...user};
+    delete userCopy.$key;
+
+    return this.afd.list(this.usersPath).update(user.$key, userCopy);
   }
 
   /** ROOM METADATA **/

@@ -141,10 +141,10 @@ export class User implements IUser {
 }
 
 export enum Languages {
-    English = 0,
-    Spanish = 1,
-    Portuguese = 2,
-    German = 3
+    English = 1,
+    Spanish = 2,
+    Portuguese = 3,
+    German = 4
 }
 
 export interface ILanguage {

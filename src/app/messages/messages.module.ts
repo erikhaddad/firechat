@@ -13,7 +13,7 @@ import {environment} from '../../environments/environment';
 
 import {MessagesComponent} from './messages.component';
 import {DataService} from '../common/data.service';
-import {MaterialModule} from '../material/material.module';
+import {MaterialModule} from '../common/material.module';
 
 const routes: Routes = [
     {path: 'messages/room/:roomId', component: MessagesComponent, canActivate: [AuthGuard]},

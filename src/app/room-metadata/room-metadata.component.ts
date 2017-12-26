@@ -1,5 +1,5 @@
 import {Component, OnInit, ViewEncapsulation, OnDestroy} from '@angular/core';
-import {Room} from '../common/data-model';
+import {Room} from '../common/data.model';
 import {MatDialogRef} from '@angular/material';
 
 @Component({
