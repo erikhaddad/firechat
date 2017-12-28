@@ -4,16 +4,13 @@ import 'rxjs/add/operator/switchMap';
 import {Injectable} from '@angular/core';
 import {AngularFireDatabase, AngularFireList, AngularFireObject} from 'angularfire2/database';
 import {AuthService} from '../auth/auth.service';
-import {
-  IModerator, IRoomMessages, IMessage, IRoom, IUser, Message, IRoomUsers,
-  ISuspendedUsers, Room, User
-} from './data.model';
+import {Moderator, RoomMessages, Message, Room, User, RoomUsers, SuspendedUsers} from './data.model';
 
-import * as firebase from 'firebase';
 import {Observable} from 'rxjs/Observable';
 import ThenableReference = firebase.database.ThenableReference;
-import {Subject} from 'rxjs/Subject';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
+
+import * as firebase from 'firebase';
 
 @Injectable()
 export class DataService {
@@ -25,8 +22,8 @@ export class DataService {
   private userNamesOnlinePath: string;
   private usersPath: string;
 
-  private roomsRef: AngularFireList<IRoom>;
-  private usersRef: AngularFireList<IUser>;
+  private roomsRef: AngularFireList<Room>;
+  private usersRef: AngularFireList<User>;
 
   constructor(private afd: AngularFireDatabase, private auth: AuthService) {
     this.moderatorsPath = '/moderators';
@@ -42,116 +39,146 @@ export class DataService {
   }
 
   /*
-  get moderators(): AngularFireList<IModerator[]> {
+  get moderators(): AngularFireList<Moderator[]> {
       return this.afd.list(this.moderatorsPath);
   }
 
-  get roomMessages(): AngularFireList<IRoomMessages[]> {
+  get roomMessages(): AngularFireList<RoomMessages[]> {
       return this.afd.list(this.roomMessagesPath);
   }
 
-  get rooms(): AngularFireList<IRoom[]> {
+  get rooms(): AngularFireList<Room[]> {
       return this.afd.list(this.roomMetadataPath);
   }
 
-  get roomUsers(): AngularFireList<IRoomUsers[]> {
+  get roomUsers(): AngularFireList<RoomUsers[]> {
       return this.afd.list(this.roomUsersPath);
   }
 
-  get suspensions(): AngularFireObject<ISuspendedUsers> {
+  get suspensions(): AngularFireObject<SuspendedUsers> {
       return this.afd.object(this.suspensionsPath);
   }
 
-  get userNamesOnline(): AngularFireList<IModerator[]> {
+  get userNamesOnline(): AngularFireList<Moderator[]> {
       return this.afd.list(this.userNamesOnlinePath);
   }
 
-  get users(): AngularFireList<IUser[]> {
+  get users(): AngularFireList<User[]> {
       return this.afd.list(this.usersPath);
   }
   */
 
   /** USERS **/
-  createUser(user: User): ThenableReference {
-    return this.afd.list(this.usersPath).push(user);
+  createUser(user: User): void {
+    const promise = this.afd.list(this.usersPath).push({});
+
+    promise
+      .then(
+        result => {
+          user.id = result.key;
+          this.afd.list(this.usersPath).set(user.id, user);
+        },
+        err => console.error(err, 'You do not have access!')
+      );
   }
 
-  getUser(userId: string): Observable<IUser> {
+  getUser(userId: string): Observable<User> {
     const userPath = `${this.usersPath}/${userId}`;
     return this.afd.object(userPath).snapshotChanges().map(action => {
-      return { $key: action.payload.key, ...action.payload.val() };
+      // could do some data tranformation here, if necessary
+      return { ...action.payload.val() };
     });
   }
 
-  removeUser(user: IUser): Promise<any> {
-    return this.afd.list(this.usersPath).remove(user.$key);
+  removeUser(user: User): Promise<any> {
+    return this.afd.list(this.usersPath).remove(user.id);
   }
 
-  updateUser(user: IUser): Promise<any> {
-    const userCopy = {...user};
-    delete userCopy.$key;
-
-    return this.afd.list(this.usersPath).update(user.$key, userCopy);
+  updateUser(user: User): Promise<any> {
+    return this.afd.list(this.usersPath).update(user.id, user);
   }
 
   /** ROOM METADATA **/
-  getRooms(): Observable<IRoom[]> {
+  getRooms(): Observable<Room[]> {
     return this.roomsRef.snapshotChanges().map(changes => {
-      return changes.map(c => ({ $key: c.payload.key, ...c.payload.val() }));
+      // could do some data tranformation here, if necessary
+      return changes.map(c => ({ ...c.payload.val() }));
     });
   }
 
-  createRoom(room: Room): ThenableReference {
+  createRoom(room: Room): void {
+    const promise = this.afd.list(this.roomMetadataPath).push({});
+
     room.createdAt = firebase.database.ServerValue.TIMESTAMP;
     room.createdByUserId = this.auth.id;
     room.authorizedUsers = {};
     room.authorizedUsers[this.auth.id] = true;
 
-    return this.roomsRef.push(room);
+    promise
+      .then(
+        result => {
+          room.id = result.key;
+          this.roomsRef.set(room.id, room);
+        },
+        err => console.error(err, 'You do not have access!')
+      );
   }
 
-  getRoom(roomId: string): Observable<IRoom> {
+  getRoom(roomId: string): Observable<Room> {
     const roomPath = `${this.roomMetadataPath}/${roomId}`;
     return this.afd.object(roomPath).snapshotChanges().map(action => {
-      return { $key: action.payload.key, ...action.payload.val() };
+      // could do some data tranformation here, if necessary
+      return { ...action.payload.val() };
     });
   }
 
-  removeRoom(metadata: IRoom): Promise<any> {
-    return this.afd.list(this.roomMetadataPath).remove(metadata.$key);
+  removeRoom(metadata: Room): Promise<any> {
+    return this.afd.list(this.roomMetadataPath).remove(metadata.id);
   }
 
-  updateRoom(metadata: IRoom, changes: any): Promise<any> {
-    return this.afd.list(this.roomMetadataPath).update(metadata.$key, changes);
+  updateRoom(metadata: Room, changes: any): Promise<any> {
+    return this.afd.list(this.roomMetadataPath).update(metadata.id, changes);
   }
 
   /** ROOM MESSAGES **/
-  createRoomMessage(roomId: string, message: Message): ThenableReference {
+  createRoomMessage(roomId: string, message: Message): void {
+    const messagePath = `${this.roomMessagesPath}/${roomId}/SOURCE`;
     message.timestamp = firebase.database.ServerValue.TIMESTAMP;
-    return this.afd.list(`${this.roomMessagesPath}/${roomId}/SOURCE`).push(message);
+
+    const promise = this.afd.list(messagePath).push({});
+
+    promise
+      .then(
+        result => {
+          message.id = result.key;
+          this.afd.list(messagePath).set(message.id, message);
+        },
+        err => console.error(err, 'You do not have access!')
+      );
   }
 
   getRoomMessages(roomId: string): AngularFireList<any> {
     return this.afd.list(`${this.roomMessagesPath}/${roomId}/OUTPUT`);
   }
 
-  getRoomMessagesByQuery(roomId: string, subject$: BehaviorSubject<string|null>): Observable<IMessage[]> {
+  getRoomMessagesByQuery(roomId: string, subject$: BehaviorSubject<string|null>): Observable<Message[]> {
     return subject$.switchMap(subject => {
       return this.afd.list(`${this.roomMessagesPath}/${roomId}/OUTPUT`,
         ref => subject ? ref.orderByChild('language').equalTo(subject) : ref)
         .snapshotChanges()
         .map(changes => {
-          return changes.map(c => ({ $key: c.payload.key, ...c.payload.val() }));
+          // could do some data tranformation here, if necessary
+          return changes.map(c => ({ ...c.payload.val() }));
         });
     });
   }
 
-  removeRoomMessage(roomId: string, message: IMessage): Promise<any> {
-    return this.afd.list(`${this.roomMessagesPath}/${roomId}`).remove(message.$key);
+  removeRoomMessage(roomId: string, message: Message): Promise<any> {
+    return this.afd.list(`${this.roomMessagesPath}/${roomId}`).remove(message.id);
   }
 
-  updateRoomMessage(roomId: string, message: IMessage, changes: any): Promise<any> {
-    return this.afd.list(this.roomMessagesPath + '/' + roomId).update(message.$key, changes);
+  updateRoomMessage(roomId: string, message: Message, changes: any): Promise<any> {
+    return this.afd.list(this.roomMessagesPath + '/' + roomId).update(message.id, changes);
   }
 
   deleteRoomMessages(roomId: string): Promise<any> {
@@ -163,19 +190,19 @@ export class DataService {
     return this.afd.list(this.roomUsersPath + '/' + roomId).push(user);
   }
 
-  getRoomUsers(roomId: string): Observable<IRoomUsers[]> {
+  getRoomUsers(roomId: string): Observable<RoomUsers[]> {
     return this.afd.list(`${this.roomUsersPath}/${roomId}`)
       .snapshotChanges().map(changes => {
-        return changes.map(c => ({ $key: c.payload.key, ...c.payload.val() }));
+        return changes.map(c => ({ ...c.payload.val() }));
       });
   }
 
-  removeRoomUser(roomId: string, user: IUser): Promise<any> {
-    return this.afd.list(this.roomUsersPath + '/' + roomId).remove(user.$key);
+  removeRoomUser(roomId: string, user: User): Promise<any> {
+    return this.afd.list(this.roomUsersPath + '/' + roomId).remove(user.id);
   }
 
-  updateRoomUser(roomId: string, user: IUser, changes: any): Promise<any> {
-    return this.afd.list(this.roomUsersPath + '/' + roomId).update(user.$key, changes);
+  updateRoomUser(roomId: string, user: User, changes: any): Promise<any> {
+    return this.afd.list(this.roomUsersPath + '/' + roomId).update(user.id, changes);
   }
 
 

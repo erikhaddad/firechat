@@ -1,9 +1,5 @@
 import {Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewChecked} from '@angular/core';
-import {AngularFireList, AngularFireObject} from 'angularfire2/database';
-import {
-  IModerator, IRoomMessages, IMessage, IRoom, IUser, Message, IRoomUsers,
-  ISuspendedUsers, Room, RoomMessages, Themes, Languages
-} from '../common/data.model';
+import {Message, Themes, Languages, User} from '../common/data.model';
 import {DataService} from '../common/data.service';
 import {AuthService} from '../auth/auth.service';
 import {
@@ -16,7 +12,6 @@ import {
   keyframes
 } from '@angular/animations';
 import {ActivatedRoute, Router} from '@angular/router';
-import {Subject} from 'rxjs/Subject';
 import * as _ from 'lodash';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {Observable} from 'rxjs/Observable';
@@ -84,11 +79,11 @@ export class MessagesComponent implements OnInit, AfterViewChecked, OnDestroy {
 
   newMessage: Message;
 
-  currentUser$: Observable<IUser>;
-  currentUser: IUser;
+  currentUser$: Observable<User>;
+  currentUser: User;
 
-  roomMessages$: Observable<IMessage[]>;
-  roomMessages: IMessage[];
+  roomMessages$: Observable<Message[]>;
+  roomMessages: Message[];
 
   constructor(private dataService: DataService,
               public authService: AuthService,
@@ -98,7 +93,7 @@ export class MessagesComponent implements OnInit, AfterViewChecked, OnDestroy {
 
     this.languageSubject = new BehaviorSubject(null);
     this.roomMessages = [];
-    this.newMessage = new Message();
+    this.newMessage = {};
 
     authService.authState$.subscribe(authUser => {
       this.currentUser$ = dataService.getUser(authUser.uid);
@@ -187,17 +182,9 @@ export class MessagesComponent implements OnInit, AfterViewChecked, OnDestroy {
       this.newMessage.language = this.currentUser.preferences.language;
       this.newMessage.moderated = false;
 
-      const promise = this.dataService.createRoomMessage(this.roomId, this.newMessage);
-      promise
-        .then(
-          result => {
-            console.log('create room message result', result);
-            this.scrollToBottom();
-          },
-          err => console.error(err, 'You do not have access!')
-        );
+      this.dataService.createRoomMessage(this.roomId, this.newMessage);
 
-      this.newMessage = new Message();
+      this.newMessage = {};
     }
   }
 

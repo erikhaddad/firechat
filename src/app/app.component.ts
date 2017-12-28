@@ -4,8 +4,8 @@ import {
 } from '@angular/core';
 import {AngularFireDatabase, AngularFireList, AngularFireObject} from 'angularfire2/database';
 import {
-  IModerator, IRoomMessages, IMessage, IRoom, IUser, Message, IRoomUsers,
-  ISuspendedUsers, ILanguage, Languages, Themes
+  Moderator, RoomMessages, Message, Room, User, RoomUsers,
+  SuspendedUsers, Language, Languages, Themes
 } from './common/data.model';
 import {DataService} from './common/data.service';
 import {DomSanitizer} from '@angular/platform-browser';
@@ -32,20 +32,20 @@ export class AppComponent implements OnInit, OnDestroy {
   roomId: string;
   paramSubscription: any;
 
-  currentUser$: Observable<IUser>;
-  currentUser: IUser;
+  currentUser$: Observable<User>;
+  currentUser: User;
 
-  rooms$: Observable<IRoom[]>;
-  rooms: IRoom[];
+  rooms$: Observable<Room[]>;
+  rooms: Room[];
 
-  currentRoom$: Observable<IRoom>;
-  currentRoom: IRoom;
+  currentRoom$: Observable<Room>;
+  currentRoom: Room;
 
-  roomUsers$: Observable<IRoomUsers[]>;
-  roomUsers: IRoomUsers[];
+  roomUsers$: Observable<RoomUsers[]>;
+  roomUsers: RoomUsers[];
 
   // ["en", "es", "pt", "de", "ja", "hi", "nl"]
-  languages: ILanguage[] = [
+  languages: Language[] = [
     {
       id: this.LANGUAGES.English,
       abbreviation: 'en',
@@ -114,6 +114,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
     this.rooms$ = this.dataService.getRooms();
     this.rooms$.subscribe(rooms => {
+      console.log('rooms updated', this.rooms);
       this.rooms = rooms;
     });
   }
@@ -164,16 +165,9 @@ export class AppComponent implements OnInit, OnDestroy {
     // this.roomMetadataDialogRef.componentInstance.currentPost = post;
 
     this.roomMetadataDialogRef.afterClosed().subscribe(room => {
-      const promise = this.dataService.createRoom(room);
+      this.dataService.createRoom(room);
 
-      promise
-        .then(
-          result => {
-            console.log('new room', result);
-            this.router.navigate(['/messages/room', result.key]);
-          },
-          err => console.error(err, 'You do not have access!')
-        );
+      // this.router.navigate(['/messages/room', room.id]);
     });
   }
 

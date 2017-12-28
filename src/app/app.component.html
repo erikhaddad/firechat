@@ -9,7 +9,7 @@
       <mat-icon>chat_bubble_outline</mat-icon>
     </button>
 
-    <span class="app-toolbar-title">{{ title }}</span>
+    <a class="app-toolbar-title" href="/">{{ title }}</a>
     <span class="app-toolbar-filler"></span>
 
     <div *ngIf="currentUser && currentUser.preferences">
@@ -98,8 +98,8 @@
 
         <div
           *ngFor="let room of rooms">
-          <a mat-list-item [routerLink]="['/messages/room', room.$key]"
-             *ngIf="room.$key != roomId">
+          <a mat-list-item [routerLink]="['/messages/room', room.id]"
+             *ngIf="room.id != roomId">
             <h3 mat-line>{{ room.name }}</h3>
             <p mat-line>
               <span>{{ room.description }}</span>
