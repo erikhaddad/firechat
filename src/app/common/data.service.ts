@@ -69,17 +69,20 @@ export class DataService {
   */
 
   /** USERS **/
-  createUser(user: User): void {
+  async createUser(user: User): Promise<string> {
     const promise = this.afd.list(this.usersPath).push({});
+    let newUserId: string;
 
-    promise
+    await promise
       .then(
         result => {
-          user.id = result.key;
+          user.id = newUserId = result.key;
           this.afd.list(this.usersPath).set(user.id, user);
         },
         err => console.error(err, 'You do not have access!')
       );
+
+    return newUserId;
   }
 
   getUser(userId: string): Observable<User> {
@@ -106,22 +109,25 @@ export class DataService {
     });
   }
 
-  createRoom(room: Room): void {
+  async createRoom(room: Room): Promise<string> {
     const promise = this.afd.list(this.roomMetadataPath).push({});
+    let newRoomId: string;
 
     room.createdAt = firebase.database.ServerValue.TIMESTAMP;
     room.createdByUserId = this.auth.id;
     room.authorizedUsers = {};
     room.authorizedUsers[this.auth.id] = true;
 
-    promise
+    await promise
       .then(
         result => {
-          room.id = result.key;
+          room.id = newRoomId = result.key;
           this.roomsRef.set(room.id, room);
         },
         err => console.error(err, 'You do not have access!')
       );
+
+    return newRoomId;
   }
 
   getRoom(roomId: string): Observable<Room> {
@@ -141,20 +147,23 @@ export class DataService {
   }
 
   /** ROOM MESSAGES **/
-  createRoomMessage(roomId: string, message: Message): void {
+  async createRoomMessage(roomId: string, message: Message): Promise<string> {
     const messagePath = `${this.roomMessagesPath}/${roomId}/SOURCE`;
+    let newMessageId: string;
     message.timestamp = firebase.database.ServerValue.TIMESTAMP;
 
     const promise = this.afd.list(messagePath).push({});
 
-    promise
+    await promise
       .then(
         result => {
-          message.id = result.key;
+          message.id = newMessageId = result.key;
           this.afd.list(messagePath).set(message.id, message);
         },
         err => console.error(err, 'You do not have access!')
       );
+
+    return newMessageId;
   }
 
   getRoomMessages(roomId: string): AngularFireList<any> {

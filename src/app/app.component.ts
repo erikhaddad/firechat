@@ -165,9 +165,14 @@ export class AppComponent implements OnInit, OnDestroy {
     // this.roomMetadataDialogRef.componentInstance.currentPost = post;
 
     this.roomMetadataDialogRef.afterClosed().subscribe(room => {
-      this.dataService.createRoom(room);
-
-      // this.router.navigate(['/messages/room', room.id]);
+      if (room.name) {
+        this.dataService.createRoom(room).
+          then(
+            newRoomId => {
+              this.router.navigate(['/messages/room', newRoomId]);
+            }
+          );
+      }
     });
   }
 
