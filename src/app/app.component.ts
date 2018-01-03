@@ -7,7 +7,8 @@ import {
   Moderator, RoomMessages, Message, Room, User, RoomUsers,
   SuspendedUsers, Language, Languages, Themes
 } from './common/data.model';
-import {DataService} from './common/data.service';
+import {RtdbService} from './common/rtdb.service';
+import {FirestoreService} from './common/firestore.service';
 import {DomSanitizer} from '@angular/platform-browser';
 import {MatDialog, MatDialogConfig, MatDialogRef, MatIconRegistry, MatSnackBar} from '@angular/material';
 import {AuthService} from './auth/auth.service';
@@ -71,7 +72,8 @@ export class AppComponent implements OnInit, OnDestroy {
   private roomMetadataDialogRef: MatDialogRef<RoomMetadataComponent>;
 
   constructor(public authService: AuthService,
-              private dataService: DataService,
+              private rtdbService: RtdbService,
+              private firestoreService: FirestoreService,
               private appState: AppStateService,
               private route: ActivatedRoute,
               private router: Router,
@@ -101,7 +103,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
     authService.authState$.subscribe(authUser => {
       if (authUser != null) {
-        this.currentUser$ = dataService.getUser(authUser.uid);
+        this.currentUser$ = rtdbService.getUser(authUser.uid);
 
         this.currentUser$.subscribe(user => {
           this.currentUser = user;
@@ -112,7 +114,7 @@ export class AppComponent implements OnInit, OnDestroy {
     this.roomUsers = [];
     this.rooms = [];
 
-    this.rooms$ = this.dataService.getRooms();
+    this.rooms$ = this.rtdbService.getRooms();
     this.rooms$.subscribe(rooms => {
       console.log('rooms updated', this.rooms);
       this.rooms = rooms;
@@ -126,13 +128,13 @@ export class AppComponent implements OnInit, OnDestroy {
       if (typeof this.roomId !== 'undefined') {
         console.log('found a roomId id in app component!', this.roomId);
 
-        this.currentRoom$ = this.dataService.getRoom(this.roomId);
+        this.currentRoom$ = this.rtdbService.getRoom(this.roomId);
         this.currentRoom$.subscribe(room => {
           this.currentRoom = room;
           console.log('got currentRoom', this.currentRoom);
         });
 
-        this.roomUsers$ = this.dataService.getRoomUsers(this.roomId);
+        this.roomUsers$ = this.rtdbService.getRoomUsers(this.roomId);
         this.roomUsers$.subscribe(users => {
           this.roomUsers = users;
         });
@@ -166,7 +168,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
     this.roomMetadataDialogRef.afterClosed().subscribe(room => {
       if (room.name) {
-        this.dataService.createRoom(room).
+        this.rtdbService.createRoom(room).
           then(
             newRoomId => {
               this.router.navigate(['/messages/room', newRoomId]);
@@ -178,16 +180,16 @@ export class AppComponent implements OnInit, OnDestroy {
 
   updateUserPreferenceLanguage(evt: Event, languageId: number) {
     this.currentUser.preferences.language = languageId;
-    this.dataService.updateUser(this.currentUser);
+    this.rtdbService.updateUser(this.currentUser);
   }
 
   updateUserPreferenceModerate(evt: Event, val: boolean) {
     this.currentUser.preferences.moderate = val;
-    this.dataService.updateUser(this.currentUser);
+    this.rtdbService.updateUser(this.currentUser);
   }
 
   updateUserPreferenceTheme(evt: Event, themeId: number) {
     this.currentUser.preferences.theme = themeId;
-    this.dataService.updateUser(this.currentUser);
+    this.rtdbService.updateUser(this.currentUser);
   }
 }

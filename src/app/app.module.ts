@@ -11,11 +11,12 @@ import {AppComponent} from './app.component';
 import {AuthModule} from './auth/auth.module';
 import {SignInModule} from './sign-in/sign-in.module';
 import {MessagesModule} from './messages/messages.module';
-import {DataService} from './common/data.service';
 import {RouterModule, Routes} from '@angular/router';
 import {RoomMetadataComponent} from './room-metadata/room-metadata.component';
 import {HttpClientModule} from '@angular/common/http';
 import {AppStateService} from './common/app-state.service';
+import {RtdbService} from './common/rtdb.service';
+import {FirestoreService} from './common/firestore.service';
 
 const routes: Routes = [
     // { path: '', redirectTo: '/messages', pathMatch: 'full'}
@@ -45,7 +46,7 @@ const routes: Routes = [
         MessagesModule
     ],
     entryComponents: [RoomMetadataComponent],
-    providers: [AppStateService, DataService],
+    providers: [AppStateService, RtdbService, FirestoreService],
     bootstrap: [AppComponent]
 })
 export class AppModule {}

@@ -1,6 +1,5 @@
 import {Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewChecked} from '@angular/core';
 import {Message, Themes, Languages, User} from '../common/data.model';
-import {DataService} from '../common/data.service';
 import {AuthService} from '../auth/auth.service';
 import {
   trigger,
@@ -16,6 +15,8 @@ import * as _ from 'lodash';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {Observable} from 'rxjs/Observable';
 import {AppStateService} from '../common/app-state.service';
+import {RtdbService} from '../common/rtdb.service';
+import {FirestoreService} from '../common/firestore.service';
 
 @Component({
   selector: 'app-messages',
@@ -85,7 +86,8 @@ export class MessagesComponent implements OnInit, AfterViewChecked, OnDestroy {
   roomMessages$: Observable<Message[]>;
   roomMessages: Message[];
 
-  constructor(private dataService: DataService,
+  constructor(private rtdbService: RtdbService,
+              private firestoreService: FirestoreService,
               public authService: AuthService,
               private appState: AppStateService,
               private router: Router,
@@ -96,7 +98,7 @@ export class MessagesComponent implements OnInit, AfterViewChecked, OnDestroy {
     this.newMessage = {};
 
     authService.authState$.subscribe(authUser => {
-      this.currentUser$ = dataService.getUser(authUser.uid);
+      this.currentUser$ = rtdbService.getUser(authUser.uid);
       this.currentUser$.subscribe(user => {
         this.currentUser = user;
 
@@ -123,8 +125,8 @@ export class MessagesComponent implements OnInit, AfterViewChecked, OnDestroy {
           equalTo: this.languageSubject
         };
 
-        // this.roomMessages$ = this.dataService.getRoomMessages(this.roomId);
-        this.roomMessages$ = this.dataService.getRoomMessagesByQuery(this.roomId, this.languageSubject);
+        // this.roomMessages$ = this.rtdbService.getRoomMessages(this.roomId);
+        this.roomMessages$ = this.rtdbService.getRoomMessagesByQuery(this.roomId, this.languageSubject);
 
         this.roomMessages$.subscribe(messages => {
           console.log('messages', messages);
@@ -182,7 +184,7 @@ export class MessagesComponent implements OnInit, AfterViewChecked, OnDestroy {
       this.newMessage.language = this.currentUser.preferences.language;
       this.newMessage.moderated = false;
 
-      this.dataService.createRoomMessage(this.roomId, this.newMessage);
+      this.rtdbService.createRoomMessage(this.roomId, this.newMessage);
 
       this.newMessage = {};
     }

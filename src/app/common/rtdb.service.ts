@@ -13,7 +13,7 @@ import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import * as firebase from 'firebase';
 
 @Injectable()
-export class DataService {
+export class RtdbService {
   private moderatorsPath: string;
   private roomMessagesPath: string;
   private roomMetadataPath: string;
@@ -138,12 +138,12 @@ export class DataService {
     });
   }
 
-  removeRoom(metadata: Room): Promise<any> {
-    return this.afd.list(this.roomMetadataPath).remove(metadata.id);
+  removeRoom(room: Room): Promise<any> {
+    return this.afd.list(this.roomMetadataPath).remove(room.id);
   }
 
-  updateRoom(metadata: Room, changes: any): Promise<any> {
-    return this.afd.list(this.roomMetadataPath).update(metadata.id, changes);
+  updateRoom(room: Room, changes: any): Promise<any> {
+    return this.afd.list(this.roomMetadataPath).update(room.id, changes);
   }
 
   /** ROOM MESSAGES **/
@@ -183,20 +183,20 @@ export class DataService {
   }
 
   removeRoomMessage(roomId: string, message: Message): Promise<any> {
-    return this.afd.list(`${this.roomMessagesPath}/${roomId}`).remove(message.id);
+    return this.afd.list(`${this.roomMessagesPath}/${roomId}/SOURCE`).remove(message.id);
   }
 
   updateRoomMessage(roomId: string, message: Message, changes: any): Promise<any> {
-    return this.afd.list(this.roomMessagesPath + '/' + roomId).update(message.id, changes);
+    return this.afd.list(`${this.roomMessagesPath}/${roomId}/SOURCE`).update(message.id, changes);
   }
 
   deleteRoomMessages(roomId: string): Promise<any> {
-    return this.afd.list(this.roomMessagesPath + '/' + roomId).remove();
+    return this.afd.list(`${this.roomMessagesPath}/${roomId}/SOURCE`).remove();
   }
 
   /** ROOM USERS **/
-  createRoomUser(roomId: string, user: User): ThenableReference {
-    return this.afd.list(this.roomUsersPath + '/' + roomId).push(user);
+  createRoomUser(roomId: string, user: User): Promise<any> {
+    return this.afd.list(`${this.roomUsersPath}/${roomId}`).set(user.id, user);
   }
 
   getRoomUsers(roomId: string): Observable<RoomUsers[]> {
@@ -207,11 +207,11 @@ export class DataService {
   }
 
   removeRoomUser(roomId: string, user: User): Promise<any> {
-    return this.afd.list(this.roomUsersPath + '/' + roomId).remove(user.id);
+    return this.afd.list(`${this.roomUsersPath}/${roomId}`).remove(user.id);
   }
 
   updateRoomUser(roomId: string, user: User, changes: any): Promise<any> {
-    return this.afd.list(this.roomUsersPath + '/' + roomId).update(user.id, changes);
+    return this.afd.list(`${this.roomUsersPath}/${roomId}`).update(user.id, changes);
   }
 
 

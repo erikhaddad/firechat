@@ -12,8 +12,9 @@ import {AngularFireAuthModule} from 'angularfire2/auth';
 import {environment} from '../../environments/environment';
 
 import {MessagesComponent} from './messages.component';
-import {DataService} from '../common/data.service';
+import {RtdbService} from '../common/rtdb.service';
 import {MaterialModule} from '../common/material.module';
+import {FirestoreService} from '../common/firestore.service';
 
 const routes: Routes = [
     {path: 'messages/room/:roomId', component: MessagesComponent, canActivate: [AuthGuard]},
@@ -37,10 +38,10 @@ const routes: Routes = [
         AngularFireAuthModule
     ],
     providers: [
-        DataService
+        RtdbService, FirestoreService
     ]
 })
 
 export class MessagesModule {}
 
-export {DataService};
+export {RtdbService, FirestoreService};
