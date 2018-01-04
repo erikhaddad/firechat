@@ -1,7 +1,7 @@
 'use strict';
 
 const functions = require('firebase-functions');
-
+const admin = require('firebase-admin');
 const Translate = require('@google-cloud/translate');
 const translate = Translate({keyFilename: "service-account-credentials.json"});
 
@@ -43,7 +43,7 @@ function getLanguageWithoutLocale(languageCode) {
     return languageCode;
 }
 
-exports.translator = functions.database
+exports.rtdbTranslator = functions.database
     .ref('/room-messages/{roomId}/TRANSLATE/{messageId}')
     .onWrite((event) => {
         const message = event.data.val();
@@ -88,3 +88,49 @@ exports.translator = functions.database
         });
         return Promise.all(promises);
     });
+
+exports.firestoreTranslator = functions.firestore
+  .document('/room-messages/{roomId}/TRANSLATE/{messageId}')
+  .onWrite((event) => {
+    const message = event.data.val();
+    let db = admin.firestore();
+
+    let text = message.message ? message.message : message;
+    let languageOriginal = languages.find(element => element.id === message.language);
+
+    // all supported languages: https://cloud.google.com/translate/docs/languages
+    let from = languageOriginal.abbreviation ? getLanguageWithoutLocale(languageOriginal.abbreviation) : "en";
+
+    let promises = languages.map(language => {
+      let to = language.abbreviation;
+
+      console.log(`translating from '${from}' to '${to}', text '${text}'`);
+
+      // call the Google Cloud Platform Translate API
+      if (from === to) {
+        return db.collection("room-messages")
+                  .document(event.params.roomId)
+                  .collection("OUTPUT")
+                  .document(event.params.messageId + '-' + to)
+                  .set(message);
+      } else {
+        return translate.translate(text, {
+          from: from,
+          to: to
+        }).then(result => {
+          // write the translation to the database
+          let translation = result[0];
+
+          message.language = language.id;
+          message.message = translation;
+
+          return db.collection("room-messages")
+                    .document(event.params.roomId)
+                    .collection("OUTPUT")
+                    .document(event.params.messageId + '-' + to)
+                    .set(message);
+        });
+      }
+    });
+    return Promise.all(promises);
+  });

@@ -2,12 +2,11 @@ import 'rxjs/add/observable/merge';
 import 'rxjs/add/operator/switchMap';
 
 import {Injectable} from '@angular/core';
-import {AngularFireDatabase, AngularFireList, AngularFireObject} from 'angularfire2/database';
+import {AngularFireDatabase, AngularFireList} from 'angularfire2/database';
 import {AuthService} from '../auth/auth.service';
-import {Moderator, RoomMessages, Message, Room, User, RoomUsers, SuspendedUsers} from './data.model';
+import {Message, Room, User} from './data.model';
 
 import {Observable} from 'rxjs/Observable';
-import ThenableReference = firebase.database.ThenableReference;
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 
 import * as firebase from 'firebase';
@@ -199,7 +198,7 @@ export class RtdbService {
     return this.afd.list(`${this.roomUsersPath}/${roomId}`).set(user.id, user);
   }
 
-  getRoomUsers(roomId: string): Observable<RoomUsers[]> {
+  getRoomUsers(roomId: string): Observable<User[]> {
     return this.afd.list(`${this.roomUsersPath}/${roomId}`)
       .snapshotChanges().map(changes => {
         return changes.map(c => ({ ...c.payload.val() }));

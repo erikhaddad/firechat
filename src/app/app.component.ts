@@ -42,8 +42,8 @@ export class AppComponent implements OnInit, OnDestroy {
   currentRoom$: Observable<Room>;
   currentRoom: Room;
 
-  roomUsers$: Observable<RoomUsers[]>;
-  roomUsers: RoomUsers[];
+  roomUsers$: Observable<User[]>;
+  roomUsers: User[];
 
   // ["en", "es", "pt", "de", "ja", "hi", "nl"]
   languages: Language[] = [
@@ -114,7 +114,7 @@ export class AppComponent implements OnInit, OnDestroy {
     this.roomUsers = [];
     this.rooms = [];
 
-    this.rooms$ = this.rtdbService.getRooms();
+    this.rooms$ = this.firestoreService.getRooms();
     this.rooms$.subscribe(rooms => {
       console.log('rooms updated', this.rooms);
       this.rooms = rooms;
@@ -128,13 +128,13 @@ export class AppComponent implements OnInit, OnDestroy {
       if (typeof this.roomId !== 'undefined') {
         console.log('found a roomId id in app component!', this.roomId);
 
-        this.currentRoom$ = this.rtdbService.getRoom(this.roomId);
+        this.currentRoom$ = this.firestoreService.getRoom(this.roomId);
         this.currentRoom$.subscribe(room => {
           this.currentRoom = room;
           console.log('got currentRoom', this.currentRoom);
         });
 
-        this.roomUsers$ = this.rtdbService.getRoomUsers(this.roomId);
+        this.roomUsers$ = this.firestoreService.getRoomUsers(this.roomId);
         this.roomUsers$.subscribe(users => {
           this.roomUsers = users;
         });

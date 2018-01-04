@@ -67,6 +67,9 @@ export class FirestoreService {
       return this.afs.collection(this.usersPath);
   }
   */
+  get timestamp() {
+    return firebase.firestore.FieldValue.serverTimestamp()
+  }
 
   /** USERS **/
   createUser(user: User): Promise<any> {
@@ -95,7 +98,7 @@ export class FirestoreService {
   createRoom(room: Room): Promise<any> {
     const newRoomId: string = this.afs.createId();
 
-    room.createdAt = firebase.database.ServerValue.TIMESTAMP;
+    room.createdAt = this.timestamp;
     room.createdByUserId = this.auth.id;
     room.authorizedUsers = {};
     room.authorizedUsers[this.auth.id] = true;
@@ -123,7 +126,7 @@ export class FirestoreService {
     const newMessageId: string = this.afs.createId();
     const messagePath = `${this.roomMessagesPath}/${roomId}/SOURCE/${newMessageId}`;
     message.id = newMessageId;
-    message.timestamp = firebase.database.ServerValue.TIMESTAMP;
+    message.timestamp = this.timestamp;
 
     return this.afs.doc<Message>(messagePath).set(message);
   }

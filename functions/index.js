@@ -5,7 +5,7 @@ const textModeration = require('./text-moderation');
 const textTranslation = require('./text-translation');
 
 module.exports = {
-    createUserRecord: authRecord.createUserRecord,
-    moderateText: textModeration.moderator,
-    translateText: textTranslation.translator
+    createUserRecord: authRecord.firestoreCreateUserRecord,
+    moderateText: textModeration.firestoreModerator,
+    translateText: textTranslation.firestoreTranslator
 };
