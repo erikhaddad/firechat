@@ -59,7 +59,7 @@ exports.rtdbModerator = functions.database
 // Moderates messages by lowering all uppercase messages and removing swearwords.
 exports.firestoreModerator = functions.firestore
   .document('/room-messages/{roomId}/SOURCE/{messageId}').onCreate(event => {
-    const message = event.data.val();
+    const message = event.data.data();
 
     let db = admin.firestore();
     const msgVersions = [];

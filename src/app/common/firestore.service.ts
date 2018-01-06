@@ -7,7 +7,6 @@ import {AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument} 
 import {Moderator, RoomMessages, Message, Room, User, RoomUsers, SuspendedUsers} from './data.model';
 
 import {Observable} from 'rxjs/Observable';
-import ThenableReference = firebase.database.ThenableReference;
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 
 import * as firebase from 'firebase';
@@ -78,8 +77,8 @@ export class FirestoreService {
     return this.afs.doc<User>(`${this.usersPath}/${newUserId}`).set(user);
   }
 
-  getUser(userId: string): AngularFirestoreDocument<User> {
-    return this.afs.doc<User>(`${this.usersPath}/${userId}`);
+  getUser(userId: string): Observable<User> {
+    return this.afs.doc<User>(`${this.usersPath}/${userId}`).valueChanges();
   }
 
   removeUser(user: User): Promise<any> {
@@ -95,15 +94,25 @@ export class FirestoreService {
     return this.roomsRef.valueChanges();
   }
 
-  createRoom(room: Room): Promise<any> {
+  async createRoom(room: Room): Promise<string> {
     const newRoomId: string = this.afs.createId();
 
+    room.id = newRoomId;
     room.createdAt = this.timestamp;
     room.createdByUserId = this.auth.id;
     room.authorizedUsers = {};
     room.authorizedUsers[this.auth.id] = true;
+    const promise = this.afs.doc<Room>(`${this.roomMetadataPath}/${newRoomId}`).set(room);
 
-    return this.afs.doc<Room>(`${this.roomMetadataPath}/${newRoomId}`).set(room);
+    await promise
+      .then(
+        result => {
+          console.log('created new room', result);
+        },
+        err => console.error(err, 'You do not have access!')
+      );
+
+    return newRoomId;
   }
 
   getRoom(roomId: string): Observable<Room> {

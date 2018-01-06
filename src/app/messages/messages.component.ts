@@ -98,9 +98,11 @@ export class MessagesComponent implements OnInit, AfterViewChecked, OnDestroy {
     this.newMessage = {};
 
     authService.authState$.subscribe(authUser => {
-      this.currentUser$ = rtdbService.getUser(authUser.uid);
+      this.currentUser$ = firestoreService.getUser(authUser.uid);
       this.currentUser$.subscribe(user => {
         this.currentUser = user;
+
+        console.log('currentUser preferences', this.currentUser, this.currentUser.preferences);
 
         if (typeof this.currentUser.preferences.language !== 'undefined') {
           console.log('filtering by language type id', this.currentUser.preferences.language);
@@ -126,7 +128,7 @@ export class MessagesComponent implements OnInit, AfterViewChecked, OnDestroy {
         };
 
         // this.roomMessages$ = this.rtdbService.getRoomMessages(this.roomId);
-        this.roomMessages$ = this.rtdbService.getRoomMessagesByQuery(this.roomId, this.languageSubject);
+        this.roomMessages$ = this.firestoreService.getRoomMessagesByQuery(this.roomId, this.languageSubject);
 
         this.roomMessages$.subscribe(messages => {
           console.log('messages', messages);
@@ -184,7 +186,7 @@ export class MessagesComponent implements OnInit, AfterViewChecked, OnDestroy {
       this.newMessage.language = this.currentUser.preferences.language;
       this.newMessage.moderated = false;
 
-      this.rtdbService.createRoomMessage(this.roomId, this.newMessage);
+      this.firestoreService.createRoomMessage(this.roomId, this.newMessage);
 
       this.newMessage = {};
     }

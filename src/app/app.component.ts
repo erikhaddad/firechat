@@ -103,7 +103,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
     authService.authState$.subscribe(authUser => {
       if (authUser != null) {
-        this.currentUser$ = rtdbService.getUser(authUser.uid);
+        this.currentUser$ = firestoreService.getUser(authUser.uid);
 
         this.currentUser$.subscribe(user => {
           this.currentUser = user;
@@ -168,7 +168,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
     this.roomMetadataDialogRef.afterClosed().subscribe(room => {
       if (room.name) {
-        this.rtdbService.createRoom(room).
+        this.firestoreService.createRoom(room).
           then(
             newRoomId => {
               this.router.navigate(['/messages/room', newRoomId]);
@@ -180,16 +180,16 @@ export class AppComponent implements OnInit, OnDestroy {
 
   updateUserPreferenceLanguage(evt: Event, languageId: number) {
     this.currentUser.preferences.language = languageId;
-    this.rtdbService.updateUser(this.currentUser);
+    this.firestoreService.updateUser(this.currentUser);
   }
 
   updateUserPreferenceModerate(evt: Event, val: boolean) {
     this.currentUser.preferences.moderate = val;
-    this.rtdbService.updateUser(this.currentUser);
+    this.firestoreService.updateUser(this.currentUser);
   }
 
   updateUserPreferenceTheme(evt: Event, themeId: number) {
     this.currentUser.preferences.theme = themeId;
-    this.rtdbService.updateUser(this.currentUser);
+    this.firestoreService.updateUser(this.currentUser);
   }
 }

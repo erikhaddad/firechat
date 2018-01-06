@@ -92,7 +92,7 @@ exports.rtdbTranslator = functions.database
 exports.firestoreTranslator = functions.firestore
   .document('/room-messages/{roomId}/TRANSLATE/{messageId}')
   .onWrite((event) => {
-    const message = event.data.val();
+    const message = event.data.data();
     let db = admin.firestore();
 
     let text = message.message ? message.message : message;

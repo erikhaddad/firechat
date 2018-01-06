@@ -8,6 +8,7 @@ import {AuthGuard} from '../auth/auth.guard';
 
 import {AngularFireModule} from 'angularfire2';
 import {AngularFireDatabaseModule} from 'angularfire2/database';
+import {AngularFirestoreModule} from 'angularfire2/firestore';
 import {AngularFireAuthModule} from 'angularfire2/auth';
 import {environment} from '../../environments/environment';
 
@@ -17,31 +18,33 @@ import {MaterialModule} from '../common/material.module';
 import {FirestoreService} from '../common/firestore.service';
 
 const routes: Routes = [
-    {path: 'messages/room/:roomId', component: MessagesComponent, canActivate: [AuthGuard]},
-    {path: 'messages', component: MessagesComponent, canActivate: [AuthGuard]},
-    {path: '', redirectTo: '/messages', pathMatch: 'full'}
+  {path: 'messages/room/:roomId', component: MessagesComponent, canActivate: [AuthGuard]},
+  {path: 'messages', component: MessagesComponent, canActivate: [AuthGuard]},
+  {path: '', redirectTo: '/messages', pathMatch: 'full'}
 ];
 
 @NgModule({
-    declarations: [
-        MessagesComponent
-    ],
-    imports: [
-        CommonModule,
-        FormsModule,
-        RouterModule.forChild(routes),
+  declarations: [
+    MessagesComponent
+  ],
+  imports: [
+    CommonModule,
+    FormsModule,
+    RouterModule.forChild(routes),
 
-        FlexLayoutModule,
-        MaterialModule,
-        AngularFireModule.initializeApp(environment.firebase),
-        AngularFireDatabaseModule,
-        AngularFireAuthModule
-    ],
-    providers: [
-        RtdbService, FirestoreService
-    ]
+    FlexLayoutModule,
+    MaterialModule,
+    AngularFireModule.initializeApp(environment.firebase),
+    AngularFireDatabaseModule,
+    AngularFirestoreModule,
+    AngularFireAuthModule
+  ],
+  providers: [
+    RtdbService, FirestoreService
+  ]
 })
 
-export class MessagesModule {}
+export class MessagesModule {
+}
 
 export {RtdbService, FirestoreService};
