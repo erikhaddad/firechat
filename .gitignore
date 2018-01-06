@@ -42,3 +42,6 @@ Thumbs.db
 
 # Keys
 /functions/service-account-credentials.json
+
+# Firebase
+firebase-debug.log
