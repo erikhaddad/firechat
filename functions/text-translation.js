@@ -109,9 +109,9 @@ exports.firestoreTranslator = functions.firestore
       // call the Google Cloud Platform Translate API
       if (from === to) {
         return db.collection("room-messages")
-                  .document(event.params.roomId)
+                  .doc(event.params.roomId)
                   .collection("OUTPUT")
-                  .document(event.params.messageId + '-' + to)
+                  .doc(event.params.messageId + '-' + to)
                   .set(message);
       } else {
         return translate.translate(text, {
@@ -125,9 +125,9 @@ exports.firestoreTranslator = functions.firestore
           message.message = translation;
 
           return db.collection("room-messages")
-                    .document(event.params.roomId)
+                    .doc(event.params.roomId)
                     .collection("OUTPUT")
-                    .document(event.params.messageId + '-' + to)
+                    .doc(event.params.messageId + '-' + to)
                     .set(message);
         });
       }

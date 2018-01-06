@@ -82,15 +82,15 @@ exports.firestoreModerator = functions.firestore
     let promises = msgVersions.map(version => {
       if (version.moderated) {
         return db.collection("room-messages")
-                  .document(event.params.roomId)
+                  .doc(event.params.roomId)
                   .collection("TRANSLATE")
-                  .document(event.params.messageId + '-mod')
+                  .doc(event.params.messageId + '-mod')
                   .set(version);
       } else {
         return db.collection("room-messages")
-                  .document(event.params.roomId)
+                  .doc(event.params.roomId)
                   .collection("TRANSLATE")
-                  .document(event.params.messageId + '-raw')
+                  .doc(event.params.messageId + '-raw')
                   .set(version);
       }
     });
