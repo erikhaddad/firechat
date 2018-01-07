@@ -17,6 +17,8 @@ import {HttpClientModule} from '@angular/common/http';
 import {AppStateService} from './common/app-state.service';
 import {RtdbService} from './common/rtdb.service';
 import {FirestoreService} from './common/firestore.service';
+import {ServiceWorkerModule} from '@angular/service-worker';
+import {environment} from '../environments/environment';
 
 const routes: Routes = [
     // { path: '', redirectTo: '/messages', pathMatch: 'full'}
@@ -37,7 +39,7 @@ const routes: Routes = [
         HttpClientModule,
         BrowserAnimationsModule,
         RouterModule.forRoot(routes, {useHash: false}),
-
+        environment.production ? ServiceWorkerModule.register('ngsw-worker.js') : [],
         FlexLayoutModule,
         MaterialModule,
 

@@ -27,7 +27,7 @@
     <textarea class="input" id="message-text-input"
               fxFlex title="New message text"
               [(ngModel)]="newMessage.message"
-              (keyup.enter)="sendRoomMessage($event)"></textarea>
+              (keydown.enter)="sendRoomMessage($event)"></textarea>
 
     <button mat-icon-button class="send"
             [disabled]="!newMessage.message"

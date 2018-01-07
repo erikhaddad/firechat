@@ -17,6 +17,11 @@ import {Observable} from 'rxjs/Observable';
 import {AppStateService} from '../common/app-state.service';
 import {RtdbService} from '../common/rtdb.service';
 import {FirestoreService} from '../common/firestore.service';
+import {AngularFireStorage} from 'angularfire2/storage';
+
+import {fromEvent} from 'rxjs/observable/fromEvent';
+import {map, filter, tap} from 'rxjs/operators';
+import {storage} from 'firebase/app';
 
 @Component({
   selector: 'app-messages',
@@ -86,8 +91,15 @@ export class MessagesComponent implements OnInit, AfterViewChecked, OnDestroy {
   roomMessages$: Observable<Message[]>;
   roomMessages: Message[];
 
+  /** STORAGE **/
+  previewURL: Observable<any>;
+  file: Blob;
+  uploadPercent: Observable<number>;
+  uploadURL: Observable<string>;
+
   constructor(private rtdbService: RtdbService,
               private firestoreService: FirestoreService,
+              private storage: AngularFireStorage,
               public authService: AuthService,
               private appState: AppStateService,
               private router: Router,
@@ -190,6 +202,8 @@ export class MessagesComponent implements OnInit, AfterViewChecked, OnDestroy {
 
       this.newMessage = {};
     }
+
+    return false;
   }
 
   scrollToBottom() {
@@ -198,5 +212,30 @@ export class MessagesComponent implements OnInit, AfterViewChecked, OnDestroy {
     } catch (err) {
       console.error(err);
     }
+  }
+
+  /** STORAGE **/
+  previewFile(event) {
+    const reader = new FileReader();
+    this.file = event.target.files[0];
+    this.previewURL = fromEvent(reader, 'load').pipe(map(e => reader.result));
+    reader.readAsDataURL(this.file);
+  }
+
+  uploadFile() {
+    const randomId = Math.random().toString(36).substring(7);
+    const task = this.storage.upload(randomId, this.file);
+
+    this.uploadPercent = task.snapshotChanges()
+      .pipe(
+        map(s => s.bytesTransferred / s.totalBytes * 100)
+      );
+
+    this.uploadURL = task.snapshotChanges()
+      .pipe(
+        filter(s => s.bytesTransferred === s.totalBytes),
+        map(s => s.downloadURL),
+        tap(console.log),
+      );
   }
 }

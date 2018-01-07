@@ -6,13 +6,38 @@
   <base href="/">
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/icons/app/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/app/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/icons/app/favicon-16x16.png">
+  <link rel="mask-icon" href="assets/icons/app/safari-pinned-tab.svg" color="#FFA000">
+
+  <meta name="theme-color" content="#ffa000">
+  <link rel="manifest" href="manifest.json">
 
   <link href="//fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
   <link href="//fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
   <link href="//fonts.googleapis.com/icon?family=Material+Icons+Extended" rel="stylesheet">
 </head>
 <body>
-  <app-root></app-root>
+  <app-root>
+    <style nonce="PaSctk3p6anH0CvOMdbxP0U39Ho">html, body {background-color: #ECEFF1;}#loadingElement {animation: preloadAnimation 1s cubic-bezier(0, 0, 0.3, 1) 0.5s; animation-fill-mode: forwards; display: block; left: 50%; position: absolute; opacity: 0; top: 50%; transform: translate(-50%, -50%);}@keyframes preloadAnimation {from {opacity: 0;}to {opacity: 1;}}</style><canvas id="loadingElement"></canvas><script nonce="PaSctk3p6anH0CvOMdbxP0U39Ho">(function(){for(var f="function"==typeof Object.defineProperties?Object.defineProperty:function(b,d,c){if(c.get||c.set)throw new TypeError("ES3 does not support getters and setters.");b!=Array.prototype&&b!=Object.prototype&&(b[d]=c.value)},h="undefined"!=typeof window&&window===this?this:"undefined"!=typeof global&&null!=global?global:this,k=["Array","prototype","fill"],l=0;l<k.length-1;l++){var m=k[l];m in h||(h[m]={});h=h[m]}
+    var n=k[k.length-1],p=h[n],r=p?p:function(b,d,c){var a=this.length||0;0>d&&(d=Math.max(0,a+d));if(null==c||c>a)c=a;c=Number(c);0>c&&(c=Math.max(0,a+c));for(d=Number(d||0);d<c;d++)this[d]=b;return this};r!=p&&null!=r&&f(h,n,{configurable:!0,writable:!0,value:r});var t=function(b,d){this.s=b;this.b=d;this.a=this.s.devicePixelRatio||1;this.h=document.createElement("canvas");this.c=this.b.getContext("2d");this.m=this.h.getContext("2d");this.g=!1;this.i=this.l=0;this.f=null;this.b.style.width=this.b.style.height="144px";this.b.width=this.b.height=144*this.a;this.h.width=this.h.height=144*this.a;this.c.scale(this.a,this.a);this.m.scale(this.a,this.a);this.j=function(){};b.requestAnimationFrame&&(this.j=b.requestAnimationFrame.bind(b));this.f=this.c.createLinearGradient(37,
+      43,104,109);this.f.addColorStop(0,"rgba(255, 255, 255, .1)");this.f.addColorStop(.33,"rgba(255, 255, 255, .05)");this.f.addColorStop(1,"transparent")};t.prototype.play=function(){this.l=Number(new Date);this.i=0;this.g=!0;u(this)};t.prototype.play=t.prototype.play;t.prototype.stop=function(){this.g=!1};t.prototype.stop=t.prototype.stop;t.prototype.o=function(){this.stop()};t.prototype.destroy=t.prototype.o;
+    var u=function(b){b.i=Number(new Date)-b.l;v(b,b.i);b.g&&b.j(function(){return u(b)})},v=function(b,d){b.c.clearRect(0,0,144,144);var c=b.c,a=b.m,e=b.a;w(c,d);x(c,d,!0);c.fillStyle="#ffa000";c.fill();a.save();a.clearRect(0,0,144,144);w(a,d);a.fillStyle="#ffa000";a.fill();x(a,d,!1);a.shadowBlur=2*e;a.shadowOffsetX=-1*e;a.shadowOffsetY=-1*e;a.shadowColor="rgba(165, 39, 20, .12)";a.fillStyle="#f57c00";a.globalCompositeOperation="source-atop";a.fill();c.save();c.globalCompositeOperation="source-atop";
+      c.drawImage(a.canvas,0,0,144,144);c.restore();a.restore();a.save();a.clearRect(0,0,144,144);y(a,d);a.shadowBlur=2*e;a.shadowOffsetX=-1*e;a.shadowOffsetY=-1*e;a.shadowColor="#a52714";a.fillStyle="rgba(165, 39, 20, .2)";a.fill();a.restore();c.save();c.globalCompositeOperation="source-atop";c.drawImage(a.canvas,0,0,144,144);c.restore();a.save();a.clearRect(0,0,144,144);a.fillStyle="rgba(255, 255, 255, .2)";a.fillRect(0,0,144,144);a.translate(0,1);w(a,d);x(a,d,!0);a.fillStyle="#000";a.globalCompositeOperation=
+        "destination-out";a.fill();a.restore();c.save();c.globalCompositeOperation="source-atop";c.drawImage(a.canvas,0,0,144,144);c.restore();y(c,d);c.fillStyle="#ffca28";c.fill();a.save();a.clearRect(0,0,144,144);a.fillStyle="rgba(255, 255, 255, .2)";a.fillRect(0,0,144,144);a.translate(0,1);y(a,d);a.fillStyle="#000";a.globalCompositeOperation="destination-out";a.fill();a.globalCompositeOperation="destination-in";a.translate(0,-1);y(a,d);a.fill();a.restore();c.save();c.globalCompositeOperation="source-atop";
+      c.drawImage(a.canvas,0,0,144,144);c.restore();a.save();a.clearRect(0,0,144,144);a.fillStyle="rgba(165, 39, 20, .2)";a.fillRect(0,0,144,144);a.translate(0,-1);y(a,d);a.fillStyle="#000";a.globalCompositeOperation="destination-out";a.fill();a.globalCompositeOperation="destination-in";a.translate(0,1);y(a,d);a.fill();a.restore();c.save();c.globalCompositeOperation="source-atop";c.drawImage(a.canvas,0,0,144,144);c.restore();c.save();c.globalCompositeOperation="source-atop";c.fillStyle=b.f;c.fillRect(0,
+        0,144,144);c.restore();b=b.c;c=(d-700)%2E3/2E3;b.save();b.translate(0,133);b.scale(1,z(d,700,2E3));b.translate(0,-133);b.fillStyle="#cfd8dc";b.fillRect(40,132,64,2);b.fillStyle="#78909c";d=Math.pow(z(c,.2,.66),2);a=z(c,0,.4);d=Math.max(0,Math.min(1,d));a=Math.max(0,Math.min(1,a));a>d&&b.fillRect(40+64*d,132,64*(a-d),2);d=1-Math.pow(1-z(c,.7,1),2);c=1-Math.pow(1-z(c,.55,.85),2);d=Math.max(0,Math.min(1,d));c=Math.max(0,Math.min(1,c));c>d&&b.fillRect(40+64*d,132,64*(c-d),2);b.restore()},w=function(b,
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            d){b.beginPath();d=A(d,0);b.moveTo(92,99);b.lineTo(40,99);C(b,b.lineTo,d,49.92,35.48,51.52,25.19);C(b,b.bezierCurveTo,d,50.21,33.63,52.65,33.16,53.61,34.77,51.83,23.27,54.43,22.86,55.3,24.61);b.closePath()},x=function(b,d,c){c||b.beginPath();d=A(d,1);b.moveTo(104,99);b.lineTo(40,99);C(b,b.lineTo,d,70.25,46.05,70.2,37.13);C(b,b.bezierCurveTo,d,71.03,44.7,72.97,44.7,73.75,46.05,70.94,35.63,73.06,35.63,73.8,37.13);b.closePath()},y=function(b,d){b.beginPath();d=A(d,2);b.moveTo(74.8,115.25);b.bezierCurveTo(73,
+      116.25,70.75,116.25,68.95,115.25);b.lineTo(40,99);C(b,b.lineTo,d,93.19,51.42,91.5,42.05);C(b,b.bezierCurveTo,d,94.37,50.38,96.24,51.03,96.49,52.59,92.63,40.8,94.7,41.41,94.97,43.08);b.lineTo(104,99);b.closePath()},A=function(b,d){return(.75*Math.sin((b-250*d)%2E3/2E3*Math.PI*2)+1)/2},z=function(b,d,c){return Math.max(0,Math.min(1,(b-d)/(c-d)))},D=[];
+    function C(b,d,c,a){for(var e=[],g=3;g<arguments.length;++g)e[g-3]=arguments[g];D.splice(0,D.length);for(var g=e.length/2,q=0;q<g;q++){var B=e[q];D.push(B+(e[g+q]-B)*c)}d.apply(b,D)}window.FirebaseLoadingAnimation=t;})();
+    var mobileSdkLoadingAnim = new FirebaseLoadingAnimation( window, document.getElementById('loadingElement')); mobileSdkLoadingAnim.play();</script><script nonce="PaSctk3p6anH0CvOMdbxP0U39Ho">(function(w,l){w[l]=new Date().getTime();})(window,'pageLoadTime');</script>
+    <noscript>
+      <h3 style="color: #673ab7; font-family: Helvetica; margin: 2rem;">
+        Sorry, but app is not available without javascript
+      </h3>
+    </noscript>
+  </app-root>
 </body>
 </html>
