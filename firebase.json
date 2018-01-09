@@ -2,17 +2,20 @@
   "database": {
     "rules": "database.rules.json"
   },
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
   "hosting": {
     "public": "dist",
     "rewrites": [
       {
         "source": "**",
         "destination": "/index.html"
-      },
-      {
-        "source": "/worker-basic.min.js",
-        "destination": "/ngsw-worker.js"
       }
     ]
+  },
+  "storage": {
+    "rules": "storage.rules"
   }
 }

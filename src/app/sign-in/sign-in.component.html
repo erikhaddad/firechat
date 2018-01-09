@@ -3,19 +3,23 @@
     <div fxLayout="column" fxLayoutAlign="center center">
       <h1>Sign in to get started</h1>
 
-      <button class="auth-google" mat-raised-button (click)="signInWithGoogle()">
+      <button class="auth-google" mat-raised-button
+              aria-label="Sign in with Google" (click)="signInWithGoogle()">
         <mat-icon svgIcon="google"></mat-icon> Sign in with Google
       </button>
 
-      <button class="auth-facebook" mat-raised-button (click)="signInWithFacebook()">
+      <button class="auth-facebook" mat-raised-button
+              aria-label="Sign in with Facebook" (click)="signInWithFacebook()">
         <mat-icon svgIcon="facebook"></mat-icon> Sign in with Facebook
       </button>
 
-      <button class="auth-twitter" mat-raised-button (click)="signInWithTwitter()">
+      <button class="auth-twitter" mat-raised-button
+              aria-label="Sign in with Twitter" (click)="signInWithTwitter()">
         <mat-icon svgIcon="twitter"></mat-icon> Sign in with Twitter
       </button>
 
-      <button class="auth-github" mat-raised-button (click)="signInWithGithub()">
+      <button class="auth-github" mat-raised-button
+              aria-label="Sign in with GitHub" (click)="signInWithGithub()">
         <mat-icon svgIcon="github"></mat-icon> Sign in with GitHub
       </button>
     </div>

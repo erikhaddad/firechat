@@ -2,7 +2,6 @@ import {
   Component, OnDestroy, OnInit, ViewContainerRef,
   ViewEncapsulation
 } from '@angular/core';
-import {AngularFireDatabase, AngularFireList, AngularFireObject} from 'angularfire2/database';
 import {
   Moderator, RoomMessages, Message, Room, User, RoomUsers,
   SuspendedUsers, Language, Languages, Themes
@@ -17,6 +16,7 @@ import {RoomMetadataComponent} from './room-metadata/room-metadata.component';
 
 import {Observable} from 'rxjs/Observable';
 import {AppStateService} from './common/app-state.service';
+import {LayoutService} from './common/layout.service';
 
 @Component({
   selector: 'app-root',
@@ -29,6 +29,12 @@ export class AppComponent implements OnInit, OnDestroy {
 
   LANGUAGES = Languages;
   THEMES = Themes;
+
+  currentPage: string;
+  showToolbar: boolean;
+  showNav: boolean;
+  showDetails: boolean;
+  isMobile: boolean;
 
   roomId: string;
   paramSubscription: any;
@@ -75,6 +81,7 @@ export class AppComponent implements OnInit, OnDestroy {
               private rtdbService: RtdbService,
               private firestoreService: FirestoreService,
               private appState: AppStateService,
+              private layoutService: LayoutService,
               private route: ActivatedRoute,
               private router: Router,
               public dialog: MatDialog,
@@ -83,6 +90,34 @@ export class AppComponent implements OnInit, OnDestroy {
               iconRegistry: MatIconRegistry,
               sanitizer: DomSanitizer) {
 
+    /** LAYOUT **/
+    this.currentPage = layoutService.sectionId;
+    this.layoutService.sectionIdAnnounced$.subscribe(
+      sectionId => {
+        this.currentPage = sectionId;
+      });
+    this.showToolbar = layoutService.toolbarShowState;
+    this.layoutService.showToolbarAnnounced$.subscribe(
+      show => {
+        this.showToolbar = show;
+      });
+    this.showNav = layoutService.navShowState;
+    this.layoutService.showNavAnnounced$.subscribe(
+      show => {
+        this.showNav = show;
+      });
+    this.showDetails = layoutService.detailsShowState;
+    this.layoutService.showDetailsAnnounced$.subscribe(
+      show => {
+        this.showDetails = show;
+      });
+    this.isMobile = layoutService.mobileWidthState;
+    this.layoutService.widthMobileAnnounced$.subscribe(
+      isMobile => {
+        this.isMobile = isMobile;
+      });
+
+    /** ICONS **/
     iconRegistry.addSvgIcon(
       'google',
       sanitizer.bypassSecurityTrustResourceUrl('assets/icons/auth/google.svg'));

@@ -1,0 +1,16 @@
+<div id="home-component" fxLayout="column" fxLayoutAlign="center center">
+  <div class="home-content" fxLayout="column" fxLayout.gt-md="row" fxLayoutAlign="center center">
+    <!--<img class="home-beer-guy" src="/assets/images/beer_guy.webp" />-->
+
+    <picture>
+      <source class="home-beer-guy" srcset="/assets/images/flame_guy.webp" type="image/webp">
+      <source class="home-beer-guy" srcset="/assets/images/flame_guy.png" type="image/png">
+      <img class="home-beer-guy" src="/assets/images/flame_guy.png" alt="Firechat guy!">
+    </picture>
+
+    <div class="home-buttons" fxLayout="row" fxLayout.gt-md="column" fxLayoutAlign="center center">
+      <a mat-raised-button color="primary" [routerLink]="'messages'" aria-label="Get Started" *ngIf="currentUser != null">Get Chatting</a>
+      <a mat-raised-button color="primary" [routerLink]="'sign-in'" aria-label="Sign in and pour some beer" *ngIf="currentUser == null">Sign In</a>
+    </div>
+  </div>
+</div>

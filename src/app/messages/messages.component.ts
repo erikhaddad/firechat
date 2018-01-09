@@ -21,7 +21,7 @@ import {AngularFireStorage} from 'angularfire2/storage';
 
 import {fromEvent} from 'rxjs/observable/fromEvent';
 import {map, filter, tap} from 'rxjs/operators';
-import {storage} from 'firebase/app';
+import {LayoutService} from '../common/layout.service';
 
 @Component({
   selector: 'app-messages',
@@ -99,7 +99,8 @@ export class MessagesComponent implements OnInit, AfterViewChecked, OnDestroy {
 
   constructor(private rtdbService: RtdbService,
               private firestoreService: FirestoreService,
-              private storage: AngularFireStorage,
+              private afStorage: AngularFireStorage,
+              public layoutService: LayoutService,
               public authService: AuthService,
               private appState: AppStateService,
               private router: Router,
@@ -127,6 +128,11 @@ export class MessagesComponent implements OnInit, AfterViewChecked, OnDestroy {
   }
 
   ngOnInit() {
+    this.layoutService.handleSectionId('messages');
+    this.layoutService.handleShowToolbar(true);
+    this.layoutService.handleShowNav(true);
+    this.layoutService.handleShowDetails(false);
+
     this.paramSubscription = this.route.params.subscribe(params => {
       this.appState.setParams(params['roomId']);
 
@@ -224,7 +230,7 @@ export class MessagesComponent implements OnInit, AfterViewChecked, OnDestroy {
 
   uploadFile() {
     const randomId = Math.random().toString(36).substring(7);
-    const task = this.storage.upload(randomId, this.file);
+    const task = this.afStorage.upload(randomId, this.file);
 
     this.uploadPercent = task.snapshotChanges()
       .pipe(

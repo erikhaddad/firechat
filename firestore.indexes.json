@@ -1,27 +1,14 @@
 {
   "indexes": [
     {
-      "collectionId": "orders",
+      "collectionId": "OUTPUT",
       "fields": [
         {
-          "fieldPath": "createdAt",
+          "fieldPath": "language",
           "mode": "ASCENDING"
         },
         {
-          "fieldPath": "progress",
-          "mode": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionId": "patrons",
-      "fields": [
-        {
-          "fieldPath": "patronId",
-          "mode": "ASCENDING"
-        },
-        {
-          "fieldPath": "createdAt",
+          "fieldPath": "timestamp",
           "mode": "ASCENDING"
         }
       ]

@@ -9,7 +9,7 @@ function isImageAndBelowMaxSize(uid, maxSizeMB) {
 }
 
 service firebase.storage {
-  match /b/fireplace-867ee.appspot.com/o {
+  match /b/firechat-a3f10.appspot.com/o {
     match /{userId}/thumb/{postId}/{fileName} {
       allow read, write: if isImageAndBelowMaxSize(userId, 1);
     }

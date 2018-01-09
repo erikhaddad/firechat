@@ -20,8 +20,7 @@ import {AngularFireStorageModule} from 'angularfire2/storage';
 
 const routes: Routes = [
   {path: 'messages/room/:roomId', component: MessagesComponent, canActivate: [AuthGuard]},
-  {path: 'messages', component: MessagesComponent, canActivate: [AuthGuard]},
-  {path: '', redirectTo: '/messages', pathMatch: 'full'}
+  {path: 'messages', component: MessagesComponent, canActivate: [AuthGuard]}
 ];
 
 @NgModule({

@@ -11,6 +11,17 @@ $nav: 100;
 $navHeight: 64px;
 $trans: 0.3s ease;
 
+.app-toolbar-container {
+  .mat-toolbar {
+    display: none;
+  }
+
+  &.hasToolbar {
+    .mat-toolbar {
+      display: flex;
+    }
+  }
+}
 .app-toolbar {
   .app-toolbar-menu {
     box-shadow: none;
@@ -95,7 +106,11 @@ $trans: 0.3s ease;
 }
 
 .app-sidenav-container {
-  height: calc(100vh - 64px);
+  height: 100vh;
+
+  &.hasToolbar {
+    height: calc(100vh - 64px);
+  }
 
   &.m2app-dark {
     background: #333333;
@@ -145,6 +160,10 @@ $trans: 0.3s ease;
     /*width: 29%;*/
     width: 274px;
     max-width: 324px;
+
+    .mat-nav-list {
+      transform: translate3d(0,0,0);
+    }
 
     .mat-list-item.active {
       background: rgba(255,255,255,.04);

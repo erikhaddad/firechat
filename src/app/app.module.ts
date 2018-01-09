@@ -19,36 +19,43 @@ import {RtdbService} from './common/rtdb.service';
 import {FirestoreService} from './common/firestore.service';
 import {ServiceWorkerModule} from '@angular/service-worker';
 import {environment} from '../environments/environment';
+import {HomeModule} from './home/home.module';
+import {LayoutService} from './common/layout.service';
 
 const routes: Routes = [
-    // { path: '', redirectTo: '/messages', pathMatch: 'full'}
+  // { path: '', redirectTo: '/messages', pathMatch: 'full'}
 ];
 
 @NgModule({
-    declarations: [
-        AppComponent,
-        RoomMetadataComponent
-    ],
-    exports: [
-        AppComponent
-    ],
-    imports: [
-        BrowserModule,
-        FormsModule,
-        HttpModule,
-        HttpClientModule,
-        BrowserAnimationsModule,
-        RouterModule.forRoot(routes, {useHash: false}),
-        environment.production ? ServiceWorkerModule.register('ngsw-worker.js') : [],
-        FlexLayoutModule,
-        MaterialModule,
+  declarations: [
+    AppComponent,
+    RoomMetadataComponent
+  ],
+  exports: [
+    AppComponent
+  ],
+  imports: [
+    BrowserModule,
+    FormsModule,
+    HttpModule,
+    HttpClientModule,
+    BrowserAnimationsModule,
+    RouterModule.forRoot(routes, {useHash: false}),
+    // environment.production ? ServiceWorkerModule.register('/ngsw-worker.js') : [],
+    ServiceWorkerModule.register('/ngsw-worker.js', {
+       enabled: environment.production
+    }),
+    FlexLayoutModule,
+    MaterialModule,
 
-        AuthModule,
-        SignInModule,
-        MessagesModule
-    ],
-    entryComponents: [RoomMetadataComponent],
-    providers: [AppStateService, RtdbService, FirestoreService],
-    bootstrap: [AppComponent]
+    AuthModule,
+    HomeModule,
+    SignInModule,
+    MessagesModule
+  ],
+  entryComponents: [RoomMetadataComponent],
+  providers: [AppStateService, RtdbService, FirestoreService, LayoutService],
+  bootstrap: [AppComponent]
 })
-export class AppModule {}
+export class AppModule {
+}

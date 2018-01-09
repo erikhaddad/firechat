@@ -1,0 +1,39 @@
+#home-component {
+  height: 100vh;
+  background-color: rgba(245, 124, 0, 1);
+  transition: background-color .2s ease;
+
+  .home-content {
+
+  }
+
+  .home-beer-guy {
+    height: 512px;
+    width: 512px;
+  }
+
+  .home-buttons {
+    padding: 12px 64px;
+
+    .mat-button, .mat-raised-button {
+      width: 172px;
+      margin: 12px;
+      text-transform: uppercase;
+      background-color: #8a2995;
+      border-radius: 18px;
+
+      .mat-button-wrapper {
+        font-family: 'Open Sans', sans-serif;
+      }
+    }
+  }
+}
+
+@media screen and (max-height: 760px) {
+  #home-component {
+    .home-beer-guy {
+      height: 256px;
+      width: 256px;
+    }
+  }
+}

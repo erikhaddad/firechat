@@ -1,11 +1,10 @@
+'use strict';
+
 const _ = require('lodash');
-const firebase = require('firebase');
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
-//admin.initializeApp(functions.config().firebase);
-const vision = require('@google-cloud/vision')();
+const vision = require('@google-cloud/vision');
 const util = require('util');
-
 
 /* Expected input: lES9QqFENNZZkd3mCtTQLVgiNUQ2/full/-KfFC5qX2Eiex_oGYfCP/IMG_20170313_134331.jpg */
 function derivePathMap(path) {
@@ -14,7 +13,7 @@ function derivePathMap(path) {
     if (!!path) {
         let pathTokens = path.split('/');
 
-        if (pathTokens.length == 4) {
+        if (pathTokens.length === 4) {
             let userId = pathTokens[0];
             let postId = pathTokens[2];
             let filename = pathTokens[3];
@@ -28,7 +27,8 @@ function derivePathMap(path) {
     return pathMap;
 }
 
-function annotatePhoto(evt) {
+exports.annotatePhoto = functions.storage.object()
+  .onChange((evt) => {
     const object = evt.data; // The Storage object.
 
     const fileBucket = object.bucket; // The Storage bucket that contains the file.
@@ -76,8 +76,4 @@ function annotatePhoto(evt) {
                 return admin.database().ref().child('tags/'+pathMap.postId).update(labelAnnotations);
             }
         });
-}
-
-module.exports = {
-    annotatePhoto: annotatePhoto
-};
+});

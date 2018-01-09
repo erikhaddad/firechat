@@ -9,6 +9,7 @@
       "outDir": "dist",
       "assets": [
         "assets",
+        "browserconfig.xml",
         "favicon.ico",
         "manifest.json"
       ],
