@@ -42,9 +42,9 @@ const routes: Routes = [
     BrowserAnimationsModule,
     RouterModule.forRoot(routes, {useHash: false}),
     // environment.production ? ServiceWorkerModule.register('/ngsw-worker.js') : [],
-    ServiceWorkerModule.register('/ngsw-worker.js', {
-       enabled: environment.production
-    }),
+    // ServiceWorkerModule.register('/ngsw-worker.js', {
+    //   enabled: environment.production
+    // }),
     FlexLayoutModule,
     MaterialModule,
 
@@ -54,7 +54,12 @@ const routes: Routes = [
     MessagesModule
   ],
   entryComponents: [RoomMetadataComponent],
-  providers: [AppStateService, RtdbService, FirestoreService, LayoutService],
+  providers: [
+    AppStateService,
+    RtdbService,
+    FirestoreService,
+    LayoutService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule {
