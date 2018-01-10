@@ -41,6 +41,44 @@
 
   /* box-shadow: 0px -3px 3px 0px rgba(50, 50, 50, 0.1); */
 
+  #new-post-input {
+    display: none;
+  }
+  .preview {
+    display: none;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 64px;
+    height: 0;
+    transition: .2s height ease-in-out;
+    max-height: 0;
+    background-color: #CCCCCC;
+
+    img {
+      display: none;
+      height: 200px;
+      width: auto;
+    }
+
+    &.open {
+      display: flex;
+      height: 240px;
+      max-height: 240px !important;
+
+      img {
+        display: inline-block;
+      }
+    }
+  }
+
+  .input-buffer {
+    .mat-button {
+      color: rgba(0, 0, 0, .87);
+      text-transform: uppercase;
+    }
+  }
+
   .input {
     height: 64px;
     background: #CCCCCC;
@@ -88,8 +126,13 @@
   &.m2app-dark {
     background: #696c75;
 
-    .input {
+    .input, .preview {
       background: #696c75;
+    }
+    .input-buffer {
+      .mat-button {
+        color: rgba(255, 255, 255, .87);
+      }
     }
   }
 }

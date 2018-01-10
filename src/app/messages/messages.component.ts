@@ -221,11 +221,28 @@ export class MessagesComponent implements OnInit, AfterViewChecked, OnDestroy {
   }
 
   /** STORAGE **/
+  triggerInputFileClick (evt) {
+    const element = document.getElementById('new-post-input');
+
+    if (element) {
+      element.click();
+    } else {
+      console.error('Could not find the new post input field!');
+    }
+
+    evt.preventDefault();
+  }
+
   previewFile(event) {
     const reader = new FileReader();
     this.file = event.target.files[0];
     this.previewURL = fromEvent(reader, 'load').pipe(map(e => reader.result));
     reader.readAsDataURL(this.file);
+  }
+
+  removeFile(event) {
+    this.file = null;
+    this.previewURL = null;
   }
 
   uploadFile() {

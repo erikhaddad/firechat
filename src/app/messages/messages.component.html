@@ -20,17 +20,32 @@
   <div class="bottom" id="bottom" *ngIf="roomId"
        fxLayout="row" fxLayoutAlign="start center"
        [class.m2app-dark]="currentUser && currentUser.preferences && currentUser.preferences.theme == THEMES.Dark">
-    <button mat-icon-button class="upload">
+
+
+    <!-- UPLOAD -->
+    <button mat-icon-button class="upload" (click)="triggerInputFileClick($event)">
       <mat-icon>image</mat-icon>
     </button>
+    <input id="new-post-input" type="file"
+           ([ngModel])="file" name="inputFile" accept="image/*"
+           (change)="previewFile($event)" />
 
+    <!-- CONTENT -->
+    <div class="preview" [class.open]="previewURL" fxLayout="row" fxLayoutAlign="center center">
+      <img [src]="previewURL | async" />
+    </div>
+    <div class="input-buffer" *ngIf="previewURL" fxFlex fxLayout="row" fxLayoutAlign="center center">
+      <button mat-button (click)="removeFile($event)">Remove</button>
+    </div>
     <textarea class="input" id="message-text-input"
+              *ngIf="!previewURL"
               fxFlex title="New message text"
               [(ngModel)]="newMessage.message"
               (keydown.enter)="sendRoomMessage($event)"></textarea>
 
+    <!-- SUBMIT -->
     <button mat-icon-button class="send"
-            [disabled]="!newMessage.message"
+            [disabled]="!newMessage.message && !previewURL"
             (click)="sendRoomMessage($event)">
       <mat-icon>send</mat-icon>
     </button>
