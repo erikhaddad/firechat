@@ -18,6 +18,7 @@ import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/observable/fromEvent';
 import {AppStateService} from './common/app-state.service';
 import {LayoutService} from './common/layout.service';
+import {MessagingService} from './common/messaging.service';
 
 @Component({
   selector: 'app-root',
@@ -86,6 +87,7 @@ export class AppComponent implements OnInit, OnDestroy {
               private firestoreService: FirestoreService,
               private appState: AppStateService,
               private layoutService: LayoutService,
+              public msg: MessagingService,
               private route: ActivatedRoute,
               private router: Router,
               public dialog: MatDialog,
@@ -146,6 +148,10 @@ export class AppComponent implements OnInit, OnDestroy {
 
         this.currentUser$.subscribe(user => {
           this.currentUser = user;
+
+          this.msg.getPermission(user);
+          this.msg.monitorRefresh(user);
+          this.msg.receiveMessages();
         });
       }
     });

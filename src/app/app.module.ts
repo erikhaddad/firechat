@@ -21,6 +21,7 @@ import {ServiceWorkerModule} from '@angular/service-worker';
 import {environment} from '../environments/environment';
 import {HomeModule} from './home/home.module';
 import {LayoutService} from './common/layout.service';
+import {MessagingService} from './common/messaging.service';
 
 const routes: Routes = [
   // { path: '', redirectTo: '/messages', pathMatch: 'full'}
@@ -58,7 +59,8 @@ const routes: Routes = [
     AppStateService,
     RtdbService,
     FirestoreService,
-    LayoutService
+    LayoutService,
+    MessagingService
   ],
   bootstrap: [AppComponent]
 })
