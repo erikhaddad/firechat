@@ -15,6 +15,7 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {RoomMetadataComponent} from './room-metadata/room-metadata.component';
 
 import {Observable} from 'rxjs/Observable';
+import 'rxjs/add/observable/fromEvent';
 import {AppStateService} from './common/app-state.service';
 import {LayoutService} from './common/layout.service';
 
@@ -74,6 +75,9 @@ export class AppComponent implements OnInit, OnDestroy {
       name: 'German'
     }
   ];
+
+  online$: Observable<any>;
+  offline$: Observable<any>;
 
   private roomMetadataDialogRef: MatDialogRef<RoomMetadataComponent>;
 
@@ -175,6 +179,20 @@ export class AppComponent implements OnInit, OnDestroy {
         });
       }
     });
+
+    this.online$ = Observable.fromEvent(window, 'online');
+    this.online$.subscribe(e => {
+      const message = 'Back online!';
+      console.log(message, e);
+      this.showSnackbar(message);
+    });
+
+    this.offline$ = Observable.fromEvent(window, 'offline');
+    this.offline$.subscribe(e => {
+      const message = 'Currently offline.';
+      console.log(message, e);
+      this.showSnackbar(message);
+    });
   }
 
   ngOnDestroy() {
@@ -185,7 +203,11 @@ export class AppComponent implements OnInit, OnDestroy {
     this.authService.signOut();
     this.router.navigate(['/sign-in']);
 
-    this.snackBar.open(message, null, {
+    this.showSnackbar(message);
+  }
+
+  showSnackbar (msg: string) {
+    this.snackBar.open(msg, null, {
       duration: 1000
     });
   }

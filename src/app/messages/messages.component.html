@@ -12,7 +12,15 @@
              (click)="details.open()"
              [style.backgroundImage]="'url(' + msg.avatar + ')'"></div>
 
-        <div class="text-wrapper animated fadeIn" [@flyInOut]="'in'">{{ msg.message }}</div>
+        <div class="text-wrapper animated fadeIn"
+             *ngIf="msg.type === 1"
+             [@flyInOut]="'in'">{{ msg.message }}</div>
+
+        <div class="text-wrapper animated fadeIn"
+             *ngIf="msg.type === 2"
+             [@flyInOut]="'in'">
+          <img [src]="msg.message" />
+        </div>
       </div>
     </div>
   </div>

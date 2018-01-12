@@ -55,7 +55,7 @@ export interface Message {
   message?: string; // The content of the message.
   moderated?: boolean; // Is message moderated
   timestamp?: number | object; // The time at which the message was sent.
-  type?: string;  // Text or image?
+  type?: number;  // Text or image?
   tags?: string[];  // Cloud Vision results
 }
 
@@ -102,6 +102,11 @@ export enum Languages {
   Spanish = 2,
   Portuguese = 3,
   German = 4
+}
+
+export enum MessageTypes {
+  Text = 1,
+  Image = 2
 }
 
 export interface Language {

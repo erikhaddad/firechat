@@ -1,5 +1,5 @@
 import {Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewChecked} from '@angular/core';
-import {Message, Themes, Languages, User} from '../common/data.model';
+import {Message, Themes, Languages, User, MessageTypes} from '../common/data.model';
 import {AuthService} from '../auth/auth.service';
 import {
   trigger,
@@ -92,7 +92,7 @@ export class MessagesComponent implements OnInit, AfterViewChecked, OnDestroy {
   roomMessages: Message[];
 
   /** STORAGE **/
-  previewURL: Observable<any>;
+  previewURL: Observable<string>;
   file: Blob;
   uploadPercent: Observable<number>;
   uploadURL: Observable<string>;
@@ -196,17 +196,32 @@ export class MessagesComponent implements OnInit, AfterViewChecked, OnDestroy {
     event.preventDefault();
     event.stopPropagation();
 
-    if (this.newMessage.message !== 'undefined') {
+    this.newMessage.userId = this.currentUser.id;
+    this.newMessage.name = this.currentUser.name;
+    this.newMessage.avatar = this.currentUser.avatar;
+    this.newMessage.language = this.currentUser.preferences.language;
+    this.newMessage.moderated = false;
+
+    if (this.file && this.previewURL) {
+      const uploadTask = this.uploadFile();
+
+      uploadTask.subscribe(url => {
+        this.newMessage.type = MessageTypes.Image;
+        this.newMessage.message = url;
+
+        this.firestoreService.createRoomMessage(this.roomId, this.newMessage);
+
+        this.newMessage = {};
+      });
+
+    } else if (this.newMessage.message !== 'undefined') {
+      this.newMessage.type = MessageTypes.Text;
       this.newMessage.message = this.newMessage.message.trim();
-      this.newMessage.userId = this.currentUser.id;
-      this.newMessage.name = this.currentUser.name;
-      this.newMessage.avatar = this.currentUser.avatar;
-      this.newMessage.language = this.currentUser.preferences.language;
-      this.newMessage.moderated = false;
 
       this.firestoreService.createRoomMessage(this.roomId, this.newMessage);
 
       this.newMessage = {};
+
     }
 
     return false;
@@ -245,7 +260,7 @@ export class MessagesComponent implements OnInit, AfterViewChecked, OnDestroy {
     this.previewURL = null;
   }
 
-  uploadFile() {
+  uploadFile(): Observable<string> {
     const randomId = Math.random().toString(36).substring(7);
     const task = this.afStorage.upload(randomId, this.file);
 
@@ -260,5 +275,7 @@ export class MessagesComponent implements OnInit, AfterViewChecked, OnDestroy {
         map(s => s.downloadURL),
         tap(console.log),
       );
+
+    return this.uploadURL;
   }
 }
