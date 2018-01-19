@@ -74,6 +74,11 @@ export class AppComponent implements OnInit, OnDestroy {
       id: this.LANGUAGES.German,
       abbreviation: 'de',
       name: 'German'
+    },
+    {
+      id: this.LANGUAGES.French,
+      abbreviation: 'fr',
+      name: 'French'
     }
   ];
 
@@ -254,5 +259,9 @@ export class AppComponent implements OnInit, OnDestroy {
   updateUserPreferenceTheme(evt: Event, themeId: number) {
     this.currentUser.preferences.theme = themeId;
     this.firestoreService.updateUser(this.currentUser);
+  }
+
+  getLanguageById(id: number) {
+    return this.languages.find(lang => lang.id === id);
   }
 }

@@ -133,7 +133,8 @@ export class FirestoreService {
   /** ROOM MESSAGES **/
   createRoomMessage(roomId: string, message: Message): Promise<any> {
     const newMessageId: string = this.afs.createId();
-    const messagePath = `${this.roomMessagesPath}/${roomId}/SOURCE/${newMessageId}`;
+    // const messagePath = `${this.roomMessagesPath}/${roomId}/SOURCE/${newMessageId}`;
+    const messagePath = `${this.roomMessagesPath}/${roomId}/TRANSLATE/${newMessageId}`;
     message.id = newMessageId;
     message.timestamp = this.timestamp;
 

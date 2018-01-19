@@ -51,6 +51,12 @@ $trans: 0.3s ease;
     }
   }
 
+  .selected-language {
+    font-size: 14px;
+    line-height: 40px;
+    color: rgba(255,255,255,.74);
+  }
+
   .app-toolbar-title {
     font-family: 'Open Sans', sans-serif;
     color: rgba(255,255,255,1);
@@ -297,6 +303,24 @@ $trans: 0.3s ease;
   font-weight:bold;
 }
 @media (max-width: 600px) {
+  .app-toolbar {
+    .selected-language {
+      display: none;
+    }
+    .user-info .signed-in-user-container .usernamelink {
+      padding: 0;
+      border-radius: 50%;
+      min-width: 0;
+
+      .avatar {
+        margin: 0;
+      }
+      .username {
+        display: none;
+      }
+    }
+  }
+
   .app-sidenav-container {
     height: calc(100vh - 56px);
   }

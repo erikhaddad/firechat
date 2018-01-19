@@ -14,6 +14,8 @@
     <span class="app-toolbar-filler"></span>
 
     <div *ngIf="currentUser && currentUser.preferences">
+      <span class="selected-language">{{ getLanguageById(currentUser.preferences.language)?.name }}</span>
+
       <button mat-icon-button
               aria-label="Select language"
               matTooltip="Select a language"
@@ -30,6 +32,7 @@
         </button>
       </mat-menu>
 
+      <!--
       <button mat-icon-button
               aria-label="Moderate toggle"
               matTooltip="Toggle message moderation"
@@ -38,6 +41,7 @@
         <mat-icon *ngIf="!currentUser.preferences.moderate">lock_open</mat-icon>
         <mat-icon *ngIf="currentUser.preferences.moderate">lock_outline</mat-icon>
       </button>
+      -->
 
       <button mat-icon-button
               matTooltip="Select a theme"
