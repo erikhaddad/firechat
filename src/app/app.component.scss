@@ -321,7 +321,7 @@ $trans: 0.3s ease;
     }
   }
 
-  .app-sidenav-container {
+  .app-sidenav-container.hasToolbar {
     height: calc(100vh - 56px);
   }
 }

@@ -75,7 +75,7 @@
 
       <div class="signed-in-user-container" *ngSwitchCase="true">
         <button mat-button class="usernamelink" [matMenuTriggerFor]="menuPerson" aria-label="User">
-          <div class="avatar" [ngStyle]="{'background-image': 'url(' + authService.user.photoURL + ')'}"></div>
+          <div class="avatar" [ngStyle]="{'background-image': 'url(' + authService.user.photoURL + '?sz=128)'}"></div>
           <div class="username">{{ authService.user.displayName }}</div>
         </button>
         <mat-menu #menuPerson="matMenu" xPosition="before">

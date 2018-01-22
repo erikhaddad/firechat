@@ -96,6 +96,7 @@ export class MessagesComponent implements OnInit, AfterViewChecked, OnDestroy {
   file: Blob;
   uploadPercent: Observable<number>;
   uploadURL: Observable<string>;
+  downloadURL: Observable<string>;
 
   constructor(private rtdbService: RtdbService,
               private firestoreService: FirestoreService,
@@ -206,12 +207,21 @@ export class MessagesComponent implements OnInit, AfterViewChecked, OnDestroy {
       const uploadTask = this.uploadFile();
 
       uploadTask.subscribe(url => {
-        this.newMessage.type = MessageTypes.Image;
-        this.newMessage.message = url;
+        console.log('returned image url', url);
 
-        this.firestoreService.createRoomMessage(this.roomId, this.newMessage);
+        if (url) {
+          this.newMessage.type = MessageTypes.Image;
+          this.newMessage.message = url;
 
-        this.newMessage = {};
+          this.firestoreService.createRoomMessage(this.roomId, this.newMessage);
+
+          this.newMessage = {};
+          this.previewURL = null;
+          this.file = null;
+          this.downloadURL = null;
+          this.uploadURL = null;
+          this.uploadPercent = null;
+        }
       });
 
     } else if (this.newMessage.message !== 'undefined') {
@@ -262,20 +272,53 @@ export class MessagesComponent implements OnInit, AfterViewChecked, OnDestroy {
 
   uploadFile(): Observable<string> {
     const randomId = Math.random().toString(36).substring(7);
-    const task = this.afStorage.upload(randomId, this.file);
 
-    this.uploadPercent = task.snapshotChanges()
+    const path = `${this.currentUser.id}/full/${this.roomId}/${randomId}`;
+
+    console.log('new image storage path', path);
+
+    // const task = this.afStorage.upload(path, this.file);
+    const ref = this.afStorage.ref(path);
+    const task = ref.put(this.file);
+
+    task.snapshotChanges().subscribe(snap => {
+      console.log('upload snapshot', snap);
+    });
+
+    // observe percentage changes
+    this.uploadPercent = task.percentageChanges();
+    this.uploadPercent.subscribe(snap => {
+      console.log('upload pct snapshot', snap);
+    });
+
+    // get notified when the download URL is available
+    this.downloadURL = task.downloadURL();
+    this.downloadURL.subscribe(url => {
+      console.log('upload download url', url);
+    });
+
+    /*
+    this.uploadPercent = task.percentageChanges()
       .pipe(
-        map(s => s.bytesTransferred / s.totalBytes * 100)
+        map(s => {
+          const uploadPct = s.bytesTransferred / s.totalBytes * 100;
+          console.log('upload percentage', uploadPct);
+          return uploadPct;
+        })
       );
 
     this.uploadURL = task.snapshotChanges()
       .pipe(
         filter(s => s.bytesTransferred === s.totalBytes),
-        map(s => s.downloadURL),
-        tap(console.log),
+        map(s => {
+          const downloadUrl = s.downloadURL;
+          console.log('downloadUrl', downloadUrl);
+          return downloadUrl;
+        }),
+        tap(console.log)
       );
+    */
 
-    return this.uploadURL;
+    return this.downloadURL;
   }
 }
