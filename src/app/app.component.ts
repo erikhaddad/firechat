@@ -19,6 +19,9 @@ import 'rxjs/add/observable/fromEvent';
 import {AppStateService} from './common/app-state.service';
 import {LayoutService} from './common/layout.service';
 import {MessagingService} from './common/messaging.service';
+import {SwPush, SwUpdate} from '@angular/service-worker';
+import {ReferenceService} from './common/reference.service';
+import {NgswCommChannel} from '@angular/service-worker/src/low_level';
 
 @Component({
   selector: 'app-root',
@@ -85,6 +88,9 @@ export class AppComponent implements OnInit, OnDestroy {
   online$: Observable<any>;
   offline$: Observable<any>;
 
+
+  VAPID_PUBLIC_KEY: string;
+
   private roomMetadataDialogRef: MatDialogRef<RoomMetadataComponent>;
 
   constructor(public authService: AuthService,
@@ -98,8 +104,13 @@ export class AppComponent implements OnInit, OnDestroy {
               public dialog: MatDialog,
               public viewContainerRef: ViewContainerRef,
               public snackBar: MatSnackBar,
+              private referenceService: ReferenceService,
+              private swPush: SwPush,
+              private swUpdate: SwUpdate,
               iconRegistry: MatIconRegistry,
               sanitizer: DomSanitizer) {
+
+    this.VAPID_PUBLIC_KEY = '12345';
 
     /** LAYOUT **/
     this.currentPage = layoutService.sectionId;
@@ -263,5 +274,57 @@ export class AppComponent implements OnInit, OnDestroy {
 
   getLanguageById(id: number) {
     return this.languages.find(lang => lang.id === id);
+  }
+
+  // Subscribe and listen to push notifications from the Service Worker.
+  subscribeToPush() {
+    // Requesting messaging service to subscribe current client (browser)
+    this.swPush.requestSubscription({
+        serverPublicKey: this.VAPID_PUBLIC_KEY
+      })
+      .then(pushSubscription => {
+        // Passing subscription object to our backend
+        this.msg.addSubscriber(pushSubscription)
+          .subscribe(
+            res => {
+              console.log('[App] Add subscriber request answer', res);
+              this.showSnackbar('Now you are subscribed.');
+            },
+            err => {
+              console.log('[App] Add subscriber request failed', err)
+            }
+          );
+      })
+      .catch(err => {
+        console.error(err);
+      });
+  }
+
+  unsubscribeFromPush(): Promise<void> {
+    return this.swPush.unsubscribe();
+  }
+
+  // Subscribe to update notifications from the Service Worker, trigger update checks, and forcibly activate updates.
+  checkForUpdate() {
+    console.log('[App] checkForUpdate started');
+    this.swUpdate.checkForUpdate()
+      .then(() => {
+        console.log('[App] checkForUpdate completed');
+      })
+      .catch(err => {
+        console.error(err);
+      });
+  }
+
+  activateUpdate() {
+    console.log('[App] activateUpdate started');
+    this.swUpdate.activateUpdate()
+      .then(() => {
+        console.log('[App] activateUpdate completed');
+        this.referenceService.nativeWindow.location.reload();
+      })
+      .catch(err => {
+        console.error(err);
+      });
   }
 }

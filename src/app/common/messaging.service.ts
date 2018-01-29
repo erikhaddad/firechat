@@ -3,6 +3,7 @@ import {AngularFirestore} from 'angularfire2/firestore';
 import {AuthService} from '../auth/auth.service';
 import * as firebase from 'firebase';
 import {Subject} from 'rxjs/Subject';
+import {Observable} from 'rxjs/Observable';
 
 @Injectable()
 export class MessagingService {
@@ -38,7 +39,7 @@ export class MessagingService {
           console.log('Token refreshed.');
           this.saveToken(user, refreshedToken);
         })
-        .catch( err => console.log(err, 'Unable to retrieve new token') )
+        .catch(err => console.log(err, 'Unable to retrieve new token'))
     });
   }
 
@@ -48,8 +49,8 @@ export class MessagingService {
     // If token does not exist in firestore, update db
     if (!currentTokens[token]) {
       const userRef = this.afs.collection('users').doc(user.uid);
-      const tokens = { ...currentTokens, [token]: true };
-      userRef.update({ fcmTokens: tokens });
+      const tokens = {...currentTokens, [token]: true};
+      userRef.update({fcmTokens: tokens});
     }
   }
 
@@ -59,5 +60,10 @@ export class MessagingService {
       console.log('Message received. ', payload);
       this.messageSource.next(payload);
     });
+  }
+
+  addSubscriber(pushSubscription: PushSubscription): Observable<string> {
+    // TODO: implement this
+    return Observable.create();
   }
 }

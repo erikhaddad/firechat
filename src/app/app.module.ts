@@ -22,6 +22,7 @@ import {environment} from '../environments/environment';
 import {HomeModule} from './home/home.module';
 import {LayoutService} from './common/layout.service';
 import {MessagingService} from './common/messaging.service';
+import {ReferenceService} from './common/reference.service';
 
 const routes: Routes = [
   // { path: '', redirectTo: '/messages', pathMatch: 'full'}
@@ -42,17 +43,19 @@ const routes: Routes = [
     HttpClientModule,
     BrowserAnimationsModule,
     RouterModule.forRoot(routes, {useHash: false}),
+    // THIS WON'T WORK DUE TO A CURRENT CONFLICT WITH ANGULARFIRE2!!!!
     // environment.production ? ServiceWorkerModule.register('/ngsw-worker.js') : [],
-    // ServiceWorkerModule.register('/ngsw-worker.js', {
-    //   enabled: environment.production
-    // }),
+    ServiceWorkerModule.register('/ngsw-worker.js', {
+      enabled: environment.production
+    }),
     FlexLayoutModule,
     MaterialModule,
 
     AuthModule,
     HomeModule,
     SignInModule,
-    MessagesModule
+    MessagesModule,
+    ServiceWorkerModule
   ],
   entryComponents: [RoomMetadataComponent],
   providers: [
@@ -60,7 +63,8 @@ const routes: Routes = [
     RtdbService,
     FirestoreService,
     LayoutService,
-    MessagingService
+    MessagingService,
+    ReferenceService
   ],
   bootstrap: [AppComponent]
 })
