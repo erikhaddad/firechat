@@ -47,7 +47,7 @@ export class RtdbService {
   }
 
   get rooms(): AngularFireList<Room[]> {
-      return this.afd.list(this.roomMetadataPath);
+      return this.roomsRef;
   }
 
   get roomUsers(): AngularFireList<RoomUsers[]> {
@@ -63,20 +63,20 @@ export class RtdbService {
   }
 
   get users(): AngularFireList<User[]> {
-      return this.afd.list(this.usersPath);
+      return this.usersRef;
   }
   */
 
   /** USERS **/
   async createUser(user: User): Promise<string> {
-    const promise = this.afd.list(this.usersPath).push({});
+    const promise = this.afd.list(this.usersPath).push({}); // pushing empty object and not using ref to avoid typing
     let newUserId: string;
 
     await promise
       .then(
         result => {
           user.id = newUserId = result.key;
-          this.afd.list(this.usersPath).set(user.id, user);
+          this.usersRef.set(user.id, user);
         },
         err => console.error(err, 'You do not have access!')
       );
@@ -93,11 +93,11 @@ export class RtdbService {
   }
 
   removeUser(user: User): Promise<any> {
-    return this.afd.list(this.usersPath).remove(user.id);
+    return this.usersRef.remove(user.id);
   }
 
   updateUser(user: User): Promise<any> {
-    return this.afd.list(this.usersPath).update(user.id, user);
+    return this.usersRef.update(user.id, user);
   }
 
   /** ROOM METADATA **/
@@ -109,7 +109,7 @@ export class RtdbService {
   }
 
   async createRoom(room: Room): Promise<string> {
-    const promise = this.afd.list(this.roomMetadataPath).push({});
+    const promise = this.roomsRef.push({});
     let newRoomId: string;
 
     room.createdAt = firebase.database.ServerValue.TIMESTAMP;
@@ -138,11 +138,11 @@ export class RtdbService {
   }
 
   removeRoom(room: Room): Promise<any> {
-    return this.afd.list(this.roomMetadataPath).remove(room.id);
+    return this.roomsRef.remove(room.id);
   }
 
   updateRoom(room: Room, changes: any): Promise<any> {
-    return this.afd.list(this.roomMetadataPath).update(room.id, changes);
+    return this.roomsRef.update(room.id, changes);
   }
 
   /** ROOM MESSAGES **/
