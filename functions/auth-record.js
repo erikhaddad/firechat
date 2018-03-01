@@ -8,7 +8,9 @@ let languagesEnum = {
   ENGLISH: 1,
   SPANISH: 2,
   PORTUGUESE: 3,
-  GERMAN: 4
+  GERMAN: 4,
+  FRENCH: 5,
+  FINNISH: 6
 };
 
 let themesEnum = {

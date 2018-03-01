@@ -102,7 +102,8 @@ export enum Languages {
   Spanish = 2,
   Portuguese = 3,
   German = 4,
-  French = 5
+  French = 5,
+  Finnish = 6
 }
 
 export enum MessageTypes {

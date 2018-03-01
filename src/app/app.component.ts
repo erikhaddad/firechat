@@ -82,6 +82,11 @@ export class AppComponent implements OnInit, OnDestroy {
       id: this.LANGUAGES.French,
       abbreviation: 'fr',
       name: 'French'
+    },
+    {
+      id: this.LANGUAGES.Finnish,
+      abbreviation: 'fi',
+      name: 'Finnish'
     }
   ];
 

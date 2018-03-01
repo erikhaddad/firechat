@@ -11,7 +11,8 @@ let languagesEnum = {
   SPANISH: 2,
   PORTUGUESE: 3,
   GERMAN: 4,
-  FRENCH: 5
+  FRENCH: 5,
+  FINNISH: 6
 };
 
 // Moderates messages by lowering all uppercase messages and removing swearwords.

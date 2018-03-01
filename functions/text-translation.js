@@ -10,7 +10,8 @@ let languagesEnum = {
   SPANISH: 2,
   PORTUGUESE: 3,
   GERMAN: 4,
-  FRENCH: 5
+  FRENCH: 5,
+  FINNISH: 6
 };
 
 // sample: ["en", "es", "pt", "de", "ja", "hi", "nl"]
@@ -39,6 +40,11 @@ let languages = [
     id: languagesEnum.FRENCH,
     abbreviation: 'fr',
     name: 'French'
+  },
+  {
+    id: languagesEnum.FINNISH,
+    abbreviation: 'fi',
+    name: 'Finnish'
   }
 ];
 
