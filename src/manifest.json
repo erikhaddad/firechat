@@ -1,6 +1,6 @@
 {
-  "name": "Firestore",
-  "short_name": "Firestore",
+  "name": "Firechat",
+  "short_name": "Firechat",
   "theme_color": "#ffa000",
   "background_color": "#2E3A4D",
   "display": "standalone",
