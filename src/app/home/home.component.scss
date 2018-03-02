@@ -37,3 +37,12 @@
     }
   }
 }
+
+@media screen and (max-width: 479px) {
+  #home-component {
+    .home-beer-guy {
+      height: 256px;
+      width: 256px;
+    }
+  }
+}
